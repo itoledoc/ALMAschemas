@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ALMA - Atacama Large Millimeter Array
+ (c) European Southern Observatory, 2002
+ (c) Associated Universities Inc., 2002
+ Copyright by ESO (in the framework of the ALMA collaboration),
+ Copyright by AUI (in the framework of the ALMA collaboration),
+ All rights reserved.
+ 
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ 
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ MA 02111-1307  USA
+ 
+////////////////////////////////////////////////////////////////////////////////////////
+//
+//                                    WARNING 
+//  This is generated code!  Do not modify this file.                  
+//  If you do, all changes will be lost when the file is re-generated. 
+//
+////////////////////////////////////////////////////////////////////////////////////////
+ File SpectralWindowTable.xsd
+ --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:spctrw="http://Alma/XASDM/SpectralWindowTable" xmlns:ent="Alma/CommonEntity" xmlns:crlbit="http://Alma/XENUM/CorrelationBitMod" xmlns:netsdb="http://Alma/XENUM/NetSidebandMod" xmlns:sdbprm="http://Alma/XENUM/SidebandProcessingModeMod" xmlns:sprslt="http://Alma/XENUM/SpectralResolutionTypeMod" xmlns:frqrfc="http://Alma/XENUM/FrequencyReferenceCodeMod" xmlns:bbnam="http://Alma/XENUM/BasebandNameMod" xmlns:winfun="http://Alma/XENUM/WindowFunctionMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/SpectralWindowTable" version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ 
+		<!-- We need the schema of CorrelationBit -->
+		<xs:import namespace="http://Alma/XENUM/CorrelationBitMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CorrelationBit.xsd" />
+		<!-- We need the schema of NetSideband -->
+		<xs:import namespace="http://Alma/XENUM/NetSidebandMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/NetSideband.xsd" />
+		<!-- We need the schema of SidebandProcessingMode -->
+		<xs:import namespace="http://Alma/XENUM/SidebandProcessingModeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/SidebandProcessingMode.xsd" />
+		<!-- No specific import for int -->
+		<!-- We need the schema of SpectralResolutionType -->
+		<xs:import namespace="http://Alma/XENUM/SpectralResolutionTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/SpectralResolutionType.xsd" />
+		<!-- No specific import for double -->
+		<!-- We need the schema of FrequencyReferenceCode -->
+		<xs:import namespace="http://Alma/XENUM/FrequencyReferenceCodeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/FrequencyReferenceCode.xsd" />
+		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
+		<!-- No specific import for boolean -->
+		<!-- No specific import for Frequency -->
+		<!-- We need the schema of BasebandName -->
+		<xs:import namespace="http://Alma/XENUM/BasebandNameMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/BasebandName.xsd" />
+		<!-- We need the schema of WindowFunction -->
+		<xs:import namespace="http://Alma/XENUM/WindowFunctionMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/WindowFunction.xsd" />
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+    <xs:element name="SpectralWindowTable">
+        <xs:complexType>
+            <xs:sequence>
+             	<!-- This table's Entity . -->
+            	<xs:element name="Entity" type="ent:EntityT" />
+
+            	<!-- This table's Container's Entity. -->
+            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	
+            	<!-- And then the sequence of its rows -->
+                <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+         <xs:element name="spectralWindowId" type="xs:string" />
+         <xs:element name="basebandName" type="bbnam:BasebandName" />
+         <xs:element name="netSideband" type="netsdb:NetSideband" />
+         <xs:element name="numChan" type="xs:string" />
+         <xs:element name="refFreq" type="xs:string" />
+         <xs:element name="sidebandProcessingMode" type="sdbprm:SidebandProcessingMode" />
+         <xs:element name="totBandwidth" type="xs:string" />
+         <xs:element name="windowFunction" type="winfun:WindowFunction" />
+     	 <xs:element name="chanFreqStart" type="xs:string" minOccurs="0" />
+     	 <xs:element name="chanFreqStep" type="xs:string" minOccurs="0" />
+     	 <xs:element name="chanFreqArray" type="xs:string" minOccurs="0" />
+     	 <xs:element name="chanWidth" type="xs:string" minOccurs="0" />
+     	 <xs:element name="chanWidthArray" type="xs:string" minOccurs="0" />
+     	 <xs:element name="correlationBit" type="crlbit:CorrelationBit" minOccurs="0" />
+     	 <xs:element name="effectiveBw" type="xs:string" minOccurs="0" />
+     	 <xs:element name="effectiveBwArray" type="xs:string" minOccurs="0" />
+     	 <xs:element name="freqGroup" type="xs:string" minOccurs="0" />
+     	 <xs:element name="freqGroupName" type="xs:string" minOccurs="0" />
+     	 <xs:element name="lineArray" type="xs:string" minOccurs="0" />
+     	 <xs:element name="measFreqRef" type="frqrfc:FrequencyReferenceCode" minOccurs="0" />
+     	 <xs:element name="name" type="xs:string" minOccurs="0" />
+     	 <xs:element name="oversampling" type="xs:string" minOccurs="0" />
+     	 <xs:element name="quantization" type="xs:string" minOccurs="0" />
+     	 <xs:element name="refChan" type="xs:string" minOccurs="0" />
+     	 <xs:element name="resolution" type="xs:string" minOccurs="0" />
+     	 <xs:element name="resolutionArray" type="xs:string" minOccurs="0" />
+     	 <xs:element name="numAssocValues" type="xs:string" minOccurs="0" />
+     	 <xs:element name="assocNature" type="xs:string" minOccurs="0" />
+     	 <xs:element name="assocSpectralWindowId" type="xs:string" minOccurs="0" />
+     	 <xs:element name="dopplerId" type="xs:string" minOccurs="0" />
+     	 <xs:element name="imageSpectralWindowId" type="xs:string" minOccurs="0" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

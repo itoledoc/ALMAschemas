@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.8">
+    <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink_1.1.xsd" />
+    <xs:annotation>
+        <xs:documentation>This schema is intended for XML headers of the binary data published by
+            the correlator. This version shows a design using XLink version 1.1 (work in progress).
+            Note that with this version reference to attributeGroups have been eliminated. In
+            addition, with XLink 1.1, xlink:type="simple" is not required. The minimum information
+            required for the data access methods is the size for each binary attachment. The
+            additional header informations are intended to provide the attributes necessary to
+            determine the positions of nodes in the metadata and data tree structures. Although
+            these informations are also available in the ASDM tables, they are not sufficient when
+            the intent is to use the data in a scientific context. Hence there is a denormalization
+            for the description of data structure but not its content. The purpose with this
+            denormalization is to provide some methods to gain in term of efficiency in data access
+            during the observing process; it may also be useful for some other reasons, e.g. tasks
+            of maintenance for the archive. <xhtml:br /> An example of validated XML instance is
+            given when the SDM item <xhtml:it>correlationMode</xhtml:it> is equal to <xhtml:a href="sdmDataHeader8_0.xml">0</xhtml:a>.<xhtml:br /> Constraints acounted for
+            validations of XML instances:<xhtml:br />
+            <xhtml:ul>
+                <xhtml:li> maximum number of antennas cannot exceed 64</xhtml:li>
+                <xhtml:li> maximum number of basebands: 4</xhtml:li>
+                <xhtml:li> maximum number of spectral windows per baseband: 32</xhtml:li>
+                <xhtml:li> maximum number of frequency points per baseband: 8192</xhtml:li>
+                <xhtml:li> possible number of bins; 1, 2 or 4</xhtml:li>
+                <xhtml:li> the number of polarization products cannot exceed 4 for the visibilities
+                    and 3 for the total power data</xhtml:li>
+                <xhtml:li> numAPC, relevant only for the visibility, can only take the value 1 or
+                2</xhtml:li>
+            </xhtml:ul> The number of bins must be the same for all spectral windows in a
+            baseband<xhtml:br /> The number of polarization products (visibility and total-power)
+            must be the same for all the spectral windows within a baseband.</xs:documentation>
+    </xs:annotation>
+    <xs:element name="dataOID" substitutionGroup="xlink:locator" type="xlink:locatorType">
+        <xs:annotation>
+            <xs:documentation> Data object identifier. It is a database key. </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:attribute name="number" type="xs:positiveInteger">
+        <xs:annotation>
+            <xs:documentation> In the SDM all the numbers are 1 based, e.g. a scan number.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+    <xs:simpleType name="Size">
+        <xs:annotation>
+            <xs:documentation>Size of an attachment in number of bytes. For the arrays of flags, if
+                size takes a value of 0, this means that all the data are valid. In this case the
+                corresponding binary attachment does not need to be present. When the presence of an
+                attachment is mandatory in a given case, its size derives directly from the
+                positiveInteger primitive data type.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:nonNegativeInteger"> </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="positiveSize">
+        <xs:annotation>
+            <xs:documentation>N.B.: some attachments may have a size set to 0, e.g. baselineFlags.
+                In these cases the presence of these attachments is not required.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:positiveInteger" />
+    </xs:simpleType>
+    <xs:simpleType name="AttachmentId">
+        <xs:restriction base="xs:Name">
+            <xs:pattern value="cid:.*..bin" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:attribute name="ref" type="AttachmentId">
+        <xs:annotation>
+            <xs:documentation> Reference to an attachment identifier. </xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+    <xs:simpleType name="Type">
+        <xs:annotation>
+            <xs:documentation>Primitive data type used in the binary attachments</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="short" />
+            <xs:enumeration value="short int" />
+            <xs:enumeration value="unsigned short int" />
+            <xs:enumeration value="long" />
+            <xs:enumeration value="unsigned int" />
+            <xs:enumeration value="long long" />
+            <xs:enumeration value="float" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ArrayTime">
+        <xs:annotation>
+            <xs:documentation>Data type defined in the ASDM: implemented as an Interval of time
+                since 17 November 1858 00:00:00 UTC, the beginning of the modified Julian
+            Day.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="Type">
+            <xs:enumeration value="long long" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="Interval">
+        <xs:annotation>
+            <xs:documentation>Data type defined in the ASDM: Interval of time in units of
+                nanoseconds.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="Type">
+            <xs:enumeration value="long long" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:attribute name="byteOrder" type="xs:string" fixed="IEEE Low_Endian">
+        <xs:annotation>
+            <xs:documentation> Endian data type for the binary data. For x86 computers this is "IEEE
+                Low_Endian". </xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="axisOrder" type="xs:string" fixed="12345678">
+        <xs:annotation>
+            <xs:documentation>Axis order as defined in a SDM processor table (the AlmaCorrelatorMode
+                table in case of the ALMA correlator) </xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+    <xs:element name="time">
+        <xs:annotation>
+            <xs:documentation> The scheduled time for the observation (an integration or a
+                subintegration). N.B.:it is one of the fields of the SDM Main table key.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:unsignedLong">
+                    <xs:attribute name="type" type="ArrayTime" />
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+    <!-- The size of the binary attachments -->
+    <xs:element name="actualTimes">
+        <xs:annotation>
+            <xs:documentation> Properties of the attachment for the time stamp which is the actual
+                time centroid in units of ArrayTime. The resulting value is the intersection of the
+                2 antennas of a baseline taking into account any gaps due to blanking in either
+                antenna. </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="size" type="positiveSize" use="required" />
+            <xs:attribute name="type" type="ArrayTime" use="prohibited" />
+            <xs:attribute name="ref" type="AttachmentId" fixed="cid:actualTimes.bin" use="required" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="actualDurations">
+        <xs:annotation>
+            <xs:documentation> Properties of the attachment for the actual duration of observation
+                for the data. This array contains the integration duration in units of nanoseconds
+                taking into account any antenna-based blanking. The resulting value is the
+                intersection of the 2 antennas of a baseline taking into account any gaps due to
+                blanking in either antenna. </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="size" type="positiveSize" use="required">
+                <xs:annotation>
+                    <xs:documentation>There is one value for each baseline for each bin for each
+                        baseband. Note that would an antenna have problems with all basebands, all
+                        the baselines which involve this antenna have a duration of 0. The number of
+                        baselines derives from the value of the element
+                    numAntenna.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="type" type="Interval" use="prohibited" />
+            <xs:attribute name="ref" type="AttachmentId" fixed="cid:actualDurations.bin" use="required" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="zeroLags">
+        <xs:annotation>
+            <xs:documentation> Average of all the spectral elements. </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="size" type="positiveSize" use="required" />
+            <xs:attribute name="type" type="Type" fixed="float" use="prohibited" />
+            <xs:attribute name="ref" type="AttachmentId" fixed="cid:zeroLags.bin" use="required" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="autoData">
+        <xs:annotation>
+            <xs:documentation> The auto data are "single-dish" data. This includes the self products
+                (e.g. XX and YY for ALMA) which are real values and the cross product (XY) which is
+                a complex value (in case there are more than 2 polarization products.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="size" type="positiveSize" use="required" />
+            <xs:attribute name="type" type="Type" fixed="float" use="prohibited" />
+            <xs:attribute name="ref" type="AttachmentId" fixed="cid:autoData.bin" use="required" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="crossData">
+        <xs:annotation>
+            <xs:documentation> The cross data are the visibilities (complex values) obtained with
+                the non-zero baselines. </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="size" type="positiveSize" use="required" />
+            <xs:attribute name="type" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="Type">
+                        <xs:enumeration value="short" />
+                        <xs:enumeration value="long" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="ref" type="AttachmentId" fixed="cid:crossData.bin" use="required" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="baselineFlags">
+        <xs:annotation>
+            <xs:documentation> The codes to be used are TBD! </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="size" type="Size" use="required" />
+            <xs:attribute name="type" type="Type" fixed="unsigned int" use="prohibited" />
+            <xs:attribute name="ref" type="AttachmentId" fixed="cid:baselineFlags.bin" use="required" />
+        </xs:complexType>
+    </xs:element>
+    <xs:simpleType name="NumPolProduct">
+        <xs:restriction base="xs:positiveInteger" />
+    </xs:simpleType>
+    <xs:attribute name="numCrossPolProduct">
+        <xs:annotation>
+            <xs:documentation> Number of polarization products (for the interferometric data)
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+            <xs:restriction base="NumPolProduct">
+                <xs:enumeration value="1" />
+                <xs:enumeration value="2" />
+                <xs:enumeration value="4" />
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="numSdPolProduct">
+        <xs:annotation>
+            <xs:documentation> Number of polarization products (for the "single-dish" data)
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+            <xs:restriction base="NumPolProduct">
+                <xs:maxInclusive value="3" />
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:simpleType name="NumAPC">
+        <xs:annotation>
+            <xs:documentation> The radiometric Atmospheric Phase Correction code (the SDM item
+                "atmPhaseCode") can take the following values: 0 if only the uncorrected data are
+                present, 1 if only the corrected data are present and 2 if both the uncorrected and
+                corected data are present Hence numAPC=2 if atmPhaseCode=2, else it is 1.</xs:documentation>
+            <!--
+            <xs:documentation>The radiometric Atmospheric Phase Correction code (the SDM item
+                    <xhtml:it>atmPhaseCode</xhtml:it>) can take the following values: <xhtml:ul>
+                    <xhtml:li>0 if only the uncorrected data are present</xhtml:li>
+                    <xhtml:li>1 if only the corrected data are present and </xhtml:li>
+                    <xhtml:li>2 if both the uncorrected and corected data are present.</xhtml:li>
+                </xhtml:ul> Hence numAPC=2 if <xhtml:it>atmPhaseCode</xhtml:it>=2, else it is
+            1.</xs:documentation>
+            -->
+        </xs:annotation>
+        <xs:restriction base="xs:positiveInteger">
+            <xs:maxInclusive value="2" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:attribute name="numAPC" type="NumAPC">
+        <xs:annotation>
+            <xs:documentation> numAPC must take the value 1 if the data contain only atmospheric
+                phase corrected values or only atmospheric phase uncorrected values, else, when both
+                are present, numAPC must take the value of 2. In the SDM this value is controlled by
+                the item "atmPhaseCode" in the ConfigDescription table.</xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+    <xs:simpleType name="NumAntenna">
+        <xs:restriction base="xs:positiveInteger">
+            <xs:maxInclusive value="64">
+                <xs:annotation>
+                    <xs:documentation>Hardware constraint: maximum number of antenna supported by
+                        the correlator</xs:documentation>
+                </xs:annotation>
+            </xs:maxInclusive>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:element name="numAntenna">
+        <xs:annotation>
+            <xs:documentation>Number of antenna scheduled to produce the data</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+            <xs:restriction base="NumAntenna" />
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="actualNumAntenna" type="xs:positiveInteger">
+        <xs:annotation>
+            <xs:documentation>Actual number of antennas effectively used to produce the data.
+                Co-constraint: this number must be equal or smaller to
+            numAntenna.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:simpleType name="NumSpectralPoint">
+        <xs:annotation>
+            <xs:documentation>Number of spectral points (channels) in a spectral window. Note that
+                this number is smaller than the number of correlator channels actually used in case
+                the spectral window is composed of more than one subband, the subbands being
+                stitched together.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:positiveInteger">
+            <xs:maxInclusive value="8192">
+                <xs:annotation>
+                    <xs:documentation>Hardware limitation: maximum number of spectral points
+                        (frequency channels) supported by the correlator in one
+                    baseband</xs:documentation>
+                </xs:annotation>
+            </xs:maxInclusive>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:attribute name="numSpectralPoint" type="NumSpectralPoint">
+        <xs:annotation>
+            <xs:documentation> Number of spectral points in a spectral window. </xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="scaleFactor" type="xs:float" />
+    <xs:complexType name="SpectralWindow">
+        <xs:annotation>
+            <xs:documentation> Structural information about a spectral window: the number of
+                spectral points. </xs:documentation>
+        </xs:annotation>
+        <xs:attribute ref="numSpectralPoint" use="required" />
+    </xs:complexType>
+    <xs:complexType name="SpectralWindowCorrelationMode0or2">
+        <xs:annotation>
+            <xs:documentation> Spectral visibilities (case when correlationMode = 0 or 2) are
+                represented with a scale factor, 2.04 SQRT(BW*duration) </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="SpectralWindow">
+                <xs:attribute ref="scaleFactor" use="required" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="NumBin">
+        <xs:restriction base="xs:positiveInteger">
+            <xs:annotation>
+                <xs:documentation>Correlator software restriction: number of steps in a Switching
+                    Cycle (frequency or wobbler switching)</xs:documentation>
+            </xs:annotation>
+            <xs:enumeration value="1" />
+            <xs:enumeration value="2" />
+            <xs:enumeration value="4" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:attribute name="numBin" type="NumBin">
+        <xs:annotation>
+            <xs:documentation>Number of steps in a switch-cycle. A value of 1 means no switching
+                cycle.</xs:documentation>
+        </xs:annotation>
+    </xs:attribute>
+    <!-- Baseband part common to all correlation modes -->
+    <xs:complexType name="AbstractBaseband" abstract="true">
+        <xs:annotation>
+            <xs:documentation>Correlator software restriction: all the spectral windows within a
+                baseband must share the same number of steps in switching mode </xs:documentation>
+        </xs:annotation>
+        <xs:sequence />
+        <xs:attribute ref="numBin" use="required" />
+    </xs:complexType>
+    <xs:complexType name="BasebandCorrelationMode0">
+        <xs:annotation>
+            <xs:documentation>An ASDM correlationMode value of 0 means that only the interferometric
+                data are stored in the binary attachments. This mode is not standard for
+            ALMA.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="AbstractBaseband">
+                <xs:attribute ref="numCrossPolProduct" use="required" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="BasebandCorrelationMode2">
+        <xs:annotation>
+            <xs:documentation>An ASDM correlationMode value of 2 means that both the interferometric
+                data (visibilities) and the total power data (single-dish) are stored in the binary
+                attachments. This is a standard mode for ALMA.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="BasebandCorrelationMode0">
+                <xs:attribute ref="numSdPolProduct" use="required" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="BasebandCorrelationMode1" abstract="false">
+        <xs:annotation>
+            <xs:documentation>An ASDM correlationMode value of 1 means that only the total power
+                data (single-dish) are stored in the binary attachments. This is a standard mode for
+                ALMA.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="AbstractBaseband">
+                <xs:attribute ref="numSdPolProduct" use="required" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ExecBlockLink">
+        <xs:annotation>
+            <xs:documentation> An ExecBlockLink type is an Xlink simple type for an outbound link to
+                an ExecBlock dataset. The role of an ExecBlock is fixed through its definition. The
+                arcrole is fixed through the to explicit role of an ExecBlock for metadata,
+                auxiliary data and observational sttrategies with regard to the data in this data
+                object. </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent mixed="false">
+            <xs:restriction base="xlink:simple">
+                <xs:attribute ref="xlink:role" fixed="http://aramis.obspm.fr/~alma/Sdm/ExecBlock" />
+                <xs:attribute ref="xlink:title" use="optional" />
+                <xs:attribute ref="xlink:href" use="optional" />
+                <xs:attribute ref="xlink:arcrole" fixed="http://aramis.obspm.fr/~alma/Sdm/ExecBlockDataContext" />
+            </xs:restriction>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- The level in the project structure -->
+    <xs:element name="scanNum" type="xs:positiveInteger">
+        <xs:annotation>
+            <xs:documentation> The scan number. For ALMA it is provided by the Control subsystem.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="subscanNum" type="xs:positiveInteger">
+        <xs:annotation>
+            <xs:documentation> The subscan number: For ALMA it is provided by the Control subsystem.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="integrationNum" type="xs:positiveInteger">
+        <xs:annotation>
+            <xs:documentation> The integration number running from 1 to the number of integrations
+                in a subscan. For ALMA it is generated by the CDP. </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="subintegrationNum" type="xs:positiveInteger">
+        <xs:annotation>
+            <xs:documentation> The subintegration number runs from 1 to the number of
+                subintegrations in an integration. For ALMA this number is generated by the CDP.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="sdmDataHeader">
+        <xs:annotation>
+            <xs:documentation>Base of the XML header associated to the binary
+            data.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="xlink:extended">
+                    <xs:sequence>
+                        <xs:element ref="time" />
+                        <xs:element ref="dataOID" />
+                        <!-- Section to provide the location in the project structure where these data have been referenced -->
+                        <xs:element name="execBlock">
+                            <xs:annotation>
+                                <xs:documentation> The scan with the subscan, integration and
+                                    subintegration numbers define a timerange within the execBlock
+                                    of the project structure in which these binary data have been
+                                    aquired. </xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:complexContent>
+                                    <xs:extension base="ExecBlockLink">
+                                        <xs:sequence>
+                                            <xs:element ref="scanNum" />
+                                            <xs:element ref="subscanNum" />
+                                            <xs:element ref="integrationNum" />
+                                            <xs:element ref="subintegrationNum" minOccurs="0" />
+                                        </xs:sequence>
+                                    </xs:extension>
+                                </xs:complexContent>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element ref="numAntenna" />
+                        <xs:element ref="actualNumAntenna" />
+                        <xs:element ref="baselineFlags" />
+                        <xs:element ref="actualTimes" />
+                        <xs:element ref="actualDurations" />
+                        <xs:element ref="zeroLags" />
+                        <!-- Section providing informations about sizes in the data structure -->
+                        <xs:choice>
+                            <xs:element name="correlationMode0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="baseband" maxOccurs="4">
+                                            <xs:complexType>
+                                                <xs:complexContent>
+                                                  <xs:extension base="BasebandCorrelationMode0">
+                                                  <xs:sequence maxOccurs="32">
+                                                  <xs:element name="spectralWindow" type="SpectralWindowCorrelationMode0or2" />
+                                                  </xs:sequence>
+                                                  </xs:extension>
+                                                </xs:complexContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element ref="crossData" />
+                                    </xs:sequence>
+                                    <xs:attribute ref="numAPC" use="required" />
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="correlationMode1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="baseband" maxOccurs="4">
+                                            <xs:complexType>
+                                                <xs:complexContent>
+                                                  <xs:extension base="BasebandCorrelationMode1">
+                                                  <xs:sequence maxOccurs="32">
+                                                  <xs:element name="spectralWindow" type="SpectralWindow" />
+                                                  </xs:sequence>
+                                                  </xs:extension>
+                                                </xs:complexContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element ref="autoData" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="correlationMode2">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="baseband" maxOccurs="4">
+                                            <xs:complexType>
+                                                <xs:complexContent>
+                                                  <xs:extension base="BasebandCorrelationMode2">
+                                                  <xs:sequence maxOccurs="32">
+                                                  <xs:element name="spectralWindow" type="SpectralWindowCorrelationMode0or2" />
+                                                  </xs:sequence>
+                                                  </xs:extension>
+                                                </xs:complexContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element ref="autoData" />
+                                        <xs:element ref="crossData" />
+                                    </xs:sequence>
+                                    <xs:attribute ref="numAPC" use="required" />
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:choice>
+                    </xs:sequence>
+                    <xs:attribute ref="byteOrder" use="required" />
+                    <xs:attribute ref="axisOrder" use="required" />
+                    <xs:attribute name="schemaVersion" type="xs:decimal" use="required" />
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

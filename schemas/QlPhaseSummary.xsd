@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xs:schema
+    targetNamespace="Alma/pipelineql/QlPhaseSummary"
+    xmlns:qlphc="Alma/pipelineql/QlPhaseSummary"
+    xmlns:qls="Alma/pipelineql/QuickLookSummary"
+    xmlns:ent="Alma/CommonEntity"
+    xmlns:val="Alma/ValueTypes"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
+  <xs:import namespace="Alma/ValueTypes" schemaLocation="ValueTypes.xsd"/>
+  <xs:import namespace="Alma/pipelineql/QuickLookSummary" schemaLocation="QuickLookSummary.xsd"/>
+
+  <xs:complexType name="QlPhaseSummary">
+    <xs:sequence>
+      <xs:element name="QlPhaseSummaryEntity" type="qlphc:QlPhaseSummaryEntityT"/>
+      <xs:element name="QuickLookSummaryRef" type="qls:QuickLookSummaryRefT"/>
+      <xs:element name="PhaseSummaries" type="qlphc:PhaseSummaryT" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PhaseSummaryT">
+    <xs:sequence>
+      <xs:element name="Source" type="xs:string"/>
+      <xs:element name="ReceiverBand" type="xs:string"/>
+      <xs:element name="Baseband" type="xs:string"/>
+      <xs:element name="Frequency1" type="xs:double"/>
+      <xs:element name="Frequency2" type="xs:double"/>
+      <xs:element name="PhaseScans" type="qlphc:PhaseScanT" minOccurs="0" maxOccurs="unbounded"/>      
+      <xs:element name="PhaseCalibrations" type="qlphc:PerBaselinePhaseT" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PhaseScanT">
+    <xs:sequence>
+      <xs:element name="ExecBlockRef" type="val:ExecBlockRefT"/>
+      <xs:element name="ScanNumber" type="xs:integer"/>
+      <xs:element name="ScanTime" type="xs:string"/>
+      <xs:element name="Status" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PerBaselinePhaseT">
+    <xs:sequence>
+      <xs:element name="Baseline" type="qlphc:BaselineT"/>
+      <xs:element name="Corrected" type="qlphc:PolPhaseSummaryT" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Uncorrected" type="qlphc:PolPhaseSummaryT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BaselineT">
+    <xs:sequence>
+      <xs:element name="Antenna1" type="qlphc:AntennaT"/>
+      <xs:element name="Antenna2" type="qlphc:AntennaT"/>
+      <xs:element name="BaselineLength" type="xs:double"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="AntennaT">
+    <xs:sequence>
+      <xs:element name="AntennaName" type="xs:string"/>
+      <xs:element name="StationName" type="xs:string"/>       
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PolPhaseSummaryT">
+    <xs:sequence>
+      <xs:element name="PerPolarization" type="qlphc:PolarizationPhaseT" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>  
+
+  <xs:complexType name="PolarizationPhaseT">
+    <xs:sequence>
+      <xs:element name="Polarization" type="xs:string"/>
+      <xs:element name="PhaseRMS" type="qlphc:StatisticT"/>
+        <xs:element name="DecorrelationFactor" type="qlphc:StatisticT"/>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="StatisticT">
+    <xs:sequence>
+      <xs:element name="Nobs" type="xs:int"/>
+      <xs:element name="Mean" type="xs:double"/>
+      <xs:element name="Sigma" type="xs:double"/>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="QlPhaseSummaryEntityT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="QlPhaseSummary"/>
+        <xs:attribute name="datamodelVersion" type="xs:string" use="required" fixed="0.1"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="QlPhaseSummaryRefT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityRefT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="QlPhaseSummary"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+</xs:schema>
+

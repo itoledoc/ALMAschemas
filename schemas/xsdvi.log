@@ -1,0 +1,29 @@
+Aug 27, 2014 4:12:25 PM xsdvi.XsdVi printUsage
+SEVERE: 
+USAGE:
+java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] [style]
+  STYLE:
+    -embodyStyle                css style will be embodied in each svg file, this is default
+    -generateStyle <style.css>  new css file with specified name will be generated and used by svgs
+    -useStyle      <style.css>  external css file at specified url will be used by svgs
+
+Aug 27, 2014 4:12:35 PM xsdvi.XsdVi main
+INFO: The style will be embodied
+Aug 27, 2014 4:12:35 PM xsdvi.XsdVi main
+INFO: Parsing ObsProject.xsd...
+Aug 27, 2014 4:12:36 PM xsdvi.XsdVi main
+INFO: Processing XML Schema model...
+Aug 27, 2014 4:12:36 PM xsdvi.XsdVi main
+INFO: Drawing SVG ObsProject.svg...
+Aug 27, 2014 4:12:36 PM xsdvi.XsdVi main
+INFO: Done.
+Sep 02, 2014 8:22:39 PM xsdvi.XsdVi main
+INFO: The style will be embodied
+Sep 02, 2014 8:22:39 PM xsdvi.XsdVi main
+INFO: Parsing ObsProposal.xsd...
+Sep 02, 2014 8:22:40 PM xsdvi.XsdVi main
+INFO: Processing XML Schema model...
+Sep 02, 2014 8:22:40 PM xsdvi.XsdVi main
+INFO: Drawing SVG ObsProposal.svg...
+Sep 02, 2014 8:22:40 PM xsdvi.XsdVi main
+INFO: Done.

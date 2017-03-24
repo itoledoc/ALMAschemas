@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xs:schema
+    targetNamespace="Alma/pipelineql/QlPointingSummary"
+    xmlns:qlpt="Alma/pipelineql/QlPointingSummary"
+    xmlns:qls="Alma/pipelineql/QuickLookSummary"
+    xmlns:qlal="Alma/pipelineql/QlAlarms"
+    xmlns:ent="Alma/CommonEntity"
+    xmlns:val="Alma/ValueTypes"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="Alma/pipelineql/QlAlarms" schemaLocation="QlAlarms.xsd"/>
+  <xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
+  <xs:import namespace="Alma/ValueTypes" schemaLocation="ValueTypes.xsd"/>
+  <xs:import namespace="Alma/pipelineql/QuickLookSummary" schemaLocation="QuickLookSummary.xsd"/>
+
+  <!-- Needs to be checked for number of occurences and value types -->
+
+  <!-- The list of pointing calibrations one for each source and receiver band combinations -->
+  <xs:complexType name="QlPointingSummary">
+    <xs:sequence>
+      <xs:element name="QlPointingSummaryEntity" type="qlpt:QlPointingSummaryEntityT"/>
+      <xs:element name="QuickLookSummaryRef" type="qls:QuickLookSummaryRefT"/>
+      <xs:element name="PointingSummaries" type="qlpt:PointingSummaryT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Alarms" type="qlal:QlAlarmsT" minOccurs="0" maxOccurs="1"/>      
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The pointing summary for each source receiver band combination in the session -->
+  <xs:complexType name="PointingSummaryT">
+    <xs:sequence>
+      <xs:element name="Source" type="xs:string"/>
+      <xs:element name="ReceiverBand" type="xs:string"/>
+      <xs:element name="PointingScans" type="qlpt:PointingScanT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="AntennaPointings" type="qlpt:PerAntennaPointingT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="AllPointings" type="qlpt:AveragePointingsT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A summary of each pointing scan -->
+  <!-- Generic to more than pointing scans ? -->
+  <xs:complexType name="PointingScanT">
+    <xs:sequence>
+      <xs:element name="ExecBlockRef" type="val:ExecBlockRefT"/>
+      <xs:element name="ScanNumber" type="xs:integer"/>
+      <xs:element name="ScanTime" type="xs:string"/>
+      <xs:element name="Status" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A summary of each antenna pointing -->
+  <!-- May contained both atmospheric uncorrected and corrected results -->
+  <xs:complexType name="PerAntennaPointingT">
+    <xs:sequence>
+      <xs:element name="AntennaName" type="xs:string"/>
+      <xs:element name="StationName" type="xs:string"/>
+      <xs:element name="Uncorrected" type="qlpt:PointingOffsetsSummaryT" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Corrected" type="qlpt:PointingOffsetsSummaryT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A summary of all antenna pointings -->
+  <!-- May contained both atmospheric uncorrected and corrected results -->
+  <xs:complexType name="AveragePointingsT">
+    <xs:sequence>
+      <xs:element name="Uncorrected" type="qlpt:PointingOffsetsSummaryT" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Corrected" type="qlpt:PointingOffsetsSummaryT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The offsets for each antenna by polarization and averaged over all polarizations -->
+  <xs:complexType name="PointingOffsetsSummaryT">
+    <xs:sequence>
+      <xs:element name="PerPolarization" type="qlpt:PolarizationPointingOffsetsT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Average" type="qlpt:AveragePointingOffsetsT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The offsets  polarization  -->
+  <xs:complexType name="PolarizationPointingOffsetsT">
+    <xs:sequence>
+      <xs:element name="Polarization" type="xs:string"/>
+      <xs:element name="Xoffsets" type="qlpt:PointingOffsetsT"/>
+      <xs:element name="Yoffsets" type="qlpt:PointingOffsetsT"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The offsets  averaged over all polarizations  -->
+  <xs:complexType name="AveragePointingOffsetsT">
+    <xs:sequence>
+      <xs:element name="Polarizations" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Xoffsets" type="qlpt:PointingOffsetsT"/>
+      <xs:element name="Yoffsets" type="qlpt:PointingOffsetsT"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The offsets -->
+  <xs:complexType name="PointingOffsetsT">
+    <xs:sequence>
+      <xs:element name="Nobs" type="xs:integer"/>
+      <xs:element name="Mean" type="xs:double"/>
+      <xs:element name="Sigma" type="xs:double"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <!-- The quicklook pointing summary entity -->
+  <xs:complexType name="QlPointingSummaryEntityT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="QlPointingSummary"/>
+        <xs:attribute name="datamodelVersion" type="xs:string" use="required" fixed="0.1"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Used by other classes to reference a quicklook display result -->
+  <xs:complexType name="QlPointingSummaryRefT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityRefT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="QlPointingSummary"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+<!--  <xs:complexType name="QlAlarmsT">
+    <xs:sequence>
+      <xs:element name="Exception" type="qlpt:QlExceptionT" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="QlExceptionT">
+    <xs:sequence>
+      <xs:element name="Parameter" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string"/>
+          <xs:attribute name="value" type="xs:string"/>
+          <xs:attribute name="unit" type="xs:string" use="optional"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="level">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="ERROR"/>
+          <xs:enumeration value="WARNING"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="description" type="xs:string"/>
+    <xs:attribute name="timestamp" type="xs:string"/>
+    <xs:attribute name="execblockuid" type="xs:string"/>
+    <xs:attribute name="scan" type="xs:int"/>
+  </xs:complexType>-->
+  
+</xs:schema>
+

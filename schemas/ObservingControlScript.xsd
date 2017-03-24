@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ent="Alma/CommonEntity" xmlns:obsscripts="Alma/SSR/ObsScripts" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="Alma/SSR/ObsScripts" version="1">
+
+  <!-- Root -->
+  <xsd:element name="ObservingControlScript">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="0" name="Documentation" type="xsd:string"/>
+
+        <!-- Property -->
+        <xsd:element maxOccurs="unbounded" name="Property">
+          <xsd:complexType>
+            <xsd:simpleContent>
+              <xsd:extension base="xsd:string">
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                <xsd:attribute name="type" type="xsd:string" use="required"/>
+                <xsd:attribute name="unit" type="xsd:string" use="optional"/>
+                <xsd:attribute name="minValue" type="xsd:string" use="optional"/>
+                <xsd:attribute name="maxValue" type="xsd:string" use="optional"/>
+              </xsd:extension>
+            </xsd:simpleContent>
+          </xsd:complexType>
+        </xsd:element>
+
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="scriptname" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>

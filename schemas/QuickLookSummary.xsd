@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema
+    targetNamespace="Alma/pipelineql/QuickLookSummary"
+    xmlns:qls="Alma/pipelineql/QuickLookSummary"
+    xmlns:qlpt="Alma/pipelineql/QlPointingSummary"
+    xmlns:qlfc="Alma/pipelineql/QlFocusSummary"
+    xmlns:qlatm="Alma/pipelineql/QlAtmosphereSummary"
+    xmlns:qlphc="Alma/pipelineql/QlPhaseSummary"
+    xmlns:ent="Alma/CommonEntity"
+    xmlns:ps="Alma/Scheduling/ProjectStatus"
+    xmlns:ouss="Alma/Scheduling/OUSStatus"
+    xmlns:val="Alma/ValueTypes"
+    xmlns:sbl="Alma/ObsPrep/SchedBlock"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
+  <xs:import namespace="Alma/Scheduling/ProjectStatus" schemaLocation="ProjectStatus.xsd"/>
+  <xs:import namespace="Alma/Scheduling/OUSStatus" schemaLocation="OUSStatus.xsd"/>
+  <xs:import namespace="Alma/ObsPrep/SchedBlock" schemaLocation="SchedBlock.xsd"/>
+  <xs:import namespace="Alma/pipelineql/QlPointingSummary" schemaLocation="QlPointingSummary.xsd"/>
+  <xs:import namespace="Alma/pipelineql/QlFocusSummary" schemaLocation="QlFocusSummary.xsd"/>
+  <xs:import namespace="Alma/pipelineql/QlAtmosphereSummary" schemaLocation="QlAtmosphereSummary.xsd"/>
+  <xs:import namespace="Alma/pipelineql/QlPhaseSummary" schemaLocation="QlPhaseSummary.xsd"/>
+  
+  <xs:element name="QuickLookSummary">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="QuickLookSummaryEntity" type="qls:QuickLookSummaryEntityT"/>
+        <xs:element name="ProjectStatusRef" type="ps:ProjectStatusRefT"/>
+        <xs:element name="OUSStatusRef" type="ouss:OUSStatusRefT"/>
+        <xs:element name="SessionRef" type="ouss:OUSStatusRefT"/>
+        <xs:element name="SchedBlockRef" type="sbl:SchedBlockRefT"/>
+        <xs:element name="QlPointingSummaryRef" type="qlpt:QlPointingSummaryRefT"/>
+        <xs:element name="QlFocusSummaryRef" type="qlfc:QlFocusSummaryRefT"/>
+        <xs:element name="QlAtmosphereSummaryRef" type="qlatm:QlAtmosphereSummaryRefT"/>
+        <xs:element name="QlPhaseSummaryRef" type="qlphc:QlPhaseSummaryRefT"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The quicklook display entity -->
+  <xs:complexType name="QuickLookSummaryEntityT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="QuickLookSummary"/>
+        <xs:attribute name="datamodelVersion" type="xs:string" use="required" fixed="0.1"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Used by other classes to reference a quicklook display result -->
+  <xs:complexType name="QuickLookSummaryRefT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityRefT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="QuickLookSummary"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>
+

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:otprefs="Alma/ObsPrep/ObsToolUserPrefs" xmlns:ent="Alma/CommonEntity" targetNamespace="Alma/ObsPrep/ObsToolUserPrefs" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+   <xsd:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd" />
+   <!--
+msc (2005-06-02):
+I had frameBounds as an element with attributes x,y,w,h (thus it had to be a complex type), for a complex
+type castor will always generate a dedicated class. This has the annoying effect, that getFrameBounds()
+may return null. Guarding such nulls makes the Java code ugly, moreover castor won't support a default
+value for a complex type (the generated code won't compile if you try).
+
+I therefore turn most pieces of information in this schema into its own elements of a simple type.
+This means losing some nice structuring, but allows me to specify a default value for each piece.
+1.) To have default values in the schema instead of in the code is quite nice in the first place
+2.) It takes away any pain from the application to deal with maybe-not-there pieces of the config which is good when:
+     a) the schema evolves but a user starts the OT with preferences.xml from an older version
+     b) the user has played around with the preferences.xml and damaged it
+     Both cases can now be dealt with easily
+-->
+
+   <xsd:simpleType name="webSubmissionHostType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="https://ot-server.osf.alma.cl" />
+         <xsd:enumeration value="https://asa.alma.cl" />
+         <xsd:enumeration value="https://asa-test.alma.cl" />
+         <xsd:enumeration value="http://asa-test.alma.cl" />
+         <xsd:enumeration value="http://gas01:8180" />
+         <xsd:enumeration value="http://localhost:8180" />
+         <xsd:enumeration value="http://alma.roe.ac.uk:8180" />
+         <xsd:enumeration value="https://alma.roe.ac.uk:8543" />
+         <xsd:enumeration value="http://ngas02.hq.eso.org:8180" />
+      </xsd:restriction>
+   </xsd:simpleType>
+
+
+
+   <xsd:element name="ObsToolUserPrefs">
+      <xsd:complexType>
+         <xsd:sequence>
+
+            <xsd:element name="fontSize" type="xsd:integer" default="12" />
+            <xsd:element name="debugMenuVisible" type="xsd:boolean" default="false" />
+            <xsd:element name="advancedUser" type="xsd:boolean" default="false" />
+            <xsd:element name="perspective" type="xsd:string" default="1" />
+            <xsd:element name="lookAndFeel" type="xsd:string" default="Metal" />
+            <xsd:element name="projectLibraryVisible" type="xsd:boolean" default="false" />
+            <xsd:element name="ousWriteProtection" type="xsd:boolean" default="false" />
+            <xsd:element name="showsAllWorkbookPagesAsSummary" type="xsd:boolean" default="true" />
+            <xsd:element name="tooltipDismissDelay" type="xsd:integer" default="4" />
+            
+            <!-- colors are stored in hex: alpha, red, green, blue -->
+            <xsd:element name="colorForeground" type="xsd:string" default="ff000000" />
+            <xsd:element name="colorClipboard" type="xsd:string" default="ffff00ff" />
+            <xsd:element name="colorError" type="xsd:string" default="ffff0000" />
+            <xsd:element name="colorPhase1" type="xsd:string" default="ff8ae234" />
+            <xsd:element name="colorPhase2" type="xsd:string" default="ff96b9e1" />
+            <xsd:element name="colorRestFrequency" type="xsd:string" default="ff6699ff" />
+            <xsd:element name="colorCentreFrequency" type="xsd:string" default="ffff0000" />
+            <xsd:element name="colorCatalogueLines" type="xsd:string" default="ff00ff00" />
+            <xsd:element name="colorSidebands" type="xsd:string" default="ffffc800" />
+            <xsd:element name="colorUnconfiguredSidebands" type="xsd:string" default="c8c8af00" />
+            <xsd:element name="colorWarning" type="xsd:string" default="ffffc800" />
+            <xsd:element name="colorZoomBox" type="xsd:string" default="ff40805f" />
+            <xsd:element name="colorBaseband" type="xsd:string" default="ff00b200" />
+            <xsd:element name="colorSpectralWindow" type="xsd:string" default="ff0000b2" />
+            <xsd:element name="colorAveragingRegion" type="xsd:string" default="ffc0c0c0" />
+            <xsd:element name="colorSuppressed" type="xsd:string" default="ff808080" />
+            <xsd:element name="colorTransmission" type="xsd:string" default="ff666666" />
+            <xsd:element name="colorDDT" type="xsd:string" default="fff9606c" />
+            <xsd:element name="colorFOV" type="xsd:string" default="ffff0000" />
+            <xsd:element name="colorFOVMainFluxHPBW" type="xsd:string" default="ff00ff00" />
+
+            <xsd:element name="frameX" type="xsd:integer" default="100" />
+            <xsd:element name="frameY" type="xsd:integer" default="100" />
+            <xsd:element name="frameWidth" type="xsd:integer" default="1000" />
+            <xsd:element name="frameHeight" type="xsd:integer" default="700" />
+
+            <!-- Note that a bunch of standard host strings is defined at the top of this schema -->
+            <xsd:element name="webSubmissionHost" type="xsd:string" />
+
+            <xsd:element name="userAuthenticationUsername" type="xsd:string" />
+
+            <xsd:element name="tabPlacement" default="TOP">
+               <xsd:simpleType>
+                  <xsd:restriction base="xsd:string">
+                     <xsd:enumeration value="TOP" />
+                     <xsd:enumeration value="BOTTOM" />
+                  </xsd:restriction>
+               </xsd:simpleType>
+            </xsd:element>
+
+            <xsd:element name="telescope" default="ESALMA">
+               <xsd:simpleType>
+                  <xsd:restriction base="xsd:string">
+                     <xsd:enumeration value="CSVALMA" />
+                     <xsd:enumeration value="ESALMA" />
+                     <xsd:enumeration value="Cycle2" />
+                     <xsd:enumeration value="ALMA" />
+                     <xsd:enumeration value="ATF" />
+                  </xsd:restriction>
+               </xsd:simpleType>
+            </xsd:element>
+
+            <xsd:element name="bLCorrelator">
+               <xsd:simpleType>
+                  <xsd:restriction base="xsd:string">
+                     <xsd:enumeration value="CORRELATOR_12m_1QUADRANT" />
+                     <xsd:enumeration value="CORRELATOR_12m_2QUADRANT" />
+                     <xsd:enumeration value="CORRELATOR_12m_4QUADRANT" />
+                     <xsd:enumeration value="CORRELATOR_12m_2ANTS" />
+                  </xsd:restriction>
+               </xsd:simpleType>
+            </xsd:element>
+
+            <xsd:element name="dialogSettings" minOccurs="0" maxOccurs="unbounded">
+               <xsd:complexType>
+                  <xsd:attribute name="dialogId" type="xsd:string" />
+                  <xsd:attribute name="description" type="xsd:string" />
+                  <xsd:attribute name="suppress" type="xsd:boolean" default="false" />
+                  <xsd:attribute name="autoanswer" type="xsd:integer" default="0" />
+                  <!-- auto-answer=0 means YES_OPTION -->
+               </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="fieldInsert" type="xsd:boolean" default="false" />
+
+            <xsd:element name="useBlCorrForAca" type="xsd:boolean" default="false" />
+            
+            <xsd:element name="defaultEditorType" default="Forms">
+               <xsd:simpleType>
+                  <xsd:restriction base="xsd:string">
+                     <xsd:enumeration value="Spectral" />
+                     <xsd:enumeration value="Spatial" />
+                     <xsd:enumeration value="Forms" />
+                  </xsd:restriction>
+               </xsd:simpleType>
+            </xsd:element>
+            
+            <xsd:element name="projectDirectory" type="xsd:string" />
+
+            <xsd:element name="favoriteDirectory" minOccurs="0" maxOccurs="unbounded">
+               <xsd:complexType>
+                  <xsd:attribute name="key" type="xsd:string" />
+                  <xsd:attribute name="dir" type="xsd:string" />
+               </xsd:complexType>
+            </xsd:element>
+
+
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <!--                    DEPRECATED SECTION                       -->
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <!-- When you want to "remove" something from this schema, don't -->
+            <!-- simply delete it but move it to here. Otherwise the OT will -->
+            <!-- fail to parse existing preference files that still contain  -->
+            <!-- the removed element. By putting it here, the element will   -->
+            <!-- still be allowed to appear in a preference file, and you    -->
+            <!-- should add some logic to ObservingToolController's method   -->
+            <!-- migratePreferences() that deletes or otherwise migrates the -->
+            <!-- element in the existing preference file. Finally, make sure -->
+            <!-- the element is not used anywhere else in the code.          -->
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+
+            <!-- deprecated -->
+            <xsd:element name="acsManagerHost" type="xsd:string" />
+
+            <!-- deprecated -->
+            <xsd:element name="userAuthenticationEnabled" type="xsd:boolean" />
+            
+            <!-- deprecated -->
+            <xsd:element name="preferencesLocation">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element name="option">
+                        <xsd:simpleType>
+                           <xsd:restriction base="xsd:string">
+                              <xsd:enumeration value="FILE" />
+                              <xsd:enumeration value="ARCHIVE" />
+                           </xsd:restriction>
+                        </xsd:simpleType>
+                     </xsd:element>
+                     <xsd:element name="string" type="xsd:string" />
+                  </xsd:sequence>
+               </xsd:complexType>
+            </xsd:element>
+            
+            <!-- deprecated -->
+            <xsd:element name="frameBounds">
+               <xsd:complexType>
+                  <xsd:attribute name="x" type="xsd:integer" />
+                  <xsd:attribute name="y" type="xsd:integer" />
+                  <xsd:attribute name="width" type="xsd:integer" />
+                  <xsd:attribute name="height" type="xsd:integer" />
+               </xsd:complexType>
+            </xsd:element>
+
+            
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>

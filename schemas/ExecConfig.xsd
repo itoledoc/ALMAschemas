@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:execcfg="Alma/Executive/ExecConfig" xmlns:ent="Alma/CommonEntity" targetNamespace="Alma/Executive/ExecConfig" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+	<xsd:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd" />
+	
+	<xsd:element name="ExecConfig">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="ExecConfigEntity" type="execcfg:ExecConfigEntityT" />
+				<xsd:element name="property-list" type="execcfg:property-listT" />
+				<xsd:element name="plugin-list" type="execcfg:plugin-listT" minOccurs="0" maxOccurs="1" />
+				<xsd:element name="subsystem-list" type="execcfg:subsystem-listT" />
+				<xsd:element name="runlevel-list" type="execcfg:runlevel-listT" minOccurs="0" maxOccurs="1" />
+				<xsd:element name="device-list" type="execcfg:device-listT" minOccurs="0" maxOccurs="1" />
+				<xsd:element name="event-list" type="execcfg:event-listT" minOccurs="0" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	
+	<xsd:complexType name="ExecConfigEntityT">
+		<xsd:complexContent>
+			<xsd:restriction base="ent:EntityT">
+				<xsd:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="ExecConfig" />
+			</xsd:restriction>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	
+	<xsd:complexType name="property-listT">
+		<xsd:sequence>
+			<xsd:element name="property" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:attribute name="name" type="xsd:string" use="required" />
+					<xsd:attribute name="value" type="xsd:string" use="required" />
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+			<!-- The Exec uses these names to look up properties that it requires -->
+			<xsd:simpleType name="requiredPropertiesT">
+				<xsd:restriction base="xsd:string">
+					<!-- unused
+					<xsd:enumeration value="GetTelCalResultsComponent"/>
+					<xsd:enumeration value="ArchiveConnectionComponent"/>
+					<xsd:enumeration value="Console:BufferSizeKilobytes"/>
+					<xsd:enumeration value="BringToStateAttempts"/>
+					<xsd:enumeration value="AbeansFrameworkPortOffset"/>
+					<xsd:enumeration value="Exec.Commands"/>
+					-->
+					<xsd:enumeration value="AutoUserGuidance" />
+
+					<xsd:enumeration value="ControlStatusComponent" />
+					<xsd:enumeration value="SchedulingComponent" />
+					<xsd:enumeration value="ControlSubsystemName" />
+					<xsd:enumeration value="AntennaStateEventsChannelName" />
+					<xsd:enumeration value="OperatorServer" />
+
+					<xsd:enumeration value="Exec.Project" />
+					<xsd:enumeration value="Exec.TmcdbConfig" />
+					<xsd:enumeration value="Exec.Tools" />
+					<xsd:enumeration value="Exec.SnmpConfig" />
+				</xsd:restriction>
+			</xsd:simpleType> 
+
+			
+	<xsd:complexType name="plugin-listT">
+		<xsd:sequence>
+			<xsd:element name="plugin" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:attribute name="class" type="xsd:string" use="required" />
+					<xsd:attribute name="name" type="xsd:string" use="optional" />
+					<xsd:attribute name="cat" type="xsd:string" use="optional" />
+					<xsd:attribute name="roles" type="xsd:string" use="optional" />
+					<xsd:attribute name="arrays" type="xsd:string" use="optional" />
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+
+	<xsd:complexType name="subsystem-listT">
+		<xsd:sequence>
+			<xsd:element name="subsystem" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="component-list">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="master">
+										<xsd:complexType>
+											<xsd:sequence>
+												<xsd:element name="backup-node" minOccurs="0" maxOccurs="unbounded">
+													<xsd:complexType>
+														<xsd:attribute name="device" type="xsd:string" use="required" />
+														<xsd:attribute name="ipaddr" type="xsd:string" use="required" />
+														<xsd:attribute name="name" type="xsd:string" use="required" />
+													</xsd:complexType>
+												</xsd:element>
+											</xsd:sequence>
+											<xsd:attribute name="name" type="xsd:string" use="required" />
+										</xsd:complexType>
+									</xsd:element>
+									<xsd:element name="component" minOccurs="0" maxOccurs="unbounded">
+										<xsd:complexType>
+											<xsd:attribute name="name" type="xsd:string" use="required" />
+										</xsd:complexType>
+									</xsd:element>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+					<xsd:attribute name="name" type="xsd:string" use="required" />
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	<xsd:complexType name="event-listT">
+		<xsd:sequence>
+			<xsd:element name="event" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:attribute name="channel" type="xsd:string" use="required" />
+					<xsd:attribute name="system" type="xsd:string" use="optional" />  <!-- this is ignored -->
+					<xsd:attribute name="name" type="xsd:string" use="optional" />
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+
+	<!-- The Exec uses these names to reference runlevels that it requires -->
+	<xsd:simpleType name="requiredRunlevelsT">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Alma_Shutdown" />
+			<xsd:enumeration value="Alma_ReInitializing" />
+			<xsd:enumeration value="Alma_Online" />
+			<xsd:enumeration value="Alma_Operational" />
+		</xsd:restriction>
+	</xsd:simpleType> 
+
+
+
+		<!-- ===============================================================-->
+		<!-- The following pieces of Config are deprecated. We don't remove -->
+		<!-- these definitions so we don't fail to parse old Config files.  -->
+
+
+		<xsd:complexType name="device-listT">
+			<xsd:sequence>
+				<xsd:element name="device" minOccurs="0" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:attribute name="ipaddr" type="xsd:string" use="required" />
+						<xsd:attribute name="community" type="xsd:string" use="required" />
+						<xsd:attribute name="name" type="xsd:string" />
+						<xsd:attribute name="loc" type="xsd:string" />
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	
+
+		<!-- msc 2010-06: Not needed with parallel startup. Deprecated as of Alma 8.0. -->
+		<xsd:complexType name="runlevel-listT">
+			<xsd:sequence>
+				<xsd:element name="runlevel" minOccurs="0" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:choice>
+							<xsd:element name="needs-runlevel" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:attribute name="name" type="xsd:string" use="required" />
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="needs-subsys" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:attribute name="name" type="xsd:string" use="required" />
+									<xsd:attribute name="state" type="xsd:string" use="required" />
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:choice>
+						<xsd:attribute name="name" type="xsd:string" use="required" />
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	
+
+	
+
+</xsd:schema>

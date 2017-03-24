@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema
+    targetNamespace="Alma/pipelinescience/SciPipeRequest"
+    xmlns:sprq="Alma/pipelinescience/SciPipeRequest"
+    xmlns:ent="Alma/CommonEntity"
+    xmlns:val="Alma/ValueTypes"
+    xmlns:prj="Alma/ObsPrep/ObsProject"
+    xmlns:sbl="Alma/ObsPrep/SchedBlock"
+    xmlns:ps="Alma/Scheduling/ProjectStatus"
+    xmlns:ouss="Alma/Scheduling/OUSStatus"
+    xmlns:sbs="Alma/Scheduling/SBStatus"
+    xmlns:sprt="Alma/pipelinescience/SciPipeResults"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
+  <xs:import namespace="Alma/ValueTypes" schemaLocation="ValueTypes.xsd"/>
+  <xs:import namespace="Alma/ObsPrep/ObsProject" schemaLocation="ObsProject.xsd"/>
+  <xs:import namespace="Alma/ObsPrep/SchedBlock" schemaLocation="SchedBlock.xsd"/>
+  <xs:import namespace="Alma/Scheduling/ProjectStatus" schemaLocation="ProjectStatus.xsd"/>
+  <xs:import namespace="Alma/Scheduling/OUSStatus" schemaLocation="OUSStatus.xsd"/>
+  <xs:import namespace="Alma/Scheduling/SBStatus" schemaLocation="SBStatus.xsd"/>
+  <xs:import namespace="Alma/pipelinescience/SciPipeResults" schemaLocation="SciPipeResults.xsd"/>
+
+  <!-- The science pipeline processing request -->
+      <!-- SciPipeRequestEntity is the pipeline processing request entity -->
+      <!-- ProjectSummary is the observing project summary -->
+      <!-- ProjectStructure lists various links to the project structure -->
+      <!-- ProcessingRequests is the list of processing requests -->
+      <!-- ResultsProcessing lists the results handling options -->
+  <!-- The science pipeline processing request -->
+
+  <xs:element name="SciPipeRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SciPipeRequestEntity" type="sprq:SciPipeRequestEntityT"/>
+        <xs:element name="ProjectSummary" type="sprq:ProjectSummaryT"/>
+        <xs:element name="ProjectStructure" type="sprq:ProjectStructureT" minOccurs="0" />
+        <xs:element name="ProcessingRequests" type="sprq:ProcessingRequestsT"/>
+        <xs:element name="ResultsProcessing" type="sprq:ResultsHandlingT"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The project summary -->
+      <!-- ProposalCode is the parent proposal id -->
+      <!-- ProposalTitle is the proposal title  -->
+      <!-- PIName is the name of the principal investigator  -->
+      <!-- COINames is the list of co-investigator names  -->
+      <!-- Observatory which produced the data, e.g JAO | NRAO -->
+      <!--     This is a political designation -->
+      <!-- Telescope which produced the data -->
+      <!--     This is an instrument designation, e.g. ALMA -->
+      <!--     Possible to have more than one telescope per observatory, e.g. EVLA, GBT  -->
+      <!-- ProcessingSite is the site where the request will be run, e.g. SCO | NAASC | PDSOC -->
+      <!-- Operator is the id of the pipeline operator which may be -->
+      <!--     A generic label, e.g. ScoPipelineOperator -->
+      <!--     The operator's real name, e.g. "A. Operator" -->
+      <!--     A user, e.g. "P.I. Name" -->
+      <!-- Mode is the procesing mode of the request, e.g. OPERATIONS | CSV | USER | ...  -->
+      <!--      Leave out formal enumerations for now -->
+      <!-- Version is the current pipeline software version -->
+      <!--     Pipeline heuristics, infrastructure, CASA, ALMA software should all align  -->
+      <!-- CreationTime specifies the date and time the request was created in UT -->
+  <!-- The project summary -->
+
+  <xs:complexType name="ProjectSummaryT">
+    <xs:sequence>
+     <xs:element name="ProposalCode" type="xs:string"/>
+     <xs:element name="ProposalTitle" type="xs:string"/>
+     <xs:element name="PIName" type="xs:string"/>
+     <xs:element name="COINames" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+     <xs:element name="Observatory" type="xs:string"/>
+     <xs:element name="Telescope" type="xs:string" maxOccurs="unbounded"/>
+     <xs:element name="ProcessingSite" type="xs:string"/>
+     <xs:element name="Operator" type="xs:string"/>
+     <xs:element name="Mode" type="xs:string"/>
+     <xs:element name="Version" type="xs:string"/>
+     <xs:element name="CreationTime" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Project specific linkages to the observing project structure -->
+  <!-- Will be different for different projects, e.g. ALMA | EVLA or non-existent  -->
+      <!--     AlmaProjectStructure defines the processing requests place in the ALMAproject structure -->
+      <!--     GenericProjectStructure defines a place holder for an undefined project structure -->
+  <!-- Project specific linkages to the observing project structure -->
+
+  <xs:complexType name="ProjectStructureT">
+    <xs:sequence>
+    <xs:element name="dummy" type="xs:string" minOccurs="0"/>
+    <xs:choice>
+      <xs:element name="AlmaStructure" type="sprq:AlmaStructureT"/>
+      <xs:element name="UndefinedStructure" type="xs:string"/>
+    </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ALMA project structure links -->
+      <!--  ObsUnitSetref is the triggering observing unit set entity reference. Includes parent ObsProject uid. ObsUnitSet defined by part id -->
+      <!--      Includes parent ObsProject uid. ObsUnitSet defined by part id -->
+      <!--  ObsUnitSetTitle is the triggering observing unit set title or name -->
+      <!--  ObsUnitSetType is the triggering observing unit set type, e.g. MEMBER | GROUP -->
+      <!--      Leave out formal enumerations for now -->
+      <!--  ProjectStatusRef is the tirggering observing unit set parent project status entity reference  -->
+      <!--  OUSStatusRef is the triggering observing unit set status entity reference -->
+      <!-- -->
+      <!--  Note that many of these references have definitions inside outher ALMA project schemas -->
+  <!-- ALMA project structure links -->
+
+  <xs:complexType name="AlmaStructureT">
+    <xs:sequence>
+     <xs:element name="ObsUnitSetRef" type="prj:ObsProjectRefT"/>
+     <xs:element name="ObsUnitSetTitle" type="xs:string"/>
+     <xs:element name="ObsUnitSetType" type="xs:string"/>
+     <xs:element name="ProjectStatusRef" type="ps:ProjectStatusRefT"/>
+     <xs:element name="OUSStatusRef" type="ouss:OUSStatusRefT"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Processing request list -->
+  <!--     RootDirectory is the root directory relative to a cluster physical directory -->
+  <!--     ProcessingRequest is an individual processing request. There may be more than one per pipeline processing request although this is discouraged -->
+  <!-- Processing request list -->
+
+  <xs:complexType name="ProcessingRequestsT">
+    <xs:sequence>
+      <xs:element name="RootDirectory" type="xs:string"/>
+      <xs:element name="ProcessingRequest" type="sprq:ProcessingRequestT" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- An individual processing request -->
+      <!-- ProcessingIntents is the list of processing intents derived from the APDM and ASDM metadata -->
+      <!--     The list may be absent and if present may be empty -->
+      <!-- ProcessingProcedure is the list of processing steps that will be executed by the pipeline -->
+      <!-- Data set defines the data to be processed in this request -->
+  <!-- An individual processing request -->
+
+  <xs:complexType name="ProcessingRequestT">
+    <xs:sequence>
+      <xs:element name="ProcessingIntents" type="sprq:ProcessingIntentsT" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="ProcessingProcedure" type="sprq:ProcessingProcedureT"/>
+      <xs:element name="DataSet" type="sprq:DataSetT"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A set of processing intents encoded as a series of name value pairs  -->
+  <!--     This may be empty  -->
+      <!-- Intents is the set of  intent name value pairs -->
+  <!-- A list of processing intents encoded as a series of name value pairs  -->
+
+  <xs:complexType name="ProcessingIntentsT">
+    <xs:sequence>
+      <xs:element name="Intents" type="sprq:KeywordValuePairT" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A list of compute resource guidelines to aid cluster job scheduling -->
+  <!--     This is optional at the moment -->
+  <!--     Set minimum number of nodes and default number of cores per node -->
+  <!--     Disk space and memory requirements can be added if useful -->
+      <!-- MinNumberOfNodes is the minimum number of of processing nodes-->
+      <!-- NumberOfCoresPerNode is the number of cores per processing node -->
+  <!-- A list of compute resource guidelines to aid in scheduling the project  -->
+
+  <!-- The processing procedure  -->
+  <!--     ProcessingCommand is a set of one or more processing commands  -->
+  <!-- The processing procedure  -->
+
+  <xs:complexType name="ProcessingProcedureT">
+    <xs:sequence>
+      <xs:element name="ProcedureTitle" type="xs:string"/>
+      <xs:element name="ProcessingCommand" type="sprq:ProcessingCommandT" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The data set -->
+  <!--     The supported data set types are -->
+      <!-- AsdmSet defines a set of ASDMs  -->
+      <!--     This option is generic  -->
+      <!-- SchedblockSet defines a set of child scheduling blocks and their ASDMs -->
+      <!--     This option is ALMA specific -->
+      <!-- OusResultsSet defines a set of child observing unit set results -->
+      <!--     This option is ALMA specific -->
+      <!-- Dummy element is put in place to get choice class to compile properly  -->
+  <!-- The data set -->
+
+  <xs:complexType name="DataSetT">
+    <xs:sequence>
+    <xs:element name="dummy" type="xs:string" minOccurs="0"/>
+    <xs:choice>
+      <xs:element name="AsdmSet" type="sprq:AsdmSetT"/>
+      <xs:element name="SchedBlockSet" type="sprq:SchedBlockSetT"/>
+      <xs:element name="OusResultsSet" type="sprq:OusResultsSetT"/>
+    </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- An ASDM data set -->
+      <!-- RelativePath is the relative path to the individual ASDM -->
+      <!--     It defaults to the current relative path -->
+      <!-- AsdmIdentifier is the ASDM id-->
+  <!-- An ASDM data set -->
+
+  <xs:complexType name="AsdmSetT">
+    <xs:sequence>
+      <xs:element name="RelativePath" type="xs:string" default="."/>
+      <xs:element name="AsdmIdentifier" type="sprq:AsdmIdentifierT" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A child scheduling block set -->
+      <!-- SchedBlockIdentifier is the scheduling block identifier -->
+  <!-- A child scheduling block set -->
+
+  <xs:complexType name="SchedBlockSetT">
+    <xs:sequence>
+      <xs:element name="SchedBlockIdentifier" type="sprq:SchedBlockIdentifierT" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A child observing unit set results set -->
+      <!-- OusIdentifier is the the observing unit set identifier-->
+  <!-- A child observing unit set results set -->
+
+  <xs:complexType name="OusResultsSetT">
+    <xs:sequence>
+      <xs:element name="OusResultsIdentifier" type="sprq:OusResultsIdentifierT" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- An ASDM identifier -->
+  <!--     Include status information from ExecStatus here ?  -->
+      <!-- AsdmRef is the ASDM entity reference -->
+      <!-- AsdmDiskName is the ASDM name on disk -->
+      <!--     Do we need this mapping here ? -->
+  <!-- An ASDM identifier -->
+
+  <xs:complexType name="AsdmIdentifierT">
+    <xs:sequence>
+      <xs:element name="AsdmRef" type="val:ExecBlockRefT" />
+      <xs:element name="AsdmDiskName" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A scheduling block identifier -->
+      <!-- RelativePath is the relative path to the scheduling lock data set-->
+      <!-- SchedBlockRef is the scheduling block entity reference -->
+      <!-- SBStatusRef is the scheduling block status entity reference -->
+      <!-- SBTtile is the scheduling block title. not sure where this is stored -->
+      <!-- AsdmIdentifier is the set of ASDMs belong to this scheduling block -->
+  <!-- A scheduling block identifier -->
+
+  <xs:complexType name="SchedBlockIdentifierT">
+    <xs:sequence>
+      <xs:element name="RelativePath" type="xs:string"/>
+      <xs:element name="SchedBlockRef" type="sbl:SchedBlockRefT" />
+      <xs:element name="SBStatusRef" type="sbs:SBStatusRefT" />
+      <xs:element name="SBTitle" type="xs:string" />
+      <xs:element name="AsdmIdentifier" type="sprq:AsdmIdentifierT" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- An observing unit set identifier -->
+  <!--     How to point to results is unclear-->
+      <!-- RelativePath is the relative path to the observing unit set results -->
+      <!-- ObsUnitSetRef is the observing unit set entity reference -->
+      <!-- OUSStatusRef is the observing unit set status entity reference -->
+      <!-- OUSName is the observing unit set name -->
+  <!-- An observing unit set identifier -->
+
+  <xs:complexType name="OusResultsIdentifierT">
+    <xs:sequence>
+      <xs:element name="RelativePath" type="xs:string"/>
+      <xs:element name="ObsUnitSetRef" type="prj:ObsProjectRefT"/>
+      <xs:element name="OUSStatusRef" type="ouss:OUSStatusRefT" />
+      <xs:element name="OUSName" type="xs:string"/>
+      <xs:choice>
+          <xs:element name="SciPipeResultsRef" type="sprt:SciPipeResultsRefT"/>
+          <xs:element name="SciPipeResultsFile" type="xs:string"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <!-- Definition of a generic pipeline processing command -->
+  <!--    Command is the processing command to be executed -->
+  <!--    ParameterSet is the parameter set for the command -->
+  <!-- Definition of a generic pipeline processing command -->
+  
+  <xs:complexType name="ProcessingCommandT">
+    <xs:sequence>
+      <xs:element name="Command" type="xs:string"/>
+      <xs:element name="ParameterSet" type="sprq:ParameterSetT"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Definition of generic parameter set  -->
+  <!--     A collection of keyword value pairs defining the command parameters  -->
+  <!-- Definition of generic parameter set  -->
+
+  <xs:complexType name="ParameterSetT">
+    <xs:sequence>
+      <xs:element name="Parameter" type="sprq:KeywordValuePairT" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="ResultsHandlingT">
+    <xs:sequence>
+      <xs:element name="ArchiveResults" type="xs:boolean" default="false"/>
+      <xs:element name="CleanUpDisk" type="xs:boolean" default="false" />
+      <xs:element name="UpdateProjectLifeCycle" type="xs:boolean" default="false" />
+      <xs:element name="NotifyOperatorWhenDone" type="xs:boolean" default="true" />
+      <xs:element name="PipelineOperatorAdress" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Definition of a generic keyword value pair -->
+  <!--     Defines a dictionary used for both intent and parameter definitions -->
+      <!-- Keyword is the keyword name -->
+      <!-- Value is the keyword value -->
+  <!-- Definition of a generic keyword value pair -->
+
+  <xs:complexType name="KeywordValuePairT">
+    <xs:sequence>
+      <xs:element name="Keyword" type="xs:string"/>
+      <xs:element name="Value" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The pipeline processing request entity definition. -->
+
+  <xs:complexType name="SciPipeRequestEntityT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="SciPipeRequest"/>
+	<xs:attribute name="datamodelVersion" type="xs:string" use="required" fixed="0.1"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Pipeline processing request definition used by other classes to reference a pipeline processing request -->
+
+  <xs:complexType name="SciPipeRequestRefT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityRefT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="SciPipeRequest"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>
+

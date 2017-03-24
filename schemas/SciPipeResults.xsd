@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sprt="Alma/pipelinescience/SciPipeResults" xmlns:ent="Alma/CommonEntity" xmlns:val="Alma/ValueTypes" xmlns:prj="Alma/ObsPrep/ObsProject" xmlns:sbl="Alma/ObsPrep/SchedBlock" xmlns:ps="Alma/Scheduling/ProjectStatus" xmlns:ouss="Alma/Scheduling/OUSStatus" xmlns:sbs="Alma/Scheduling/SBStatus" xmlns:sprq="Alma/pipelinescience/SciPipeRequest" targetNamespace="Alma/pipelinescience/SciPipeResults" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd" />
+  <xs:import namespace="Alma/ValueTypes" schemaLocation="ValueTypes.xsd" />
+  <xs:import namespace="Alma/ObsPrep/ObsProject" schemaLocation="ObsProject.xsd" />
+  <xs:import namespace="Alma/ObsPrep/SchedBlock" schemaLocation="SchedBlock.xsd" />
+  <xs:import namespace="Alma/Scheduling/ProjectStatus" schemaLocation="ProjectStatus.xsd" />
+  <xs:import namespace="Alma/Scheduling/OUSStatus" schemaLocation="OUSStatus.xsd" />
+  <xs:import namespace="Alma/Scheduling/SBStatus" schemaLocation="SBStatus.xsd" />
+  <xs:import namespace="Alma/pipelinescience/SciPipeRequest" schemaLocation="SciPipeRequest.xsd" />
+
+  <!-- The science pipeline processing results -->
+      <!-- SciPipeResultsEntity is the pipeline processing request entity -->
+      <!-- ResultsSummary is the high level pipeline results summary -->
+      <!-- ProjectStructure provides various links to the parent project structure -->
+      <!-- DataProducts is the set of pipeline processing data products -->
+  <!-- The science pipeline processing results -->
+
+  <xs:element name="SciPipeResults">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SciPipeResultsEntityT" type="ent:EntityT" />
+        <xs:element name="ResultsSummary" type="sprt:ResultsSummaryT" />
+        <xs:element name="ProjectStructure" type="sprq:ProjectStructureT" />
+        <xs:element name="DataProducts" type="sprt:DataProductsT" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The results summary -->
+  <!--     This section may be too short short to justify a separate section        -->
+  <!--     Do not  duplicate information already in the pipeline processing request -->
+      <!-- CreationTime specifies the date and time the results were created in UT  -->
+  <!-- The results summary -->
+
+  <xs:complexType name="ResultsSummaryT">
+    <xs:sequence>
+     <xs:element name="CreationTime" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- See the SciPipeRequest schema for a definition of ProjectStructure     --> 
+
+  <!-- ALMA data products -->
+      <!--      CalibrationProducts includes  flagging tables, calibration tables  image   -->
+      <!--          matching tables, and quality assessment tables                         -->
+      <!--      ImageProducts includes science images, thumbnail images,  and quality      -->
+      <!--          assessment tables, plus optional auxiliary products                    -->
+      <!--      ProcessingLog is a log of the CASA commands executed by the pipeline (TXT) -->
+      <!--      WebLog is a full HTML log of the pipeline results (GZIP/TAR)               -->
+      <!--           Includes plots and CASA logs                                          -->
+      <!--      ExecutiveSummary is a short printable summary of the pipeline run (PDF)    -->
+      <!--          Requested by users but could be auto-generated from WebLog(?)          -->
+      <!--      QA2Summary is a set of quality assessment metrics for the Archive          -->
+  <!-- ALMA data products -->
+
+  <xs:complexType name="DataProductsT">
+    <xs:sequence>
+      <xs:element name="CalibrationProducts" type="sprt:CalibrationProductsT" />
+      <xs:element name="ImageProducts" type="sprt:ImageProductsT" />
+      <xs:element name="ProcessingLog" type="sprt:ArchiveUnitT" />
+      <xs:element name="WebLog" type="sprt:ArchiveUnitT" />
+      <xs:element name="ExecutiveSummary" type="sprt:ArchiveUnitT" />
+      <xs:element name="QA2Summary" type="sprt:QA2SummaryT" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Calibration Products are the flagging and calibration tables required to prepare         -->
+  <!--      the data for final imaging                                                          -->
+  <!--      ObsUnitSetProducts are the per member observing unit set products used to combine   -->
+  <!--          data at the group observing unit set level                                      -->
+  <!--      SchedBlockProducts are the per scheduling products used to combine data at the      -->
+  <!--          member observing unit set level                                                 -->
+  <!--      UndefinedProducts is a place holder for generic products                            -->
+
+  <xs:complexType name="CalibrationProductsT">
+    <xs:sequence>
+    <xs:element name="dummy" type="xs:string" minOccurs="0" />
+    <xs:choice>
+      <xs:element name="ObsUnitSetProducts" type="sprt:ObsUnitSetProductsT" maxOccurs="unbounded" />
+      <xs:element name="SchedBlockProducts" type="sprt:SchedBlockProductsT" maxOccurs="unbounded" />
+      <xs:element name="UndefinedProducts" type="xs:string" />
+    </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Per observing unit set block data products                                          -->
+  <!--        This will including position, spectral window, and flux mathching            -->
+  <!--            calibration information (details TBD)                                    -->
+  <!-- Per observing unit set block data products                                          -->
+  <xs:complexType name="ObsUnitSetProductsT">
+    <xs:sequence>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Per scheduling block data products                                                  -->
+  <!--     RelativePath is the relative path to the data products                          -->
+  <!--     SchedBlockRef is the reference to the parent scheduling block entity            -->
+  <!--     SBStatusRef is the reference to the parent scheduling block status entity       -->
+  <!--     SessionProducts are the per session flagging and calibration products           -->
+  <!-- Per scheduling block data products                                                  -->
+  <xs:complexType name="SchedBlockProductsT">
+    <xs:sequence>
+      <xs:element name="RelativePath" type="xs:string" />
+      <xs:element name="SchedBlockRef" type="sbl:SchedBlockRefT" />
+      <xs:element name="SBStatusRef" type="sbs:SBStatusRefT" />
+      <xs:element name="SessionProducts" type="sprt:SessionProductsT" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Per session data products -->
+  <!--     SessionRef is the reference to the parent scheduling block entity               -->
+  <!--     AsdmProducts are the per ASDM data prodcuts                                     -->
+  <!--     CalibrationTables are all the calibration tables relevant for a session         -->
+  <!-- Per session data products -->
+
+  <xs:complexType name="SessionProductsT">
+    <xs:sequence>
+      <xs:element name="SessionRef" type="ouss:OUSStatusRefT" />
+      <xs:element name="AsdmProducts" type="sprt:AsdmProductsT" maxOcurrs="unbounded" />
+      <xs:element name="CalibrationTables" type="sprt:CalibrationTablesT" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Per ASDM data products -->
+      <!--      AsdmUid is the unique identifier of the ASDM                                                -->
+      <!--      ApplyFlags are the final set of ASDM flags (GZIP / TAR CASA flag versions)                  -->
+      <!--      ApplyFlagsStatistics are the final set of ASDM flagging statistics (GZIP / TAR CASA table)  -->
+      <!--      ApplyCalList is the set of calilbration tables to be applied to this ASDM (obsolete)        -->
+      <!--      ApplyCalFile is the file specifying the caltable apply list                                 -->
+  <!-- Per ASDM data products -->
+
+  <xs:complexType name="AsdmProductsT">
+    <xs:sequence>
+      <xs:element name="AsdmUid" type="val:ExecBlockRefT" />
+      <xs:element name="ApplyFlags" type="sprt:ArchiveUnitT" />
+      <xs:element name="ApplyFlagsStatistics" type="sprt:ArchiveUnitT" />
+     <!--      <xs:element name="ApplyCalList" type="sprt:ApplyCalListT"/>                                  -->
+      <xs:element name="ApplyCalFile" type="sprt:ArchiveUnitT" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Sequence of calibration apply  operations                                         -->
+  <!--     In future to be replaced by CASA callibrary                                   -->
+  <!-- Sequence of calibration apply  operations                                         -->
+
+  <!-- <xs:complexType name="ApplyCalListT">                                             -->
+  <!--  <xs:sequence>                                                                    -->
+  <!--    <xs:element name="ApplyCal" type="sprt:ApplyCalT" maxOccurs="unbounded"/>      -->
+  <!--  </xs:sequence>                                                                   -->
+  <!-- </xs:complexType>                                                                 -->
+
+  <!-- A single calibration apply operation                                              -->
+  <!--      The field selection for the apply                                            -->
+  <!--      The spectral window selection for the apply                                  -->
+  <!--      The polarization selection for the apply                                     -->
+  <!--      The list of calilbration tables to be applied                                -->
+  <!-- A single calibration apply operation                                              -->
+
+  <!-- <xs:complexType name="ApplyCalT">                                                 -->
+  <!--  <xs:sequence>                                                                    -->
+  <!--    <xs:element name="Fields" type="xs:string"/>                                   -->
+  <!--    <xs:element name="Spws" type="xs:string"/>                                     -->
+  <!--    <xs:element name="Pols" type="xs:string"/>                                     -->
+  <!--    <xs:element name="ApplyCalTables" type="sprt:ApplyCalTableT" maxOccurs="unbounded"/> -->
+  <!--  </xs:sequence>                                                                   -->
+  <!-- </xs:complexType>                                                                 -->
+
+  <!-- A single calibration apply parameter set                                          -->
+  <!--      DiskName is the name of the calilbration table on disk                       -->
+  <!--      CalType is the type of calibration table, wvr | bandbass | ...               -->
+  <!--          Enumerations need to be standardised                                     -->
+  <!--      FieldMap specifies the mapping from data field to cal field                  -->
+  <!--          Define as string for now for flexibility (exact CASA syntax TBD)         -->
+  <!--      SpwMap specifies the mapping from data spw to cal spw                        -->
+  <!--          Define as string for now for flexibility (exact CASA syntax TBD)         -->
+  <!--      AntennaMap specifies the mapping from data antenna to cal antenna            -->
+  <!--          Define as string for now for flexibility (exact CASA syntax TBD)         -->
+  <!--      InterpType specifies the solution interpolation algorithm                    -->
+  <!--          Define as string for now for flexibility (exact CASA syntax TBD)         -->
+  <!-- A single calibration apply parameter set                                          -->
+
+  <!-- <xs:complexType name="ApplyCalTableT">                                            -->
+  <!--  <xs:sequence>                                                                    -->
+  <!--    <xs:element name="DiskName" type="xs:string"/>                                 -->
+  <!--    <xs:element name="CalType" type="xs:string"/>                                  -->
+  <!--    <xs:element name="FieldMap" type="xs:string"/>                                 -->
+  <!--    <xs:element name="SpwMap" type="xs:string"/>                                   -->
+  <!--    <xs:element name="AntennaMap" type="xs:string"/>                               -->
+  <!--    <xs:element name="InterpType" type="xs:string"/>                               -->
+  <!--  </xs:sequence>                                                                   -->
+  <!-- </xs:complexType>                                                                 -->
+
+
+  <!-- Per session calibration tables                                                                 -->
+      <!-- CalTables is a file containing all the calibration tables in a session (TAR / GZIP)        -->
+      <!-- CalTablesIndex is an index into the  CalTables (for data mininig purposes, TBD)            -->
+      <!-- QA2CalTables is a file containing all the QA2 calibration tables in a session (TAR / GZIP) -->
+      <!-- QA2CalTablesIndex is an index into the  CalTables (for data mininig purposes, TBD)         -->
+  <!-- Per session calibration tables                                                                 -->
+
+  <xs:complexType name="CalibrationTablesT">
+    <xs:sequence>
+      <xs:element name="CalTables" type="sprt:ArchiveUnitT" />
+      <xs:element name="CalTablesIndex" type="sprt:TableIndexT" minOccurs="0" />
+      <xs:element name="QA2CalTables" type="sprt:ArchiveUnitT" />
+      <xs:element name="QA2CalTablesIndex" type="sprt:TableIndexT" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Calibration table index (TBD) -->
+
+  <xs:complexType name="TableIndexT">
+    <xs:sequence>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Per OUS image data products                                               -->
+  <!--         ScienceTargets are the science target image data products         -->
+  <!--         CalibrationTargets are the calibration target image data products -->
+  <!-- Per OUS image data products                                               -->
+  <xs:complexType name="ImageProductsT">
+    <xs:sequence>
+      <xs:element name="ScienceTargets" type="sprt:TargetT" maxOccurs="unbounded" />
+      <xs:element name="CalibrationTargets" type="sprt:TargetT" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Per target data products                                                                -->
+  <!--        MetaData a  set of meta data for the Archive                                     -->
+  <!--        Image is the science image of the target (FITS)                                  -->
+  <!--        ThumbNail is a graphics image of the target (PNG | JPEG)                         -->
+  <!--        QA2ImageTable is the image statistics QA2 table (TAR / GZIP of CASA tables)      -->
+  <!--        SourceList is an optional source list for the image (TXT, CASA regions list)     -->
+  <!--        LineRegionsList is an optional line list for the image (TXT, CASA regions list)  -->
+  <!-- Per target data products                                                                -->
+  <xs:complexType name="TargetT">
+    <xs:sequence>
+      <xs:element name="MetaDataSet" type="sprt:MetaDataSetT" />
+      <xs:element name="Image" type="sprt:ArchiveUnitT" />
+      <xs:element name="ThumbNail" type="sprt:ArchiveUnitT" />
+      <xs:element name="QA2ImageTable" type="sprt:ArchiveUnitT" />
+      <xs:element name="SourceList" type="sprt:ArchiveUnitT" minOccurs="0" />
+      <xs:element name="LineRegionsList" type="sprt:ArchiveUnitT" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Definition of  the target image meta data set                    -->
+  <!--           These are a set of keyword value pairs for now         -->
+  <!-- Definition of  the target image meta data set                    -->
+  <xs:complexType name="MetaDataSetT">
+    <xs:sequence>
+    <xs:element name="MetaData" type="sprt:KeywordValuePairT" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Definition of  the final global QA2 metrics                      -->
+  <!--           These are a set of keyword value pairs for now         -->
+  <!-- Definition of  the target image meta data set                    -->
+  <xs:complexType name="QA2SummaryT">
+    <xs:sequence>
+    <xs:element name="QA2Metric" type="sprt:KeywordValuePairT" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Definition of archive storage unit                              -->
+      <!--      ArchiveUid is the unique identifier of the stored unit -->
+      <!--      ArchiveFormat is the format of the stored unit         -->
+      <!--           e.g. TXT, FITS, TAR/GZIP, ...                     -->
+      <!--      DiskName is the  disk name of the stored unit          -->
+      <!--      ProductType is the type of data product                -->
+      <!--           e.g. flag table(s), caltable(s), QA2 table(s)     -->
+  <!-- Definition of archive storage unit                              -->
+
+  <xs:complexType name="ArchiveUnitT">
+    <xs:sequence>
+      <xs:element name="ArchiveUid" type="xs:string" />
+      <xs:element name="ArchiveFormat" type="xs:string" />
+      <xs:element name="DiskName" type="xs:string" />
+      <xs:element name="ProductType" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Definition of a generic keyword value pair                              -->
+  <!--     Defines a dictionary used for meta data definitions                 -->
+  <!--     ** Note that meta data is not hardcoded at present **               -->
+  <!--     Keyword is the keyword name                                         -->
+  <!--     Value is the keyword value                                          -->
+  <!-- Definition of a generic keyword value pair -->
+
+  <xs:complexType name="KeywordValuePairT">
+    <xs:sequence>
+      <xs:element name="Keyword" type="xs:string" />
+      <xs:element name="Value" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The entity definition. -->
+  <xs:complexType name="SciPipeResultsEntityT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="SciPipeResults" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- The entity reference definition. -->
+  <xs:complexType name="SciPipeResultsRefT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityRefT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="SciPipeResults" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>

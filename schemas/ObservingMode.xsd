@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ent="Alma/CommonEntity" xmlns:obsmodes="Alma/SSR/ObsModes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="Alma/SSR/ObsModes" version="1">
+
+  <!-- Enumerated types -->
+  <xsd:simpleType name="ModeTypeEnum">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Expert"/>
+      <xsd:enumeration value="Observatory"/>
+      <xsd:enumeration value="User"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="CalibTypeEnum">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Amplitude"/>
+      <xsd:enumeration value="Atmospheric"/>
+      <xsd:enumeration value="Bandpass"/>
+      <xsd:enumeration value="Baseline"/>
+      <xsd:enumeration value="Delay"/>
+      <xsd:enumeration value="Focus"/>
+      <xsd:enumeration value="Phase"/>
+      <xsd:enumeration value="Pointing"/>
+      <xsd:enumeration value="Polarization"/>
+      <xsd:enumeration value="OpticalPointing"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="TargetTypeEnum">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Amplitude"/>
+      <xsd:enumeration value="Atmospheric"/>
+      <xsd:enumeration value="Bandpass"/>
+      <xsd:enumeration value="Delay"/>
+      <xsd:enumeration value="Focus"/>
+      <xsd:enumeration value="Phase"/>
+      <xsd:enumeration value="Pointing"/>
+      <xsd:enumeration value="Polarization"/>
+      <xsd:enumeration value="OpticalPointing"/>
+      <xsd:enumeration value="Science"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- <xsd:simpleType name="InetegerLimit"> <xsd:restriction base="xsd:integer"> 
+    <xsd:minInclusive value="0"/> <xsd:maxInclusive value="120"/> </xsd:restriction> 
+    </xsd:simpleType> -->
+
+  <!-- Root -->
+  <xsd:element name="ObservingMode">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="0" name="Documentation" type="xsd:string"/>
+        <xsd:element default="true" name="StandardMode" type="xsd:boolean"/>
+        <xsd:element default="true" name="RunQuickLook" type="xsd:boolean"/>
+
+        <!-- Calibrations -->
+        <xsd:element name="Calibrations">
+          <xsd:complexType>
+            <xsd:sequence>
+
+              <!-- CalibrationType -->
+              <xsd:element maxOccurs="unbounded" name="CalibrationType">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <!--  required -->
+                    <xsd:element name="required" type="xsd:boolean"/>
+                    
+                    <!-- defaultCycleTime -->
+                    <xsd:element name="defaultCycleTime">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:double">
+                            <xsd:attribute fixed="s" name="unit" type="xsd:string" use="required"/>
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+
+                    <!-- expectedFlux -->
+                    <xsd:element minOccurs="0" name="expectedFlux">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:double">
+                            <xsd:attribute fixed="Jy" name="unit" type="xsd:string" use="required"/>                 
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+
+                  </xsd:sequence>
+                  <xsd:attribute name="name" type="obsmodes:CalibTypeEnum" use="required"/>
+                </xsd:complexType>
+              </xsd:element>
+
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+
+        <!-- Groups -->
+        <xsd:element name="Groups">
+          <xsd:complexType>
+            <xsd:sequence>
+
+              <!-- Group -->
+              <xsd:element maxOccurs="unbounded" name="Group">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="number" type="xsd:positiveInteger"/>
+                    <xsd:element name="required" type="xsd:boolean"/>
+
+                    <!-- TargetType -->
+                    <xsd:element maxOccurs="unbounded" name="TargetType">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element minOccurs="0" name="minRequired" type="xsd:string"/>
+                          <xsd:element minOccurs="0" name="maxAllowed" type="xsd:string"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="obsmodes:TargetTypeEnum" use="required"/>
+                        <xsd:attribute default="false" name="needsAtmosphericCalibrator" type="xsd:boolean" use="optional"/>
+                      </xsd:complexType>
+                    </xsd:element>
+
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+
+        <!-- Property -->
+        <xsd:element maxOccurs="unbounded" name="Property">
+          <xsd:complexType>
+            <xsd:simpleContent>
+              <xsd:extension base="xsd:string">
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                <xsd:attribute name="type" type="xsd:string" use="required"/>
+                <xsd:attribute name="unit" type="xsd:string" use="optional"/>
+              </xsd:extension>
+            </xsd:simpleContent>
+          </xsd:complexType>
+        </xsd:element>
+
+
+        <!-- ObservingScript -->
+        <xsd:element name="ObservingScript">
+          <xsd:complexType>
+            <xsd:sequence>
+
+              <!-- Property -->
+              <xsd:element maxOccurs="unbounded" name="Property">
+                <xsd:complexType>
+                  <xsd:simpleContent>
+                    <xsd:extension base="xsd:string">
+                      <xsd:attribute name="name" type="xsd:string" use="required"/>
+                    </xsd:extension>
+                  </xsd:simpleContent>
+                </xsd:complexType>
+              </xsd:element>
+
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+            <xsd:attribute name="file" type="xsd:string" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="type" type="obsmodes:ModeTypeEnum" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>

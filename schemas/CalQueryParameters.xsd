@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:calqueryparms="Alma/Common/CalibratorCatalogue/CalQueryParameters" targetNamespace="Alma/Common/CalibratorCatalogue/CalQueryParameters" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+
+    <xsd:element name="CalQueryParameters">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="rightAscension" type="xsd:double" default="0.0" />
+                <xsd:element name="declination" type="xsd:double" default="0.0" />
+                <xsd:element name="radius" type="xsd:double" default="0.0" />
+                <xsd:element name="minFrequency" type="xsd:double" default="0.0" />
+                <xsd:element name="maxFrequency" type="xsd:double" default="0.0" />
+                <xsd:element name="minFlux" type="xsd:double" default="0.0" />
+                <xsd:element name="maxFlux" type="xsd:double" default="0.0" />
+                <xsd:element name="earliestObservation" type="xsd:dateTime" />
+                <xsd:element name="latestObservation" type="xsd:dateTime" />
+                <xsd:element name="calibrationUse" default="UNDEFINED">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="AMPLITUDE" />
+                            <xsd:enumeration value="PHASE" />
+                            <xsd:enumeration value="POINTING" />
+                            <xsd:enumeration value="POLARIZATION" />
+                            <xsd:enumeration value="FOCUS" />
+                            <xsd:enumeration value="BANDPASS" />
+                            <xsd:enumeration value="UNDEFINED" />
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xs:schema
+    targetNamespace="Alma/pipelineql/QlFocusSummary"
+    xmlns:qlfc="Alma/pipelineql/QlFocusSummary"
+    xmlns:qls="Alma/pipelineql/QuickLookSummary"
+    xmlns:ent="Alma/CommonEntity"
+    xmlns:val="Alma/ValueTypes"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
+  <xs:import namespace="Alma/ValueTypes" schemaLocation="ValueTypes.xsd"/>
+  <xs:import namespace="Alma/pipelineql/QuickLookSummary" schemaLocation="QuickLookSummary.xsd"/>
+
+  <!-- Needs to be checked for number of occurences and value types -->
+
+  <!-- The list of focus calibrations one for each source and receiver band combinations -->
+  <xs:complexType name="QlFocusSummary">
+    <xs:sequence>
+      <xs:element name="QlFocusSummaryEntity" type="qlfc:QlFocusSummaryEntityT"/>
+      <xs:element name="QuickLookSummaryRef" type="qls:QuickLookSummaryRefT"/>
+      <xs:element name="FocusSummaries" type="qlfc:FocusSummaryT" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The focus summary for each source receiver band combination in the session -->
+  <xs:complexType name="FocusSummaryT">
+    <xs:sequence>
+      <xs:element name="Source" type="xs:string"/>
+      <xs:element name="ReceiverBand" type="xs:string"/>
+      <xs:element name="FocusScans" type="qlfc:FocusScanT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="AntennaFocus" type="qlfc:PerAntennaFocusT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="AllFocus" type="qlfc:AverageFocusT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A summary of each focus scan -->
+  <!-- Generic to more than focus scans ? -->
+  <xs:complexType name="FocusScanT">
+    <xs:sequence>
+      <xs:element name="ExecBlockRef" type="val:ExecBlockRefT"/>
+      <xs:element name="ScanNumber" type="xs:integer"/>
+      <xs:element name="ScanTime" type="xs:string"/>
+      <xs:element name="Status" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A summary of each antenna focus -->
+  <!-- May contained both atmospheric uncorrected and corrected results -->
+  <xs:complexType name="PerAntennaFocusT">
+    <xs:sequence>
+      <xs:element name="AntennaName" type="xs:string"/>
+      <xs:element name="StationName" type="xs:string"/>
+      <xs:element name="Uncorrected" type="qlfc:FocusOffsetsSummaryT" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Corrected" type="qlfc:FocusOffsetsSummaryT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A summary of all antenna focus measurements -->
+  <!-- May contained both atmospheric uncorrected and corrected results -->
+  <xs:complexType name="AverageFocusT">
+    <xs:sequence>
+      <xs:element name="Uncorrected" type="qlfc:FocusOffsetsSummaryT" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Corrected" type="qlfc:FocusOffsetsSummaryT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The offsets for each antenna by polarization and averaged over all polarizations -->
+  <xs:complexType name="FocusOffsetsSummaryT">
+    <xs:sequence>
+      <xs:element name="PerPolarization" type="qlfc:PolarizationFocusOffsetsT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Average" type="qlfc:AverageFocusOffsetsT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The offsets  polarization  -->
+  <xs:complexType name="PolarizationFocusOffsetsT">
+    <xs:sequence>
+      <xs:element name="Polarization" type="xs:string"/>
+      <xs:element name="Xoffsets" type="qlfc:FocusOffsetsT"/>
+      <xs:element name="Yoffsets" type="qlfc:FocusOffsetsT"/>
+      <xs:element name="Zoffsets" type="qlfc:FocusOffsetsT"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The offsets  averaged over all polarizations  -->
+  <xs:complexType name="AverageFocusOffsetsT">
+    <xs:sequence>
+      <xs:element name="Polarizations" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Xoffsets" type="qlfc:FocusOffsetsT"/>
+      <xs:element name="Yoffsets" type="qlfc:FocusOffsetsT"/>
+      <xs:element name="Zoffsets" type="qlfc:FocusOffsetsT"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The offsets -->
+  <xs:complexType name="FocusOffsetsT">
+    <xs:sequence>
+      <xs:element name="Nobs" type="xs:integer"/>
+      <xs:element name="Mean" type="xs:double"/>
+      <xs:element name="Sigma" type="xs:double"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The quicklook focus summary entity -->
+  <xs:complexType name="QlFocusSummaryEntityT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="QlFocusSummary"/>
+        <xs:attribute name="datamodelVersion" type="xs:string" use="required" fixed="0.1"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Used by other classes to reference a quicklook display result -->
+  <xs:complexType name="QlFocusSummaryRefT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityRefT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="QlFocusSummary"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+
+</xs:schema>
+

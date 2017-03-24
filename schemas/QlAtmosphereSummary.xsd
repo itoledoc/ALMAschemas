@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xs:schema
+    targetNamespace="Alma/pipelineql/QlAtmosphereSummary"
+    xmlns:qlatm="Alma/pipelineql/QlAtmosphereSummary"
+    xmlns:qls="Alma/pipelineql/QuickLookSummary"
+    xmlns:qlal="Alma/pipelineql/QlAlarms"
+    xmlns:ent="Alma/CommonEntity"
+    xmlns:val="Alma/ValueTypes"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
+  <xs:import namespace="Alma/ValueTypes" schemaLocation="ValueTypes.xsd"/>
+  <xs:import namespace="Alma/pipelineql/QuickLookSummary" schemaLocation="QuickLookSummary.xsd"/>
+  <xs:import namespace="Alma/pipelineql/QlAlarms" schemaLocation="QlAlarms.xsd"/>  
+  
+  <!-- Needs to be checked for number of occurences and value types -->
+
+  <!-- The list of atmsopheric calibrations one for each source and receiver band combinations -->
+  <xs:complexType name="QlAtmosphereSummary">
+    <xs:sequence>
+      <xs:element name="QlAtmosphereSummaryEntity" type="qlatm:QlAtmosphereSummaryEntityT"/>
+      <xs:element name="QuickLookSummaryRef" type="qls:QuickLookSummaryRefT"/>
+      <xs:element name="AtmSummaries" type="qlatm:AtmSummaryT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Alarms" type="qlal:QlAlarmsT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The atmsopheric calibration summary for each source receiver band combination in the session -->
+  <xs:complexType name="AtmSummaryT">
+    <xs:sequence>
+      <xs:element name="Source" type="xs:string"/>
+      <xs:element name="ReceiverBand" type="xs:string"/>
+      <xs:element name="AtmScans" type="qlatm:AtmScanT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="AntennaTemps" type="qlatm:PerAntennaTempsT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="AllTemps" type="qlatm:TempsSummaryT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A summary of each atmospheric scan -->
+  <!-- Generic to more than atmospheric scans ? -->
+  <xs:complexType name="AtmScanT">
+    <xs:sequence>
+      <xs:element name="ExecBlockRef" type="val:ExecBlockRefT"/>
+      <xs:element name="ScanNumber" type="xs:integer"/>
+      <xs:element name="ScanTime" type="xs:string"/>
+      <xs:element name="Status" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A summary of each atmospheric temperature / tau measurement -->
+  <xs:complexType name="PerAntennaTempsT">
+    <xs:sequence>
+      <xs:element name="AntennaName" type="xs:string"/>
+      <xs:element name="StationName" type="xs:string"/>
+      <xs:element name="Temps" type="qlatm:TempsSummaryT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A summary of all antenna temperature  / tau measurement -->
+  <xs:complexType name="AllTempsT">
+    <xs:sequence>
+      <xs:element name="Temps" type="qlatm:TempsSummaryT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The temperatures / opacities for each antenna by polarization and averaged over all polarizations -->
+  <xs:complexType name="TempsSummaryT">
+    <xs:sequence>
+      <xs:element name="PerPolarization" type="qlatm:PolarizationTempsT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Average" type="qlatm:AverageTempsT" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The temperatures / opacities for each polarization  -->
+  <xs:complexType name="PolarizationTempsT">
+    <xs:sequence>
+      <xs:element name="Polarization" type="xs:string"/>
+      <xs:element name="ReceiverTemps" type="qlatm:TempsT"/>
+      <xs:element name="SystemTemps" type="qlatm:TempsT"/>
+      <xs:element name="Taus" type="qlatm:TausT"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The temperatures / opacities averaged over all polarizations  -->
+  <xs:complexType name="AverageTempsT">
+    <xs:sequence>
+      <xs:element name="Polarizations" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="ReceiverTemps" type="qlatm:TempsT"/>
+      <xs:element name="SystemTemps" type="qlatm:TempsT"/>
+      <xs:element name="Taus" type="qlatm:TausT"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The temperatures -->
+  <xs:complexType name="TempsT">
+    <xs:sequence>
+      <xs:element name="Nobs" type="xs:integer"/>
+      <xs:element name="Mean" type="xs:double"/>
+      <xs:element name="Sigma" type="xs:double"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The opacities -->
+  <xs:complexType name="TausT">
+    <xs:sequence>
+      <xs:element name="Nobs" type="xs:integer"/>
+      <xs:element name="Mean" type="xs:double"/>
+      <xs:element name="Sigma" type="xs:double"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The quicklook pointing summary entity -->
+  <xs:complexType name="QlAtmosphereSummaryEntityT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="QlAtmosphereSummary"/>
+        <xs:attribute name="datamodelVersion" type="xs:string" use="required" fixed="0.1"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Used by other classes to reference a quicklook display result -->
+  <xs:complexType name="QlAtmosphereSummaryRefT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityRefT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="QlAtmosphereSummary"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+</xs:schema>
+
