@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,16 +30,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File GainTrackingTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:gntrk="http://Alma/XASDM/GainTrackingTable" xmlns:ent="Alma/CommonEntity" xmlns:poltyp="http://Alma/XENUM/PolarizationTypeMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/GainTrackingTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:gntrk="http://Alma/XASDM/GainTrackingTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:poltyp="http://Alma/XENUM/PolarizationTypeMod"
+					   targetNamespace="http://Alma/XASDM/GainTrackingTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for String -->
-		<!-- No specific import for int -->
-		<!-- We need the schema of PolarizationType -->
-		<xs:import namespace="http://Alma/XENUM/PolarizationTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/PolarizationType.xsd" />
 		<!-- No specific import for ArrayTimeInterval -->
 		<!-- No specific import for double -->
+		<!-- No specific import for String -->
 		<!-- No specific import for float -->
+		<!-- We need the schema of PolarizationType -->
+		<xs:import namespace="http://Alma/XENUM/PolarizationTypeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/PolarizationType.xsd"/>
+		<!-- No specific import for int -->
 		<!-- No specific import for Complex -->
 	
 	
@@ -52,26 +61,59 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="timeInterval" type="xs:string" />
-         <xs:element name="numReceptor" type="xs:string" />
-         <xs:element name="attenuator" type="xs:string" />
-         <xs:element name="polarizationType" type="xs:string" />
-     	 <xs:element name="samplingLevel" type="xs:string" minOccurs="0" />
-     	 <xs:element name="numAttFreq" type="xs:string" minOccurs="0" />
-     	 <xs:element name="attFreq" type="xs:string" minOccurs="0" />
-     	 <xs:element name="attSpectrum" type="xs:string" minOccurs="0" />
-         <xs:element name="antennaId" type="xs:string" />
-         <xs:element name="feedId" type="xs:string" />
-         <xs:element name="spectralWindowId" type="xs:string" />
+         <xs:element name="timeInterval" type=
+"xs:string"
+
+/>
+         <xs:element name="numReceptor" type=
+"xs:string"
+
+/>
+         <xs:element name="attenuator" type=
+"xs:string"
+
+/>
+         <xs:element name="polarizationType" type=
+"xs:string"
+
+/>
+     	 <xs:element name="samplingLevel" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="numAttFreq" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="attFreq" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="attSpectrum" type=
+"xs:string"
+
+  minOccurs="0"/>
+         <xs:element name="antennaId" type=
+"xs:string"
+
+/>
+         <xs:element name="feedId" type=
+"xs:string"
+
+/>
+         <xs:element name="spectralWindowId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

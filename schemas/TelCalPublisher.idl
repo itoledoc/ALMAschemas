@@ -1,0 +1,611 @@
+/*
+ * ALMA - Atacama Large Millimiter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * All rights reserved
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ * 
+ * File TelCalPublisher.idl
+ * 
+ */
+
+#ifndef _TELCAL_PUBLISHER_IDL_
+#define _TELCAL_PUBLISHER_IDL_
+
+#include <baci.idl>
+#include <acscomponent.idl>
+#include <TelCalErrType.idl>
+#include <asdmIDL.idl>
+#include <ControlBasicInterfaces.idl>
+
+#pragma prefix "alma"
+
+/** @file TelCalPublisher.idl
+ *  TelCal Publisher's IDL File
+ */
+module telcal
+{
+
+  /**
+   * Enumeration for the status of calibration 
+   */
+  enum CompletionEnum {
+    FAIL,
+    SUCCESS,
+    PARTIAL,
+    TIMEOUT
+  };
+
+  /**
+   * Enumeration for the quality of results
+   */
+  enum QualityEnum {
+    GOOD,
+    POOR,
+    BAD,
+    UNKNOWN
+  };
+
+
+  //////////////////////////////////////////////////////////////////////////
+  //                             Published Events
+  //////////////////////////////////////////////////////////////////////////
+
+  const string CHANNELNAME_TELCALPUBLISHER="TelCalPublisherEventNC";
+  
+  /**
+   * TelCalReducedEvent is a structure that will be passed around as events
+   * in the notification channel when all the calibrations for a scan are finished.
+   */
+  struct TelCalReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+  };
+
+  /**
+   * AmpliCalReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct AmpliCalReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * AmpCurveReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct AmpCurveReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * AntennaPositionsReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct AntennaPositionsReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * AtmosphereReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct AtmosphereReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * BandPassReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct BandPassReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * DelayReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct DelayReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * FocusReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct FocusReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * PhaseCalReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct PhaseCalReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * PhaseCurveReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct PhaseCurveReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * PointingReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct PointingReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+  
+  /**
+   * PointingModelReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct PointingModelReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * SideBandRatioReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct SideBandRatioReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * SkydipReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct SkydipReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * WVRReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct WVRReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  /**
+   * AppPhaseReducedEvent is a structure that will be passed around as events
+   * in the notification channel.
+   */
+  struct AppPhaseReducedEvent
+  {
+    asdmIDLTypes::IDLEntityRef   execBlockId;
+    ACS::Time                    finishedAt;
+    long                         scanNum;
+    CompletionEnum               completion;
+    QualityEnum                  quality;
+  };
+
+  //////////////////////////////////////////////////////////////////////////
+  // Structure used to transfer data between TelCal_DataManager and TelCal_Publisher 
+  //////////////////////////////////////////////////////////////////////////
+
+  struct CalibrationResultParam
+  {
+    asdmIDLTypes::IDLEntityRef        execBlockId;
+    long                              scanNum;
+
+    CalTypeMod::CalType               calType;
+    CalCurveTypeMod::CalCurveType     calCurveType;  // AMPLITUDE or PHASE (for CAL_CURVE type)
+    SyscalMethodMod::SyscalMethod     syscalMethod;  // TEMPERATURE_SCALE or SKYDIP (for CAL_ATMOSPHERE type)
+
+    // ICT-5320 : remove asdm structure from CalibrationResult (code too large)
+    // asdmIDL::ASDMDataSetIDL           asdm;  
+    CompletionEnum                    completion;
+    QualityEnum                       quality;
+
+    string                            arrayId;
+    //    CorrelatorNameMod::CorrelatorName correlatorName;
+    string                            correlatorName; // ALMA_ACA ALMA_BASELINE or None
+    string                            sourceName;
+    
+  };
+
+  struct WaterResult
+  {
+    float                        water;
+    asdmIDLTypes::IDLArrayTime   startValidTime;
+  };
+    
+
+  
+  //////////////////////////////////////////////////////////////////////////
+  //                      GetTelCalResults interface                      */
+  //////////////////////////////////////////////////////////////////////////
+  
+  /** This interface is used by all subsystems to get the results
+   *  of the Telescope Calibration. User subsystems are Control,
+   *  Scheduling, DRUI, Off-Line, Executive subsystems.
+   */
+
+  interface GetTelCalResults: ACS::ACSComponent
+  {
+    /** 
+     *  AmpliCal results.
+     *  @return AmpliCalResult : result of the AmpliCal processing of scanNum
+     */
+    asdmIDL::ASDMDataSetIDL  getAmpliCalResult(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+   /** 
+     *  AmpCurve results.
+     *  @return AmpCurvelResult : result of the AmpliCurve processing
+     */
+    asdmIDL::ASDMDataSetIDL  getAmpCurveResult(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  AntennaPositions results.
+     *  @return AntennaPositionsResult : result of the AntennaPositions processing of scanNum
+     */
+    asdmIDL::ASDMDataSetIDL  getAntennaPositionsResult(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  Atmosphere results.
+     *  @return AtmosphereResult : result of an atmosphere calibration
+     */
+    asdmIDL::ASDMDataSetIDL  getAtmosphereResult(in asdmIDLTypes::IDLEntityRef execBlockId,in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  BandPass results.
+     *  @return BandPassResult : result of the BandPass processing of scanNum
+     */
+    asdmIDL::ASDMDataSetIDL  getBandPassResult(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  Delay results.
+     *  @return DelayResult : result of the Delay processing of scanNum
+     */
+    asdmIDL::ASDMDataSetIDL  getDelayResult(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  Focus results.
+     *  @return FocusResult : result of the focus processing of scanNum
+     */
+    asdmIDL::ASDMDataSetIDL getFocusResult(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  PhaseCal results.
+     *  @return PhaseCalResult : result of the PhaseCal processing of scanNum
+     */
+    asdmIDL::ASDMDataSetIDL  getPhaseCalResult(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  PhaseCurve results.
+     *  @return PhaseCurveResult : result of the PhaseCurve processing
+     */
+    asdmIDL::ASDMDataSetIDL  getPhaseCurveResult(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  Pointing results.
+     *  @return PointingResult : result of the pointing processing of scanNum
+     */
+    asdmIDL::ASDMDataSetIDL getPointingResult(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+    
+
+    /** 
+     *  PointingModel results.
+     *  @return PointingModelResult:  result of an atmosphere calibration
+     */
+    asdmIDL::ASDMDataSetIDL getPointingModelResult(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  SideBandRatio results.
+     *  @return SideBandRatioResult:  result of a sideband ratio calibration
+     */
+    asdmIDL::ASDMDataSetIDL  getSideBandRatioResult(in asdmIDLTypes::IDLEntityRef execBlockId,in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  Skydip results.
+     *  @return SkydipResult:  result of a skydip calibration
+     */
+    asdmIDL::ASDMDataSetIDL  getSkydipResult(in asdmIDLTypes::IDLEntityRef execBlockId,in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /** 
+     *  WVR results.
+     *  @return WVRResult:  result of a WVR calibration
+     */
+    asdmIDL::ASDMDataSetIDL  getWVRResult(in asdmIDLTypes::IDLEntityRef execBlockId,in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+    /** 
+     *  APP Phase results.
+     *  @return AppPhaseResult:  result of a APP phase calibration
+     */
+    asdmIDL::ASDMDataSetIDL  getAppPhaseResult(in asdmIDLTypes::IDLEntityRef execBlockId,in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+    /////////////////////////////////////////////////////////////////
+    // Methods used by TelCalSpy to identify the Array or the Correlator
+    //////////////////////////////////////////////////////////////////////////
+
+    string getArrayName(in asdmIDLTypes::IDLEntityRef execBlockId)
+      raises (TelCalErrType::NoSuchResultEx);
+
+    string getCorrelatorName(in asdmIDLTypes::IDLEntityRef execBlockId)
+      raises (TelCalErrType::NoSuchResultEx);
+
+    string getSourceName(in asdmIDLTypes::IDLEntityRef execBlockId, in long scanNum)
+      raises (TelCalErrType::NoSuchResultEx);
+
+    WaterResult getWater()
+      raises (TelCalErrType::NoSuchResultEx);
+
+
+    /////////////////////////////////////////////////////////////////
+    // Methods used by the ReceivingDataManager component to transfer data to
+    // the TelCalPublisher component
+    //////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Inform the publisher that one of the receiver components has started the calibration(s) relative to a scan
+     */
+    void startScanProcessing(in asdmIDLTypes::IDLEntityRef execBlockId,
+                             in long scanNum,
+                             in ACS::Time startTime,
+                             in string receiverName);
+
+    /**
+     * Inform the publisher that one of the receiver components has finished the calibration(s) relative to a scan
+     */
+    void endScanProcessing(in asdmIDLTypes::IDLEntityRef execBlockId,
+                           in long scanNum,
+                           in string receiverName);
+
+    
+    /** 
+     * Stores AmpliCal results into the telcal internal list of results,
+     * publish events
+     * @param result : the AmpliCal result to be stored
+     */
+    void publishAmpliCalResult(in asdmIDL::ASDMDataSetIDL asdm,
+			       in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+
+    /** 
+     * Stores AmpCurve results into the telcal internal list of results,
+     * publish events
+     * @param result : the AmpCurve result to be stored
+     */
+    void publishAmpCurveResult(in asdmIDL::ASDMDataSetIDL asdm,
+			       in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+
+
+    /** 
+     * Stores AntennaPositions results into the telcal internal list of results,
+     * publish events
+     * @param result : the AntennaPositions result to be stored
+     */
+    void publishAntennaPositionsResult(in asdmIDL::ASDMDataSetIDL asdm,
+				       in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+
+     /** 
+     * Stores atmosphere results into the telcal internal list of results,
+     * publish events
+     * @param result : the atmosphere result to be stored
+     */
+    void publishAtmosphereResult(in asdmIDL::ASDMDataSetIDL asdm,
+				 in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+
+    /** 
+     * Stores bandpass results into the telcal internal list of results,
+     * publish events
+     * @param result : the bandpass result to be stored
+     */
+    void publishBandPassResult(in asdmIDL::ASDMDataSetIDL asdm,
+			       in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+
+    /** 
+     * Stores delay results into the telcal internal list of results,
+     * publish events
+     * @param result : the delay result to be stored
+     */
+    void publishDelayResult(in asdmIDL::ASDMDataSetIDL asdm,
+			    in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+
+    /** 
+     * Stores focus results into the telcal internal list of results,
+     * publish events
+     * @param result : the focus result to be stored
+     */
+    void publishFocusResult(in asdmIDL::ASDMDataSetIDL asdm,
+			    in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+
+    /** 
+     * Stores PhaseCal results into the telcal internal list of results,
+     * publish events
+     * @param result : the PhaseCal result to be stored
+     */
+    void publishPhaseCalResult(in asdmIDL::ASDMDataSetIDL asdm,
+			       in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+
+    /** 
+     * Stores PhaseCurve results into the telcal internal list of results,
+     * publish events
+     * @param result : the PhaseCurve result to be stored
+     */
+    void publishPhaseCurveResult(in asdmIDL::ASDMDataSetIDL asdm,
+				 in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+
+    /** 
+     * Stores pointing results into the telcal internal list of results,
+     * publish events
+     * @param result : the pointing result to be stored
+     */
+    void publishPointingResult(in asdmIDL::ASDMDataSetIDL asdm,
+			       in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+    /** 
+     * Stores pointing model results into the telcal internal list of results,
+     * publish events
+     * @param result : the pointing model result to be stored
+     */
+    void publishPointingModelResult(in asdmIDL::ASDMDataSetIDL asdm,
+				    in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+    /** 
+     * Stores side band ratio results into the telcal internal list of results,
+     * publish events
+     * @param result : the skydip result to be stored
+     */
+    void publishSideBandRatioResult(in asdmIDL::ASDMDataSetIDL asdm,
+				    in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+    /** 
+     * Stores skydip results into the telcal internal list of results,
+     * publish events
+     * @param result : the skydip result to be stored
+     */
+    void publishSkydipResult(in asdmIDL::ASDMDataSetIDL asdm,
+			     in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+    /** 
+     * Stores WVR results into the telcal internal list of results,
+     * publish events
+     * @param result : the WVR result to be stored
+     */
+    void publishWVRResult(in asdmIDL::ASDMDataSetIDL asdm,
+			     in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+    /** 
+     * Stores AppPhase results into the telcal internal list of results,
+     * publish events
+     * @param result : the AppPhase result to be stored
+     */
+    void publishAppPhaseResult(in asdmIDL::ASDMDataSetIDL asdm,
+			       in CalibrationResultParam result);  // ICT-5320: CalibrationResult, without asdm
+
+
+  };
+  
+};
+
+#endif

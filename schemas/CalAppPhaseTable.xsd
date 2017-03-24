@@ -43,11 +43,11 @@
  
 		<!-- No specific import for ArrayTime -->
 		<!-- No specific import for String -->
-		<!-- No specific import for int -->
 		<!-- No specific import for float -->
 		<!-- We need the schema of BasebandName -->
 		<xs:import namespace="http://Alma/XENUM/BasebandNameMod" 
 	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/BasebandName.xsd"/>
+		<!-- No specific import for int -->
 	
 	
 	

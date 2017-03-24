@@ -1,0 +1,108 @@
+// @(#) $Id: DataCaptureInterfaces.idl 214616 2015-02-17 17:36:13Z rmarson $
+//
+// ALMA - Atacama Large Millimeter Array
+// (c) Associated Universities Inc., 2009, 2012, 2014, 2015
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+
+#ifndef DATACAPTUREINTERFACES_IDL 
+#define DATACAPTUREINTERFACES_IDL 
+
+#include <almaEnumerations_IF.idl>
+#include <acscommon.idl> // For ACS::Time
+
+#pragma prefix "alma"
+
+/**
+ * This IDL module contains the public IDL interfaces implemented
+ * by the Control system which Deal with the transfer of Data to DataCapture.
+ * In principle these could be internal to Control, but for historical reasons
+ * are available externally as well.
+
+ * <p>
+ * 
+ */
+module Control {
+
+    /**
+     * Definition of a structure to convey the sub-reflector position
+     */
+    struct FocusData {
+        // The antenna name e.g., "DA41" 
+        string antennaName;
+        
+        // If true the subreflector position is automatically updated using the focus model 
+        boolean focusTracking;
+        
+        // The actual position of the subreflector, in x, y, z, in metres.
+        double xMeasured;
+        double yMeasured;
+        double zMeasured;
+        
+        // The actual rotation of the sub-reflector, as tip and tilt, in radians
+        double tipMeasured;
+        double tiltMeasured;
+        
+        // Offsets that are added to the focus model (or a fixed position/rotation). 
+        double xOffset; 
+        double yOffset; 
+        double zOffset;
+        double tipOffset;
+        double tiltOffset;
+    };
+
+    // Structure to send CalDevice data
+    typedef sequence<CalibrationDeviceMod::CalibrationDevice> CalibrationDeviceSeq;
+    struct CalDeviceData {
+        // The name of the antenna. e.g., "DV04"
+        string antennaName;
+        
+        // Timestamp from which these data are valid.
+        ACS::Time timestamp;
+        
+        // The number of calibration loads for which data are given
+        long numCalLoad;
+        
+        // The names of the calibration loads for which data are provided.
+        // This is an array of size [numCalLoad].
+        CalibrationDeviceSeq calLoadNames;
+
+        // The physical temperature of the loads, for a black-body 
+        //calibration source, in Kelvin.
+        // This is an array of size [numCalLoad]
+        ACS::doubleSeq temperatureLoad;
+    };
+
+
+  
+    // ------------------------- LLC Structure  ---------------------------
+    /* This structure contains the information which should be passed
+       to data capture whenever a LLC Reset is performed */
+    //   struct LLCStretcherResetData {
+    //     /* This is the name of the antenna */
+    //     string antennaName;
+  
+    //     /* This is the change in the fringe counter during the reset */
+    //     long fringeCounter;
+  
+    //     /* This is the change in the fast stretcher voltage */
+    //     double fastStretcherVoltageChange;
+    //   };
+  
+    //   typedef sequence<LLCStretcherResetData> LLCStretcherResetDataSeq;
+
+}; // End of module Control
+
+#endif

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File CalibrationSet.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:calset="http://Alma/XENUM/CalibrationSetMod" targetNamespace="http://Alma/XENUM/CalibrationSetMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:calset="http://Alma/XENUM/CalibrationSetMod" 
+                         targetNamespace="http://Alma/XENUM/CalibrationSetMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="CalibrationSet">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="NONE">
+			<xsd:enumeration value="NONE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Scan is not part of a calibration set. </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="AMPLI_CURVE">
+			<xsd:enumeration value="AMPLI_CURVE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Amplitude calibration scan (calibration curve to be derived). </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="ANTENNA_POSITIONS">
+			<xsd:enumeration value="ANTENNA_POSITIONS" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Antenna positions measurement. </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="PHASE_CURVE">
+			<xsd:enumeration value="PHASE_CURVE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Phase calibration scan (calibration curve to be derived). </xsd:documentation>
@@ -72,7 +77,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="POINTING_MODEL">
+			<xsd:enumeration value="POINTING_MODEL" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Pointing calibration scan (pointing model to be derived). </xsd:documentation>
@@ -80,7 +85,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="ACCUMULATE">
+			<xsd:enumeration value="ACCUMULATE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Accumulate a scan in a calibration set. </xsd:documentation>
@@ -88,7 +93,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="TEST">
+			<xsd:enumeration value="TEST" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Reserved for development. </xsd:documentation>
@@ -96,7 +101,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="UNSPECIFIED">
+			<xsd:enumeration value="UNSPECIFIED" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Unspecified calibration intent. </xsd:documentation>
@@ -122,9 +127,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="CalibrationSets">
+	<xsd:simpleType name ="CalibrationSets">
 		<xsd:restriction base="calset:CalibrationSetList">
-			<xsd:maxLength value="8" />
+			<xsd:maxLength value = "8" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

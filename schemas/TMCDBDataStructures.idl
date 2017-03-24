@@ -1,0 +1,183 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ * 
+ * $Id: TMCDBDataStructures.idl 191763 2013-07-03 15:33:47Z rmarson $
+ */
+
+#ifndef TMCDBDATASTRUCTURES_IDL
+#define TMCDBDATASTRUCTURES_IDL
+
+#include <asdmIDLTypes.idl>
+
+#pragma prefix "alma"
+
+module TMCDB_IDL {
+
+    /**
+     * The Antenna table represents the general properties of an ALMA antenna. 
+     * The x-y-z position is the position from the pad position to the point of
+     * rotation of the antenna.  The x-y-z offset is the offset, if any, from
+     * that position to the point from which the feeds offsets are measured. 
+     * Included is the name of the software component that executes the antenna. 
+     *  
+     */
+    struct AntennaIDL { 
+        long BaseElementId;  
+        string AntennaName; 
+        string AntennaType;  
+        asdmIDLTypes::IDLLength DishDiameter;  
+        asdmIDLTypes::IDLArrayTime CommissionDate;  
+        asdmIDLTypes::IDLLength XPosition;  
+        asdmIDLTypes::IDLLength YPosition;  
+        asdmIDLTypes::IDLLength ZPosition;  
+        asdmIDLTypes::IDLLength XOffset;  
+        asdmIDLTypes::IDLLength YOffset;  
+        asdmIDLTypes::IDLLength ZOffset;  
+        long ComponentId;  
+    };
+
+    /**
+     * The most important thing about pads is their location.
+     * Locations are in meters. 
+     *  
+     */
+    struct PadIDL { 
+        long BaseElementId;  
+        string PadName; 
+        asdmIDLTypes::IDLArrayTime CommissionDate;  
+        asdmIDLTypes::IDLLength XPosition;  
+        asdmIDLTypes::IDLLength YPosition;  
+        asdmIDLTypes::IDLLength ZPosition;  
+    };
+
+    /**
+     * The AntennaPointingModel table gives the measured parameters of the
+     * pointing model for the designated antenna that is associated with the
+     * designated pad. The terms of the pointing model are given in the
+     * AntennaPointingModelTerm table. 
+     */
+    struct AntennaPointingModelIDL { 
+        long PointingModelId;  
+        long AntennaId;  
+        long PadId;  
+        string ReceiverBand;  
+        asdmIDLTypes::IDLArrayTime StartTime;  
+        asdmIDLTypes::IDLArrayTime StartValidTime;  
+        asdmIDLTypes::IDLArrayTime EndValidTime; 
+        string AsdmUID;  
+    };
+
+    /**
+     * The AntennaPointingModelTerm table gives the terms of a given pointing
+     * model. 
+     */
+    struct AntennaPointingModelTermIDL { 
+        long PointingModelId;  
+        string CoeffName;  
+        float CoeffValue;  
+        float CoeffError;  
+    };
+    typedef sequence<AntennaPointingModelTermIDL> AntennaPointingModelTermSeq;
+
+    /**
+     * The AsssemblyLocationIDL structure gives the data necessary to locate an
+     * assembly within the context of a collection of assemblies and can busses.
+     * Included are the type of assembly, its role name (in case there are more
+     * than one), its relative can address, channel number and base address.
+     */
+    struct AssemblyLocationIDL { 
+        string assemblyTypeName;
+        string assemblyRoleName;
+        long rca;
+        long channelNumber;
+        long baseAddress;
+    };
+    typedef sequence<AssemblyLocationIDL> AssemblyLocationSeq;
+
+    /**
+     * The StartupAntennaIDL structure supplies the information needed to
+     * initialize an antenna.  Included are the name of the antenna, the pad on
+     * which it resides, the name of front end, the assembly locations in the 
+     * front end, and the assembly locations in the antenna. 
+     */
+    struct StartupAntennaIDL {
+        string antennaName;
+        string padName;
+        string frontEndName;
+        short uiDisplayOrder;
+        AssemblyLocationSeq frontEndAssembly;
+        AssemblyLocationSeq antennaAssembly;
+    };
+
+    /**
+     * The StartupAOSTimingIDL structure supplies the information needed to
+     * initialize the AOS Timming devices. It is a sequence of AssemblyLocation
+     */
+    struct StartupAOSTimingIDL {
+        AssemblyLocationSeq assemblies;
+    };
+
+    /**
+     * The StartupWeatherStationControllerIDL structure supplies the information needed to
+     * initialize the Weather Station devices. It is a sequence of AssemblyLocation
+     */
+    struct StartupWeatherStationControllerIDL {
+        AssemblyLocationSeq assemblies;
+    };
+
+    /** 
+     * A Photonic Reference Spec will normally contain 2 elements a 
+     * Continually Variable Reference and a Laser Synthesizer
+     */
+    struct StartupPhotonicReferenceIDL {
+        string name;
+        AssemblyLocationSeq assemblies;
+    };
+    typedef sequence<StartupPhotonicReferenceIDL> StartupPhotonicReferenceSeq;
+
+    /**
+     * The StartupCLOIDL structure supplies the information needed to
+     * initialize the Central LO.  It is a sequence of AssemblyLocations
+     * and a Sequence of PhotonicReferences
+     */
+    struct StartupCLOIDL {
+        AssemblyLocationSeq assemblies;
+        StartupPhotonicReferenceSeq photonicReferences;
+    };
+        
+    /**
+     * The PointingModelIDL structure is a data structure that is used to supply 
+     * information about an antenna pointing model.  Included is the antenna name,
+     * the pad on which the antenna was located at the time of the measurement,
+     * the pointing model itself, including a link to the ASDM that made the 
+     * measurement, and the terms of the pointing model.     
+     */
+    struct PointingModelIDL {
+        string antennaName;
+        string padName;
+        AntennaPointingModelIDL pointingModel;
+        AntennaPointingModelTermSeq term;
+    };
+};
+
+#endif /* TMCDBDATASTRUCTURES_IDL */

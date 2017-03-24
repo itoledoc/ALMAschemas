@@ -1,0 +1,93 @@
+#ifndef ControlSimpleTypeDefs_midl
+#define ControlSimpleTypeDefs_midl
+/*******************************************************************************
+ * ALMA - Atacama Large Millimiter Array
+ * (c) Associated Universities Inc., 2009
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA
+ *
+ * $Id: ControlSimpleTypeDefs.idl 199080 2013-12-18 15:49:47Z rmarson $
+ *
+ * who      when     what
+ * tjuerges  Apr 29, 2009  created
+ */
+
+
+#include <acscommon.idl>
+#pragma prefix "alma"
+
+
+module Control
+{
+    /// Typedefs to promote better type safety and documentation.  When
+    /// the documentation contains "(minimum)", the CORBA to C++ mapping
+    /// says that the mapped C++ type has this minimum size but no guarantees
+    /// are made what size it actually has.  Important for differences in
+    /// 32/64 bit architectures.  See
+    /// \ref https://www.sokrates.homelinux.net/~thomas/Wiki/index.php?n=ALMA.ACS#toc2
+
+    /// CORBA sequence of unsigned (minimum) 8-bit values.
+    typedef sequence< octet > OctetSeq;
+
+    /// CORBA sequence of signed (minimum) 8-bit values.
+    typedef sequence< char > CharSeq;
+
+    /// CORBA sequence of signed (minimum) 16-bit values.
+    typedef sequence< unsigned short > UShortSeq;
+
+    /// CORBA sequence of signed (minimum) 16-bit values.
+    typedef sequence< short > ShortSeq;
+
+    /// CORBA sequence of unsigned (minimum) 32-bit values.
+    typedef sequence< unsigned long > ULongSeq;
+
+    /// CORBA sequence of signed (minimum) 32-bit values.
+    typedef sequence< long > LongSeq;
+
+    /// CORBA sequence of unsigned (minimum) 64-bit values.
+    typedef sequence< unsigned long long > ULongLongSeq;
+
+    /// CORBA sequence of signed (minimum) 64-bit values.
+    typedef sequence< long long > LongLongSeq;
+
+    /// CORBA sequence of (minimum) 32-bit values.
+    typedef sequence< float > FloatSeq;
+
+    /// CORBA sequence of (minimum) 64-bit values.
+    typedef sequence< double > DoubleSeq;
+
+    /// CORBA sequence of (minimum) 96-bit values.
+    ///
+    /// TODO
+    /// Thomas, May 7, 2009
+    /// Cannot be defined because OmniORB does not support this type yet
+    /// (ACS 8.0).
+    ///typedef sequence< long double > LongDoubleSeq;
+
+    /// Sequence of CORBA::Booleans.  The C++ mapping does not guarantee which
+    /// size the C++ will have!  You cannot imply that CORBA::Boolean fits
+    /// entirely in a C++ boolean.
+    typedef sequence< boolean > BooleanSeq;
+
+    /// Sequence of unbound CORBA strings.
+    typedef sequence< string > StringSeq;
+
+    /// Sequence of \ref ACS::Time time stamps.
+    typedef sequence< ACS::Time > ACSTimeSeq;
+
+    /// Sequence of \ref Control::LongSeq.
+    typedef sequence < LongSeq > LongSeqSeq;
+};
+#endif

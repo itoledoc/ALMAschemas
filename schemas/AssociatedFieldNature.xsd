@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File AssociatedFieldNature.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:asfldn="http://Alma/XENUM/AssociatedFieldNatureMod" targetNamespace="http://Alma/XENUM/AssociatedFieldNatureMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:asfldn="http://Alma/XENUM/AssociatedFieldNatureMod" 
+                         targetNamespace="http://Alma/XENUM/AssociatedFieldNatureMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="AssociatedFieldNature">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="ON">
+			<xsd:enumeration value="ON" >
 		
 				<xsd:annotation>
 					<xsd:documentation>The associated field is used as ON source data </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="OFF">
+			<xsd:enumeration value="OFF" >
 		
 				<xsd:annotation>
 					<xsd:documentation>The associated field is used as OFF source data </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="PHASE_REFERENCE">
+			<xsd:enumeration value="PHASE_REFERENCE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>The associated field is used as Phase reference data </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="AssociatedFieldNatures">
+	<xsd:simpleType name ="AssociatedFieldNatures">
 		<xsd:restriction base="asfldn:AssociatedFieldNatureList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

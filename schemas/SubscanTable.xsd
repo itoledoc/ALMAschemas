@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,18 +30,31 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File SubscanTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sbscn="http://Alma/XASDM/SubscanTable" xmlns:ent="Alma/CommonEntity" xmlns:crlcal="http://Alma/XENUM/CorrelatorCalibrationMod" xmlns:swtchm="http://Alma/XENUM/SwitchingModeMod" xmlns:ssnint="http://Alma/XENUM/SubscanIntentMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/SubscanTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:sbscn="http://Alma/XASDM/SubscanTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:crlcal="http://Alma/XENUM/CorrelatorCalibrationMod"
+	xmlns:swtchm="http://Alma/XENUM/SwitchingModeMod"
+	xmlns:ssnint="http://Alma/XENUM/SubscanIntentMod"
+					   targetNamespace="http://Alma/XASDM/SubscanTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- We need the schema of CorrelatorCalibration -->
-		<xs:import namespace="http://Alma/XENUM/CorrelatorCalibrationMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CorrelatorCalibration.xsd" />
 		<!-- No specific import for ArrayTime -->
-		<!-- No specific import for String -->
-		<!-- No specific import for int -->
+		<!-- We need the schema of CorrelatorCalibration -->
+		<xs:import namespace="http://Alma/XENUM/CorrelatorCalibrationMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/CorrelatorCalibration.xsd"/>
 		<!-- We need the schema of SwitchingMode -->
-		<xs:import namespace="http://Alma/XENUM/SwitchingModeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/SwitchingMode.xsd" />
+		<xs:import namespace="http://Alma/XENUM/SwitchingModeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/SwitchingMode.xsd"/>
+		<!-- No specific import for String -->
 		<!-- We need the schema of SubscanIntent -->
-		<xs:import namespace="http://Alma/XENUM/SubscanIntentMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/SubscanIntent.xsd" />
+		<xs:import namespace="http://Alma/XENUM/SubscanIntentMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/SubscanIntent.xsd"/>
+		<!-- No specific import for int -->
 	
 	
 	
@@ -52,26 +65,59 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="scanNumber" type="xs:string" />
-         <xs:element name="subscanNumber" type="xs:string" />
-         <xs:element name="startTime" type="xs:string" />
-         <xs:element name="endTime" type="xs:string" />
-         <xs:element name="fieldName" type="xs:string" />
-         <xs:element name="subscanIntent" type="ssnint:SubscanIntent" />
-     	 <xs:element name="subscanMode" type="swtchm:SwitchingMode" minOccurs="0" />
-         <xs:element name="numIntegration" type="xs:string" />
-         <xs:element name="numSubintegration" type="xs:string" />
-     	 <xs:element name="correlatorCalibration" type="crlcal:CorrelatorCalibration" minOccurs="0" />
-         <xs:element name="execBlockId" type="xs:string" />
+         <xs:element name="scanNumber" type=
+"xs:string"
+
+/>
+         <xs:element name="subscanNumber" type=
+"xs:string"
+
+/>
+         <xs:element name="startTime" type=
+"xs:string"
+
+/>
+         <xs:element name="endTime" type=
+"xs:string"
+
+/>
+         <xs:element name="fieldName" type=
+"xs:string"
+
+/>
+         <xs:element name="subscanIntent" type=
+"ssnint:SubscanIntent"
+
+/>
+     	 <xs:element name="subscanMode" type=
+"swtchm:SwitchingMode"
+
+  minOccurs="0"/>
+         <xs:element name="numIntegration" type=
+"xs:string"
+
+/>
+         <xs:element name="numSubintegration" type=
+"xs:string"
+
+/>
+     	 <xs:element name="correlatorCalibration" type=
+"crlcal:CorrelatorCalibration"
+
+  minOccurs="0"/>
+         <xs:element name="execBlockId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

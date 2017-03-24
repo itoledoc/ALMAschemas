@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:val="Alma/ValueTypes" xmlns:orv="Alma/ObsPrep/ObsReview" xmlns:ent="Alma/CommonEntity" xmlns:ouss="Alma/Scheduling/OUSStatus" xmlns:ps="Alma/Scheduling/ProjectStatus" xmlns:sbs="Alma/Scheduling/SBStatus" xmlns:oat="Alma/Obsprep/ObsAttachment" xmlns:prj="Alma/ObsPrep/ObsProject" xmlns:prp="Alma/ObsPrep/ObsProposal" xmlns:sbl="Alma/ObsPrep/SchedBlock" elementFormDefault="qualified" attributeFormDefault="unqualified" version="13 6" targetNamespace="Alma/ObsPrep/ObsReview">  
-  <xsd:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd" />  
-  <xsd:import namespace="Alma/ValueTypes" schemaLocation="ValueTypes.xsd" />  
-  <xsd:import namespace="Alma/Scheduling/OUSStatus" schemaLocation="OUSStatus.xsd" />  
-  <xsd:import namespace="Alma/Scheduling/ProjectStatus" schemaLocation="ProjectStatus.xsd" />  
-  <xsd:import namespace="Alma/Scheduling/SBStatus" schemaLocation="SBStatus.xsd" />  
-  <xsd:import namespace="Alma/Obsprep/ObsAttachment" schemaLocation="ObsAttachment.xsd" />  
-  <xsd:import namespace="Alma/ObsPrep/ObsProject" schemaLocation="ObsProject.xsd" />  
-  <xsd:import namespace="Alma/ObsPrep/ObsProposal" schemaLocation="ObsProposal.xsd" />  
-  <xsd:import namespace="Alma/ObsPrep/SchedBlock" schemaLocation="SchedBlock.xsd" />  
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:val="Alma/ValueTypes" xmlns:orv="Alma/ObsPrep/ObsReview" xmlns:ent="Alma/CommonEntity" xmlns:prj="Alma/ObsPrep/ObsProject" xmlns:oat="Alma/Obsprep/ObsAttachment" xmlns:sbl="Alma/ObsPrep/SchedBlock" xmlns:ps="Alma/Scheduling/ProjectStatus" xmlns:sbs="Alma/Scheduling/SBStatus" xmlns:ouss="Alma/Scheduling/OUSStatus" xmlns:prp="Alma/ObsPrep/ObsProposal" elementFormDefault="qualified" attributeFormDefault="unqualified" version="13 23" targetNamespace="Alma/ObsPrep/ObsReview">  
+  <xsd:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>  
+  <xsd:import namespace="Alma/ValueTypes" schemaLocation="ValueTypes.xsd"/>  
+  <xsd:import namespace="Alma/ObsPrep/ObsProject" schemaLocation="ObsProject.xsd"/>  
+  <xsd:import namespace="Alma/Obsprep/ObsAttachment" schemaLocation="ObsAttachment.xsd"/>  
+  <xsd:import namespace="Alma/ObsPrep/SchedBlock" schemaLocation="SchedBlock.xsd"/>  
+  <xsd:import namespace="Alma/Scheduling/ProjectStatus" schemaLocation="ProjectStatus.xsd"/>  
+  <xsd:import namespace="Alma/Scheduling/SBStatus" schemaLocation="SBStatus.xsd"/>  
+  <xsd:import namespace="Alma/Scheduling/OUSStatus" schemaLocation="OUSStatus.xsd"/>  
+  <xsd:import namespace="Alma/ObsPrep/ObsProposal" schemaLocation="ObsProposal.xsd"/>  
 
   <!-- generated from UML entity class 'alma/obsprep/obsreview/ObsReview' -->  
   <xsd:element name="ObsReview" type="orv:ObsReview"> 
@@ -20,12 +21,12 @@
     <xsd:complexContent> 
       <xsd:extension base="prj:ObsPhaseT"> 
         <xsd:sequence> 
-          <xsd:element name="ObsReviewEntity" type="orv:ObsReviewEntityT" />  
-          <xsd:element name="ObsProjectRef" type="prj:ObsProjectRefT" /> 
+          <xsd:element name="ObsReviewEntity" type="orv:ObsReviewEntityT"/>  
+          <xsd:element name="ObsProjectRef" type="prj:ObsProjectRefT"/> 
         </xsd:sequence>  
-        <xsd:attribute name="schemaVersion" type="xsd:string" use="required" fixed="13" />  
-        <xsd:attribute name="revision" type="xsd:string" default="6" />  
-        <xsd:attribute name="almatype" type="xsd:string" use="required" fixed="APDM::ObsReview" /> 
+        <xsd:attribute name="schemaVersion" type="xsd:string" use="required" fixed="13"/>  
+        <xsd:attribute name="revision" type="xsd:string" default="23"/>  
+        <xsd:attribute name="almatype" type="xsd:string" use="required" fixed="APDM::ObsReview"/> 
       </xsd:extension> 
     </xsd:complexContent> 
   </xsd:complexType>  
@@ -34,8 +35,8 @@
   <xsd:complexType name="ObsReviewEntityT"> 
     <xsd:complexContent> 
       <xsd:restriction base="ent:EntityT"> 
-        <xsd:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="ObsReview" />  
-        <xsd:attribute name="schemaVersion" type="xsd:string" use="required" fixed="13" /> 
+        <xsd:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="ObsReview"/>  
+        <xsd:attribute name="schemaVersion" type="xsd:string" use="required" fixed="13"/> 
       </xsd:restriction> 
     </xsd:complexContent> 
   </xsd:complexType>  
@@ -44,7 +45,7 @@
   <xsd:complexType name="ObsReviewRefT"> 
     <xsd:complexContent> 
       <xsd:restriction base="ent:EntityRefT"> 
-        <xsd:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="ObsReview" /> 
+        <xsd:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="ObsReview"/> 
       </xsd:restriction> 
     </xsd:complexContent> 
   </xsd:complexType> 

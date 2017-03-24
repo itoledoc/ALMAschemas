@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File PositionMethod.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:positm="http://Alma/XENUM/PositionMethodMod" targetNamespace="http://Alma/XENUM/PositionMethodMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:positm="http://Alma/XENUM/PositionMethodMod" 
+                         targetNamespace="http://Alma/XENUM/PositionMethodMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="PositionMethod">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="DELAY_FITTING">
+			<xsd:enumeration value="DELAY_FITTING" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Delays are measured for each source; the delays are used for fitting antenna position errors. </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="PHASE_FITTING">
+			<xsd:enumeration value="PHASE_FITTING" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Phases are measured for each source; these phases are used to fit antenna position errors. </xsd:documentation>
@@ -74,9 +79,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="PositionMethods">
+	<xsd:simpleType name ="PositionMethods">
 		<xsd:restriction base="positm:PositionMethodList">
-			<xsd:maxLength value="2" />
+			<xsd:maxLength value = "2" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

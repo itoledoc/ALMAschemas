@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File BasebandName.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:bbnam="http://Alma/XENUM/BasebandNameMod" targetNamespace="http://Alma/XENUM/BasebandNameMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:bbnam="http://Alma/XENUM/BasebandNameMod" 
+                         targetNamespace="http://Alma/XENUM/BasebandNameMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="BasebandName">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="NOBB">
+			<xsd:enumeration value="NOBB" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Baseband not applicable. </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BB_1">
+			<xsd:enumeration value="BB_1" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Baseband one </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BB_2">
+			<xsd:enumeration value="BB_2" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Baseband two </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BB_3">
+			<xsd:enumeration value="BB_3" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Baseband three </xsd:documentation>
@@ -72,7 +77,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BB_4">
+			<xsd:enumeration value="BB_4" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Baseband four </xsd:documentation>
@@ -80,7 +85,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BB_5">
+			<xsd:enumeration value="BB_5" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Baseband five (not ALMA) </xsd:documentation>
@@ -88,7 +93,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BB_6">
+			<xsd:enumeration value="BB_6" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Baseband six (not ALMA) </xsd:documentation>
@@ -96,7 +101,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BB_7">
+			<xsd:enumeration value="BB_7" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Baseband seven (not ALMA) </xsd:documentation>
@@ -104,7 +109,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BB_8">
+			<xsd:enumeration value="BB_8" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Baseband eight (not ALMA) </xsd:documentation>
@@ -112,7 +117,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BB_ALL">
+			<xsd:enumeration value="BB_ALL" >
 		
 				<xsd:annotation>
 					<xsd:documentation>All ALMA basebands (i.e. all available basebands) </xsd:documentation>
@@ -120,27 +125,27 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="A1C1_3BIT">
+			<xsd:enumeration value="A1C1_3BIT" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="A2C2_3BIT">
+			<xsd:enumeration value="A2C2_3BIT" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="AC_8BIT">
+			<xsd:enumeration value="AC_8BIT" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="B1D1_3BIT">
+			<xsd:enumeration value="B1D1_3BIT" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="B2D2_3BIT">
+			<xsd:enumeration value="B2D2_3BIT" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BD_8BIT">
+			<xsd:enumeration value="BD_8BIT" >
 		
 			</xsd:enumeration>
      
@@ -162,9 +167,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="BasebandNames">
+	<xsd:simpleType name ="BasebandNames">
 		<xsd:restriction base="bbnam:BasebandNameList">
-			<xsd:maxLength value="16" />
+			<xsd:maxLength value = "16" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

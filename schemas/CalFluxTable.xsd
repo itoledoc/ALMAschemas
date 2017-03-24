@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,23 +30,38 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File CalFluxTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:clflx="http://Alma/XASDM/CalFluxTable" xmlns:ent="Alma/CommonEntity" xmlns:direfc="http://Alma/XENUM/DirectionReferenceCodeMod" xmlns:flxcam="http://Alma/XENUM/FluxCalibrationMethodMod" xmlns:sourcm="http://Alma/XENUM/SourceModelMod" xmlns:stkprm="http://Alma/XENUM/StokesParameterMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/CalFluxTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:clflx="http://Alma/XASDM/CalFluxTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:sourcm="http://Alma/XENUM/SourceModelMod"
+	xmlns:stkprm="http://Alma/XENUM/StokesParameterMod"
+	xmlns:flxcam="http://Alma/XENUM/FluxCalibrationMethodMod"
+	xmlns:direfc="http://Alma/XENUM/DirectionReferenceCodeMod"
+					   targetNamespace="http://Alma/XASDM/CalFluxTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for ArrayTime -->
-		<!-- We need the schema of DirectionReferenceCode -->
-		<xs:import namespace="http://Alma/XENUM/DirectionReferenceCodeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/DirectionReferenceCode.xsd" />
-		<!-- No specific import for Angle -->
-		<!-- We need the schema of FluxCalibrationMethod -->
-		<xs:import namespace="http://Alma/XENUM/FluxCalibrationMethodMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/FluxCalibrationMethod.xsd" />
-		<!-- No specific import for int -->
-		<!-- No specific import for String -->
 		<!-- We need the schema of SourceModel -->
-		<xs:import namespace="http://Alma/XENUM/SourceModelMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/SourceModel.xsd" />
-		<!-- No specific import for Frequency -->
-		<!-- No specific import for double -->
+		<xs:import namespace="http://Alma/XENUM/SourceModelMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/SourceModel.xsd"/>
+		<!-- No specific import for Angle -->
+		<!-- No specific import for ArrayTime -->
 		<!-- We need the schema of StokesParameter -->
-		<xs:import namespace="http://Alma/XENUM/StokesParameterMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/StokesParameter.xsd" />
+		<xs:import namespace="http://Alma/XENUM/StokesParameterMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/StokesParameter.xsd"/>
+		<!-- No specific import for double -->
+		<!-- No specific import for Frequency -->
+		<!-- No specific import for String -->
+		<!-- No specific import for int -->
+		<!-- We need the schema of FluxCalibrationMethod -->
+		<xs:import namespace="http://Alma/XENUM/FluxCalibrationMethodMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/FluxCalibrationMethod.xsd"/>
+		<!-- We need the schema of DirectionReferenceCode -->
+		<xs:import namespace="http://Alma/XENUM/DirectionReferenceCodeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/DirectionReferenceCode.xsd"/>
 	
 	
 	
@@ -61,35 +76,95 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="sourceName" type="xs:string" />
-         <xs:element name="startValidTime" type="xs:string" />
-         <xs:element name="endValidTime" type="xs:string" />
-         <xs:element name="numFrequencyRanges" type="xs:string" />
-         <xs:element name="numStokes" type="xs:string" />
-         <xs:element name="frequencyRanges" type="xs:string" />
-         <xs:element name="fluxMethod" type="flxcam:FluxCalibrationMethod" />
-         <xs:element name="flux" type="xs:string" />
-         <xs:element name="fluxError" type="xs:string" />
-         <xs:element name="stokes" type="xs:string" />
-     	 <xs:element name="direction" type="xs:string" minOccurs="0" />
-     	 <xs:element name="directionCode" type="direfc:DirectionReferenceCode" minOccurs="0" />
-     	 <xs:element name="directionEquinox" type="xs:string" minOccurs="0" />
-     	 <xs:element name="PA" type="xs:string" minOccurs="0" />
-     	 <xs:element name="PAError" type="xs:string" minOccurs="0" />
-     	 <xs:element name="size" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sizeError" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sourceModel" type="sourcm:SourceModel" minOccurs="0" />
-         <xs:element name="calDataId" type="xs:string" />
-         <xs:element name="calReductionId" type="xs:string" />
+         <xs:element name="sourceName" type=
+"xs:string"
+
+/>
+         <xs:element name="startValidTime" type=
+"xs:string"
+
+/>
+         <xs:element name="endValidTime" type=
+"xs:string"
+
+/>
+         <xs:element name="numFrequencyRanges" type=
+"xs:string"
+
+/>
+         <xs:element name="numStokes" type=
+"xs:string"
+
+/>
+         <xs:element name="frequencyRanges" type=
+"xs:string"
+
+/>
+         <xs:element name="fluxMethod" type=
+"flxcam:FluxCalibrationMethod"
+
+/>
+         <xs:element name="flux" type=
+"xs:string"
+
+/>
+         <xs:element name="fluxError" type=
+"xs:string"
+
+/>
+         <xs:element name="stokes" type=
+"xs:string"
+
+/>
+     	 <xs:element name="direction" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="directionCode" type=
+"direfc:DirectionReferenceCode"
+
+  minOccurs="0"/>
+     	 <xs:element name="directionEquinox" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="PA" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="PAError" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="size" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sizeError" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sourceModel" type=
+"sourcm:SourceModel"
+
+  minOccurs="0"/>
+         <xs:element name="calDataId" type=
+"xs:string"
+
+/>
+         <xs:element name="calReductionId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

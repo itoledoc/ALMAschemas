@@ -1,0 +1,502 @@
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * "@(#) $Id: CorrConfig.idl,v 1.25 2013/01/23 23:09:53 mmora Exp $"
+ *
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ */
+#ifndef CORR_CONFIG_IDL
+#define CORR_CONFIG_IDL
+
+#include <acstime.idl>
+#include <almaEnumerations_IF.idl>
+
+#pragma prefix "alma"
+
+/** This IDL file defines all the parameters for correlator configuration. It
+ ** is a hierarchical structure of containers:
+ ** 1. Correlator configuraiton:
+ **    2. 1 - 4 Baseband configurations
+ **       3. 1 - 8 Spectral window configurations
+ **
+ ** A note about sidebands.
+ ** There are 3 types of receivers:
+ ** Band	    Type
+ ** 1,2	    SSB w/ USB & LSB 
+ ** 3 - 8	    2 sidebands, with either sideband suppression removing either USB
+ **	    or LSB or sideband separation which routes the USB to one baseband
+ **	    pair & the LSB to another baseband pair.
+ ** 9,10	    Double sidebands, with 90d phase switching to do sideband separation
+ **	    or no separation & the 2 sidebands are overlaid.
+ **
+ ** The relevant parameters to define this are:
+ ** NetSideBand defines if the spectral window is  USB or LSB 
+ ** SideBandSeparationMode defines 90d phase switching or sideband rejection
+ ** ReceiverSideband defines which type of receiver is in use: SSB, 2SB or DSB
+ **
+ ** The order of frequency channels are implied that for the USB, the lowest sky 
+ ** frequency is mapped to the lowest IF (or baseband) frequency and for the LSB,
+ ** the lowest sky frequency is mapped to the highest IF frequency, i.e., the 
+ ** channel order is 'reversed'.
+ **
+ ** A note about frequencies.
+ ** The correlator knows only about baseband frequency. All frequencies in this IDL
+ ** are <b>baseband</b> frequencies, i.e., 2 - 4 GHz.
+ */
+
+module Correlator
+{
+    /// Sequence of stokes parameters to define single, dual, or full polarization
+    typedef sequence <StokesParameterMod::StokesParameter> StokesParameterSeq;
+    /// Sequence of APC to allow: CORRECTED &/or UNCORRECTED
+    typedef sequence <AtmPhaseCorrectionMod::AtmPhaseCorrection> AtmPhaseCorrectionSeq;
+
+    /** The maximum number of spectral windows per baseband.
+     ** For the BLC there can only be 4 independent spectral windows per baseband.
+     ** We allow for 8 because there can be 4 pairs of spectral windows with DSB receivers.
+     */
+    const short MAXIMUM_NUMBER_SPECTRAL_WINDOWS = 64;
+
+    /// The maximum number of channel average regions per spectral window
+    const short MAXIMUM_NUMBER_CHANNEL_AVERAGE_REGIONS = 32;
+
+    /// The maximum number of basebands supported in a configuration
+    const short MAXIMUM_NUMBER_BASEBANDS = 4;
+
+    /** Nutator or frequency switching definition. This structure defines the 
+     ** type of switching, the number of switching positions, the dwell time,
+     ** i.e., the time in a given position and the 'dead time', i.e., the time
+     ** that the data should be ignored due to mechanical delays, e.g., moving time 
+     ** and settling time. Some caveats:
+     ** -# Frequency switching usually has no dead time.
+     ** -# dwellTime + deadTime must be multiple of 48ms
+     ** -# The size of the dwellTime & deadTime sequences must equal numberOfPositions.
+     ** -# If SwitchingType == NO_SWITICHING, then numberOfPositions = 0.
+     ** -# Frequency switching is per baseband while nutator switching applies to all
+     **    basebands.
+     */
+    struct BinSwitching_t
+    {
+        /// NO_SWITCHING | PHASE_SWITCHING | FREQUENCY_SWITCHING | NUTATOR_SWITCHING
+        SwitchingModeMod::SwitchingMode SwitchingType;
+        /// 2 | 3 | 4
+        long numberOfPositions; 
+        /// The duration at a given position
+        ACS::TimeIntervalSeq dwellTime;
+        /// The duration of data to ignore for each position
+        ACS::TimeIntervalSeq deadTime;
+    };
+
+    /** This structure defines the phase switching configuration 180 degrees
+     ** which is performed in the ACA correlator.
+     */
+    struct ACAPhaseSwitchingConfigurations
+    {
+        /** If doD180modulation = TRUE then '180-degree anti-demodulation' is 
+         ** performed in the DTS receiver, else no '180-degree anti-demodulation' 
+         ** is performed.
+         ** The '180-degree anti-demodulation' cancels the 180 degrees demodulation 
+         ** in the DTS transmitter to detect potential spurious signals mixed at the 
+         ** digitizer. The '180 degrees anti-demodulation' is also used to reduce the 
+         ** bias generated in the FFT calculation. 
+         */
+        boolean doD180modulation;      
+
+        /** If doD180demodulation = TRUE then '180-degree demodulation' is 
+         ** performed in the CIP module, else, no '180-degree demodulation'
+         ** is performed.
+         ** The '180-degree demodulation' cancels the '180 degrees anti-demodulation' 
+         ** in the DTS receiver if doD180modulation = TRUE. Or the '180-degree 
+         ** demodulation' cancels the 180 degrees modulation performed in the LO, if 
+         ** neither the 180 degrees demodulation in the DTS transmitter nor '180-
+         ** degree anti-demodulation' in the DTS receiver are performed.
+         ** The doD180demodulation must be TRUE when doD180modulation = TRUE, 
+         ** because '180-degree anti-demodulation' must be canceled if the '180-
+         ** degree anti-demodulation' is performed.
+         */
+        boolean doD180demodulation;
+    };
+
+    /** \struct Defines a region for channel average data. Note that these
+     ** parameters are based on effective channels. That is, startChannel
+     ** must be a zero based index within the effective range of spectral
+     ** channels and the number of channels is interpreted based on the
+     ** spectral resolution (band-width per channel) before any spectral
+     ** averaging (spectralAveragingFactor) has been applied.
+     */ 
+    struct ChannelAverageRegion
+    {
+        long startChannel;     ///< the first channel of this channel average region,
+        long numberChannels;   ///< the number of channels to average together
+    };
+    typedef sequence<ChannelAverageRegion,MAXIMUM_NUMBER_CHANNEL_AVERAGE_REGIONS> ChannelAverageRegionSeq;
+
+    /** \struct Defines a spectral window for the Tunable filter. 
+     */
+    struct SpectralWindow
+    {
+		/** the spectral window's name
+		 */
+		string name;
+
+        /** The center frequency of each spectral window in MHz <b>relative to the
+         ** baseband</b>, i.e., 2 - 4 GHz. The step size of the band is 2 GHz/8192
+         ** = 244.141 KHz.
+         */ 
+        double centerFrequencyMHz;
+
+        /** the effective bandwidth of each spectral window in MHz
+         */
+        double effectiveBandwidthMHz;
+
+        /** the effective number of channels of the spectral window.
+         */
+        long effectiveNumberOfChannels;
+
+        /** Specify the number of spectral channels to average together for
+         ** each spectral window. This factor is the number of adjacent channels to
+         ** average together and must be a power of 2, e.g., 1, 2, 4, 8, etc.
+         ** The spectral averaging factor can be used to reduce the amount of
+         ** spectral data sent to the Archive. 
+         */
+         long spectralAveragingFactor;
+
+        /** The sideband defines which sideband to be output: USB or LSB.
+         ** Note that if this spectral window is LSB, then its frequency (or channel)
+         ** order is reversed from the sky frequency, i.e., lowest sky frequency is
+         ** highest baseband frequency.
+         ** The SideBandMode should be common to all spectral windows in a baseband
+         ** except for the DSB of ReceiverSideBand.
+         */
+        NetSidebandMod::NetSideband sideBand;
+        
+        /** 90d offsetting of LO1's phase following different orthogonal
+         ** switching sequences at each antenna makes possible to integrate
+         ** in the correlator into separated memory locations the different
+         ** phase states per base-line (0d, +90d and -90d); from whence USB
+         ** and LSB signals can be decoupled in software. Every time that such
+         ** mechanism is applied there is a one-to-one relation between
+         ** pairing USB and LSB spectral windows, because both are synthesized
+         ** from the same original data. 
+         ** The present parameter in the configuration makes explicit the
+         ** association from one spectral window to the other in the opposite
+         ** sideband and vice-versa. The actual value is an index (one-based)
+         ** within the spectral window sequence. The parameter is meaningful
+         ** only when 90d phase switching is active.
+         */
+        long associatedSpectralWindowNumberInPair;
+
+        /** For DSB receivers, the user could suppress an image spectral window of a
+         ** given pair. This would allow the user to improve data rate by discarding
+         ** unwanted data. This flag is always TRUE for SSB & 2SB receivers and can
+         ** be TRUE or FALSE only for DSB receivers.
+         */
+        boolean useThisSpectralWindow;
+
+        /** An enumerated value representing the data smoothing function to use.
+         */
+        WindowFunctionMod::WindowFunction windowFunction;
+
+        /** The observer can select up to 10 sets of contiguous channels (regions)
+         ** which produces a channel average result for each channel average region
+	 ** for a spectral window.
+	 ** Each band is selected by the following parameters:
+         ** -# startChannel The starting (0-based) channel used to calculate the
+         **    spectral channel average.
+         **    startChannel < effective number of channels
+	 ** -# numberChannels The region width as the number of spectral channels
+	 **    used to calculate the spectral channel average for the region. 
+	 **    startChannel + numberChannels < effective number of channels
+         */
+        ChannelAverageRegionSeq channelAverageRegions;
+
+        /** <ACA correlator specific>
+         ** The ACA correlator outputs the spectral results with a frequency 
+         ** channel profile compatible with that of the baseline correlator 
+         ** when frqChProfReproduction = TRUE. The ACA correlator outputs the 
+         ** spectral results with the FX correlator specific frequency channel 
+         ** profile when frqChProfReproduction = FALSE.
+         */
+        boolean frqChProfReproduction;
+
+        /** <ACA correlator specific>
+         ** synthProf is enumerated type and has a value in {NOSYNTH, ACACORR, ACA_CDP}.
+         ** The ACA correlator is an FX type correlator of which frequency profile of 
+         ** output channels will be different from that of the BL correlator which is 
+         ** an XF type correlator.
+         ** The ACA correlator synthesizes the frequency profile of the output channels
+         ** to be compatible with that of the BL correlator unless synthProf=NOSYNTH.
+         ** The frequency profile of the output channels will be synthsized inside the 
+         ** ACA correlator when synthProf=ACACORR.
+         ** The ACA-CDP computers will do that when synthProf=ACA_CDP.
+         ** frqChProfReproduction will be replaced with synthProf. frqChProfReproduction 
+         ** is left for the compatibility of the existing SBs&EBs with a rule below:
+         ** synthProf=NOSYNTH & frqChProfReproduction is not defined then frqChProfReproduction to be false
+         ** synthProf=ACACORR & frqChProfReproduction is not defined then frqChProfReproduction to be true
+         ** synthProf=ACA_CDP & frqChProfReproduction is not defined then frqChProfReproduction to be true
+         ** frqChProfReproduction=false & synthProf is not defined then synthProf to be NOSYNTH
+         ** frqChProfReproduction=true & synthProf is not defined then synthProf to be ACACORR
+         */
+        SynthProfMod::SynthProf synthProf;
+
+        /** <BL correlator specific>
+         ** Options: 2x2, 3x3, 4x4
+         */
+        CorrelationBitMod::CorrelationBit correlationBits;
+
+        /** <BL correlator specific>
+         ** Nyquist sampling/oversampling True means do Nyquist oversampling, False
+         ** means non-oversampling.
+         */
+        boolean correlationNyquistOversampling;
+
+        /** <BL correlator specific>
+         ** Options: XX | YY (single pol'n) or XX,YY, (dual pol'n) or XX, YY, XY, YX (full pol'n)
+         ** The ACA correlator always outputs all 4 polarization products. The
+         ** ACA correlator will share the polnProductsSeq if the polnProductsSeq is 
+         ** common to all spectral windows in a baseband. For the ACA correlator, the 
+         ** polarization products can not be changed by the spectral windows.
+         ** AUTO_ONLY:
+         ** "XX"          for autoData: {XX}
+         ** "YY"          for autoData: {YY}
+         ** "XX YY"       for autoData: {XX,YY}
+         ** "XX XY YX YY" for autoData: {XX,XY,YY}
+         **
+         ** CROSS_AND_AUTO:
+         ** "XX"          for autoData: {XX}        if for crossData: {XX}
+         ** "YY"          for autoData: {YY}        if for crossData: {YY}
+         ** "XX YY"       for autoData: {XX,YY}     if for crossData: {XX,YY}
+         ** "XX XY YX YY" for autoData: {XX,XY,YY}  if for crossData: {XX,XY,YX,YY}
+         */
+        Correlator::StokesParameterSeq polnProductsSeq;
+
+        /** <BL correlator specific>
+         ** Boolean selection to perform quantization ('VanVleck') correction on
+         ** the lag data. Normally this is true, but for diagnostic purposes, we
+         ** may wish to view the uncorrected lags.
+         ** <ACA correlator specific comments>
+         ** The ACA correlator does not use this parameter, because the ACA-CDP always 
+         ** does the quantization correction on the spectral results.
+         */
+        boolean quantizationCorrection;
+    };
+
+    /** up to 8 spectral windows per baseband either as 8 separately tunable spectral
+     ** windows for SSB & 2SB receivers or 4 pairs of separately tunable spectral
+     ** windows for DSB receivers.
+     */
+    typedef sequence<SpectralWindow,MAXIMUM_NUMBER_SPECTRAL_WINDOWS> SpectralWindowSeq;
+
+    /** \anchor BaseBandConfig. Each baseband can be configured independently
+     ** (except for integration & sub-integration durations) with up to four
+     ** baseband configurations within a correlator configuration.
+     */
+    struct BaseBandConfig
+    {
+        /** The baseband name "BB_1" to "BB_4" to be configured. The TMCDB must
+         ** define the mapping between baseband names and correlator quadrants.
+         **/
+        BasebandNameMod::BasebandName basebandName;
+
+        /** If true then the 2 by 2 matrix switch, in the IF processors for both 
+         ** polarizations, will be set to pass the signal through the 12GHz low-pass 
+         ** filter. If false the 8.5GHz filter is used. Normally the 12GHz filter is 
+         ** used when the corresponding second LO frequency is greater than about 
+         ** 10.5GHz.           
+         */
+        boolean use12GHzFilter;
+
+        /** If true then the 2 by 2 matrix switch, in the IF processors for both 
+         ** polarizations, will be set to use the upper sideband (USB) output of the 
+         ** front-end for this baseband. Because of wiring constraints in the IF 
+         ** processor, the first two and the last two base-bands must have the same 
+         ** value for this field.
+         */
+        boolean useUSB;
+
+        /** The Correlator Accumulation Mode. If CAM is ALMA_FAST, i.e., 1-ms dumps, 
+         ** only auto-correlation products are sent to the CDP. If CAM = ALMA_NORMAL,
+         ** then both auto- and cross-correlation products are sent to the
+         ** CDP w/ a minimum dump time of 16ms.
+         **/
+        AccumModeMod::AccumMode CAM;
+      
+        /** Allows the user to select both auto & cross correlation products or
+         ** auto only or cross only when CAM = ALMA_NORMAL. When CAM = ALMA_FAST,
+         ** only the auto products are available. 
+         */
+        CorrelationModeMod::CorrelationMode dataProducts;
+
+        /** The following parameter (sideBandSeparationMode) is not part of
+         ** the APDM but for historical reasons correlator sub-systems rely
+         ** on its value to perform their tasks. In reality the actual value
+         ** of this parameter can be deduced from both Walsh functions status
+         ** in the spectral specification (90d and 180d) plus the 3LOs 
+         ** setting. The present parameter is preserve for convenience to
+         ** correlators logic implementation. It is the responsibility of 
+         ** the XML to IDL parser to set its value according to the status
+         ** of the other items mentioned before.
+         **
+         ** sideBandSeparationMode defines sideband separation as:
+         **
+         **     - 90d phase switching (PHASE_SWITCHING_SEPARATION)
+         **     - TFB offsetting (FREQUENCY_OFFSET_SEPARATION)
+         **
+         ** sideband suppression as:
+         **
+         **     - suppress a sideband (FREQUENCY_OFFSET_REJECTION)
+         **
+         ** or no real action in the correlator software as NONE.
+         **
+         ** FREQUENCY_OFFSET_REJECTION and FREQUENCY_OFFSET_SEPARATION are
+         ** achieved through LO offsetting in the first and second LOs plus
+         ** a matching TFB LO offsetting (CORR) or frequency shifting on
+         ** spectral data channels (ACACORR).
+         **
+         ** Receiver                  180d   90d    LO                  TFB     ACA    SideBandSeparationMode
+         ** Mode#  Type     Sideband  Walsh  Walsh  Mode  LO1     L02   Offset  Shift
+         ** -----------------------------------------------------------------------------------------------------
+         ** [1]    2SB      upper     ON     OFF    2LOs    ND    -ND     0       0    NONE
+         ** [2]    2SB      lower     ON     OFF    2LOs    ND     ND     0       0    NONE
+         ** [3]    2SB      upper     OFF    OFF    3LOs  2*ND  -3*ND    ND      AC    FREQUENCY_OFFSET_REJECTION
+         ** [4]    2SB      lower     OFF    OFF    3LOs  2*ND     ND    ND      AC    FREQUENCY_OFFSET_REJECTION
+         ** [5]    DSB      both      ON     ON     None     0      0     0       0    PHASE_SWITCHING_SEPARATION
+         ** [6]    DSB      upper     OFF    OFF    3LOs  2*ND  -3*ND    ND      AC    FREQUENCY_OFFSET_REJECTION
+         ** [7]    DSB      lower     OFF    OFF    3LOs  2*ND     ND    ND      AC    FREQUENCY_OFFSET_REJECTION
+         ** [8]    DSB      both
+         **                 upper     OFF    OFF    3LOs  2*ND    -ND   -ND     N/A    FREQUENCY_OFFSET_SEPARATION
+         **                 lower     OFF    OFF    3LOs  2*ND    -ND  3*ND     N/A    FREQUENCY_OFFSET_SEPARATION
+         **
+         ** Note 1: for more technical background on the actual values in
+         ** the above table refer to Peter Naper's 'ALMA Use of LO Offsetting
+         ** for Spurious Signal Suppression and Sideband Rejection'
+         ** SYSE-55.00.00.00-004-B-DSN (latest version supersedes previous
+         ** ones.)
+         ** 
+         ** Note 2: the use of a digital LO frequency offseting in the BL
+         ** correlator or frequency shifting in ACA correlator is the approach
+         ** proposed in the paper to efficiently reject a sideband and/or 
+         ** spurious signals generated within the antenna at high spectral
+         ** resolution modes, that is, at resolutions at which de-synchronization
+         ** errors in the 180d Walsh function between antennas start becoming
+         ** important.
+         **
+         ** Note 3: extra CORR implementation details in the following
+         ** twiki http://almasw.hq.eso.org/almasw/bin/view/CORR/SidebandSeparationAndLOOffsetting)
+         **/
+        SidebandProcessingModeMod::SidebandProcessingMode sideBandSeparationMode;
+
+        /** 8 spectral windows can be defined per baseband. In the case of SSB or 2SB
+         ** receivers, there can be up to 4 independently tuned spectral windows. For 
+         ** DSB receivers, there can be up to 4 independently tuned pairs of spectral
+         ** windows.
+         */
+        SpectralWindowSeq spectralWindows;
+
+        /** Nutator switching is common to all basebands, but frequency switching
+         ** occurs at the 2-nd LO so it can be different for each baseband.
+         **
+         */
+        BinSwitching_t  binSwitchingMode;
+
+        /** The frequency of LO2 in MHz
+         */
+        double LO2FrequencyMHz;
+
+        /** <ACA correlator specific>
+         ** The center frequency of the fringe rotation.
+         ** This value is used in the residual delay compensation to calculate 
+         ** the phase error.
+         */
+        double centerFreqOfResidualDelayMHz;
+    };
+
+    typedef sequence<BaseBandConfig,MAXIMUM_NUMBER_BASEBANDS> BaseBandConfigSeq;
+
+    /** \anchor CorrelatorConfiguration. 2 The correlator configuration container. */
+    struct CorrelatorConfiguration
+    {
+        /** <BL Correlator specific> The dump interval must be a multiple of
+         ** 16ms for cross & auto mode, or 1ms for auto-only mode.
+         */
+        ACS::TimeInterval dumpDuration;
+
+        /** The integration duration must be a multiple of the channel
+         ** average duration.
+         */
+        ACS::TimeInterval integrationDuration;
+
+        /** <ACACORR specific interpretation>
+         ** The channel average duration must be a multiple of 16ms if 
+         ** CAM=ALMA_NORMAL and it must be a multiple of 1ms if CAM=ALMA_FAST. 
+         ** Its actual value must not be lower than 512ms and not bigger than 
+         ** 1008ms if the integration duration is bigger than 1008ms. If the 
+         ** integration duration is equal or smaller than 1008ms then the 
+         ** channel average and integration durations must be the same.
+         ** <BL-CORR specific interpretation>
+         ** The channel average duration must be a multiple of the dump
+         ** duration.
+         */
+        ACS::TimeInterval channelAverageDuration;
+
+        /** <ACA correlator specific>
+         ** the subscan duration must be a multiple of of integration duration. 
+         */
+        ACS::TimeInterval subScanDurationACA;
+
+	/** Receiver band used for all basebands
+         */
+        ReceiverBandMod::ReceiverBand receiverBand;
+        
+        /** Type of receiver used for all basebands.
+         */
+        ReceiverSidebandMod::ReceiverSideband receiverType;
+
+        /** Up to 4 basebands can be configured in a single correlator
+         ** configuration.
+         */
+        BaseBandConfigSeq baseBands;
+
+        /** This flag determines which APC results are published. Sequence
+         ** allows for:
+         **
+         **     CORRECTED or UNCORRECTED or CORRECTED + UNCORRECTED
+         */
+        AtmPhaseCorrectionSeq APCDataSets;
+
+        /** The frequency of LO1 in MHz
+         */
+        double LO1FrequencyMHz;
+
+        /** <ACA correlator specific>
+         ** This parameter is common among all of four sets of the ACA correlator.
+         */
+        ACAPhaseSwitchingConfigurations ACAPhaseSwConfig;
+    };
+
+    /** A sequence of correlator configurations, as required for the execution
+     ** of sub-scan sequences.
+     */
+    typedef sequence<CorrelatorConfiguration> CorrelatorConfigurationSeq;
+};
+#endif
+

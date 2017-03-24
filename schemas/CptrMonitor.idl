@@ -1,0 +1,124 @@
+#ifndef Cptr_MONITOR_IDL
+#define Cptr_MONITOR_IDL
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * "@(#) $Id: CptrMonitor.idl,v 1.3 2011/11/01 14:15:16 ramestic Exp $"
+ *
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ */
+
+#include <baci.idl>
+#pragma prefix "alma"
+
+module Correlator
+{
+    /** Correlator Computer Monitor Interface.
+     ** This interface defines the monitor information available for the 
+     ** Correlator computers (CDP & CCC). 
+     */
+    interface CptrMonitor : ACS::CharacteristicComponent
+    {
+	/** \defgroup Correlator computer monitor points.
+	 ** For each node of the CDP (master and compute nodes) & CCC there is one
+	 ** of these.
+	 */
+        /*@{*/
+        /// @name CPU temperatures
+
+        /// CPU 0 temperature
+	readonly attribute ACS::ROfloat tempCPU0;
+        /// CPU 1 temperature
+	readonly attribute ACS::ROfloat tempCPU1;
+
+        /// Chassis temperature
+	readonly attribute ACS::ROfloat tempChassis;
+        /// @name Voltages
+        //@{
+        /// 5 Volt level
+	readonly attribute ACS::ROfloat voltage_5v;
+
+        /// CPU 0 Core 0 temperature
+	readonly attribute ACS::ROfloat tempCPU0Core0;
+
+        /// CPU 0 Core 1 temperature
+	readonly attribute ACS::ROfloat tempCPU0Core1;
+
+        /// CPU 1 Core 0 temperature
+	readonly attribute ACS::ROfloat tempCPU1Core0;
+
+        /// CPU 1 Core 1 temperature
+	readonly attribute ACS::ROfloat tempCPU1Core1;
+        //@}
+
+        /** @name Fans
+	 ** Chassis has multiple fans, separate control may be possible.
+	 */
+        //@{
+        /// Fan 0 speed 
+	readonly attribute ACS::ROfloat CPU0FanSpeed;
+        /// Fan 1 speed 
+	readonly attribute ACS::ROfloat CPU1FanSpeed;
+      /// Fan 0 speed 
+	readonly attribute ACS::ROfloat ChassisFan0Speed;
+        /// Fan 1 speed 
+	readonly attribute ACS::ROfloat ChassisFan1Speed;
+        //@}
+
+        /** @name CPU Speed
+	 ** We see the CPU speed in MHz. It can be set to cool down if 
+	 ** necessary.
+	 */
+        //@{
+        /// CPU 0 speed
+	readonly attribute ACS::ROfloat CPU0Speed;
+        /// CPU 1 speed
+	readonly attribute ACS::ROfloat CPU1Speed;
+        //@}
+
+        /** @name Error counts
+	 */
+        //@{
+	/// Count of DPI interface hardware errors (framing errors)
+	readonly attribute ACS::ROlong DPIerrorCount;
+	
+	/// Missed any timing events for master [0] or compute nodes[1-16]
+	readonly attribute ACS::ROlong missedTECount;
+        //@}
+        /*@}*/
+
+        /** Reset absolute DPI framing error counts. Invoking this function
+	 ** sets the DPI framing error count to 0.
+	 */
+	void DPI_ResetErrorCount();
+
+        /** Reset absolute timing event error counts. Invoking this function 
+	 ** sets the TE error count to 0.
+	 */
+	void TE_ResetErrorCount();
+
+        /** Return cob computers serial number
+         */
+	unsigned long long getSerialNumber();
+    };
+};
+#endif

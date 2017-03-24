@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- $Id: CorrStateModelErr.xml,v 1.5 2009/03/14 22:02:50 jperez Exp $ -->
+<Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="Alma/ACSError"
+      xsi:schemaLocation="Alma/ACSError ACSError.xsd"
+      name="CorrStateModelErr"
+      type="27000"
+      _prefix="alma">
+  <ErrorCode name="InvalidStartTransition" 
+             shortDescription="Invalid Start transition" 
+             description="Cannot start from the current state."/>
+  <ErrorCode name="InvalidRecoverTransition" 
+             shortDescription="Invalid Recover transition" 
+             description="Cannot recover from the current state."/>
+  <ErrorCode name="InvalidRestartTransition" 
+             shortDescription="Invalid Restart transition" 
+             description="Cannot restart from the current state."/>
+  <ErrorCode name="InvalidRunDiagnostics" 
+             shortDescription="Invalid Run Diagnostics transition." 
+             description="Cannot run diagnostics from the current state."/>
+  <ErrorCode name="InvalidShutdownTransition" 
+             shortDescription="Invalid Shutdown transition." 
+             description="Cannot shutdown from the current state."/>
+  <ErrorCode name="InvalidMonitorStart" 
+             shortDescription="Unable to start monitoring." 
+             description="Cannot shutdown from the current state."/>
+  <ErrorCode name="InvalidMonitorStop" 
+             shortDescription="Unable to stop monitoring." 
+             description="Cannot shutdown from the current state."/>
+  <ErrorCode name="SubStateBusy" 
+             shortDescription="Sub-state busy." 
+             description="Cannot transition from the current state because its sub-state is BUSY."/>
+</Type>
+

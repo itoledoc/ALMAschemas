@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,29 +30,46 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File SourceTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:src="http://Alma/XASDM/SourceTable" xmlns:ent="Alma/CommonEntity" xmlns:direfc="http://Alma/XENUM/DirectionReferenceCodeMod" xmlns:sourcm="http://Alma/XENUM/SourceModelMod" xmlns:ravrfc="http://Alma/XENUM/RadialVelocityReferenceCodeMod" xmlns:frqrfc="http://Alma/XENUM/FrequencyReferenceCodeMod" xmlns:stkprm="http://Alma/XENUM/StokesParameterMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/SourceTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:src="http://Alma/XASDM/SourceTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:stkprm="http://Alma/XENUM/StokesParameterMod"
+	xmlns:direfc="http://Alma/XENUM/DirectionReferenceCodeMod"
+	xmlns:sourcm="http://Alma/XENUM/SourceModelMod"
+	xmlns:frqrfc="http://Alma/XENUM/FrequencyReferenceCodeMod"
+	xmlns:ravrfc="http://Alma/XENUM/RadialVelocityReferenceCodeMod"
+					   targetNamespace="http://Alma/XASDM/SourceTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for ArrayTime -->
-		<!-- We need the schema of DirectionReferenceCode -->
-		<xs:import namespace="http://Alma/XENUM/DirectionReferenceCodeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/DirectionReferenceCode.xsd" />
-		<!-- No specific import for int -->
-		<!-- We need the schema of SourceModel -->
-		<xs:import namespace="http://Alma/XENUM/SourceModelMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/SourceModel.xsd" />
-		<!-- No specific import for AngularRate -->
-		<!-- We need the schema of RadialVelocityReferenceCode -->
-		<xs:import namespace="http://Alma/XENUM/RadialVelocityReferenceCodeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/RadialVelocityReferenceCode.xsd" />
-		<!-- We need the schema of FrequencyReferenceCode -->
-		<xs:import namespace="http://Alma/XENUM/FrequencyReferenceCodeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/FrequencyReferenceCode.xsd" />
-		<!-- No specific import for Angle -->
 		<!-- No specific import for Speed -->
+		<!-- No specific import for AngularRate -->
+		<!-- No specific import for ArrayTime -->
+		<!-- We need the schema of StokesParameter -->
+		<xs:import namespace="http://Alma/XENUM/StokesParameterMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/StokesParameter.xsd"/>
 		<!-- No specific import for Flux -->
 		<!-- No specific import for String -->
-		<!-- No specific import for Length -->
+		<!-- No specific import for int -->
+		<!-- We need the schema of DirectionReferenceCode -->
+		<xs:import namespace="http://Alma/XENUM/DirectionReferenceCodeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/DirectionReferenceCode.xsd"/>
+		<!-- We need the schema of SourceModel -->
+		<xs:import namespace="http://Alma/XENUM/SourceModelMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/SourceModel.xsd"/>
+		<!-- We need the schema of FrequencyReferenceCode -->
+		<xs:import namespace="http://Alma/XENUM/FrequencyReferenceCodeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/FrequencyReferenceCode.xsd"/>
 		<!-- No specific import for ArrayTimeInterval -->
+		<!-- We need the schema of RadialVelocityReferenceCode -->
+		<xs:import namespace="http://Alma/XENUM/RadialVelocityReferenceCodeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/RadialVelocityReferenceCode.xsd"/>
+		<!-- No specific import for Angle -->
+		<!-- No specific import for Length -->
 		<!-- No specific import for Frequency -->
-		<!-- We need the schema of StokesParameter -->
-		<xs:import namespace="http://Alma/XENUM/StokesParameterMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/StokesParameter.xsd" />
 	
 	
 	
@@ -72,47 +89,143 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="sourceId" type="xs:string" />
-         <xs:element name="timeInterval" type="xs:string" />
-         <xs:element name="code" type="xs:string" />
-         <xs:element name="direction" type="xs:string" />
-         <xs:element name="properMotion" type="xs:string" />
-         <xs:element name="sourceName" type="xs:string" />
-     	 <xs:element name="directionCode" type="direfc:DirectionReferenceCode" minOccurs="0" />
-     	 <xs:element name="directionEquinox" type="xs:string" minOccurs="0" />
-     	 <xs:element name="calibrationGroup" type="xs:string" minOccurs="0" />
-     	 <xs:element name="catalog" type="xs:string" minOccurs="0" />
-     	 <xs:element name="deltaVel" type="xs:string" minOccurs="0" />
-     	 <xs:element name="position" type="xs:string" minOccurs="0" />
-     	 <xs:element name="numLines" type="xs:string" minOccurs="0" />
-     	 <xs:element name="transition" type="xs:string" minOccurs="0" />
-     	 <xs:element name="restFrequency" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sysVel" type="xs:string" minOccurs="0" />
-     	 <xs:element name="rangeVel" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sourceModel" type="sourcm:SourceModel" minOccurs="0" />
-     	 <xs:element name="frequencyRefCode" type="frqrfc:FrequencyReferenceCode" minOccurs="0" />
-     	 <xs:element name="numFreq" type="xs:string" minOccurs="0" />
-     	 <xs:element name="numStokes" type="xs:string" minOccurs="0" />
-     	 <xs:element name="frequency" type="xs:string" minOccurs="0" />
-     	 <xs:element name="frequencyInterval" type="xs:string" minOccurs="0" />
-     	 <xs:element name="stokesParameter" type="xs:string" minOccurs="0" />
-     	 <xs:element name="flux" type="xs:string" minOccurs="0" />
-     	 <xs:element name="fluxErr" type="xs:string" minOccurs="0" />
-     	 <xs:element name="positionAngle" type="xs:string" minOccurs="0" />
-     	 <xs:element name="positionAngleErr" type="xs:string" minOccurs="0" />
-     	 <xs:element name="size" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sizeErr" type="xs:string" minOccurs="0" />
-     	 <xs:element name="velRefCode" type="ravrfc:RadialVelocityReferenceCode" minOccurs="0" />
-         <xs:element name="spectralWindowId" type="xs:string" />
+         <xs:element name="sourceId" type=
+"xs:string"
+
+/>
+         <xs:element name="timeInterval" type=
+"xs:string"
+
+/>
+         <xs:element name="code" type=
+"xs:string"
+
+/>
+         <xs:element name="direction" type=
+"xs:string"
+
+/>
+         <xs:element name="properMotion" type=
+"xs:string"
+
+/>
+         <xs:element name="sourceName" type=
+"xs:string"
+
+/>
+     	 <xs:element name="directionCode" type=
+"direfc:DirectionReferenceCode"
+
+  minOccurs="0"/>
+     	 <xs:element name="directionEquinox" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="calibrationGroup" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="catalog" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="deltaVel" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="position" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="numLines" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="transition" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="restFrequency" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sysVel" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="rangeVel" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sourceModel" type=
+"sourcm:SourceModel"
+
+  minOccurs="0"/>
+     	 <xs:element name="frequencyRefCode" type=
+"frqrfc:FrequencyReferenceCode"
+
+  minOccurs="0"/>
+     	 <xs:element name="numFreq" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="numStokes" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="frequency" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="frequencyInterval" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="stokesParameter" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="flux" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="fluxErr" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="positionAngle" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="positionAngleErr" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="size" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sizeErr" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="velRefCode" type=
+"ravrfc:RadialVelocityReferenceCode"
+
+  minOccurs="0"/>
+         <xs:element name="spectralWindowId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

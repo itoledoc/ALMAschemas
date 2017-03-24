@@ -1,0 +1,166 @@
+#ifndef _ASDMIDLTYPES_IDL_
+#define _ASDMIDLTYPES_IDL_ 
+#pragma prefix "alma"
+
+module asdmIDLTypes {
+
+	typedef sequence<long> Soflong;
+	typedef sequence<sequence<long> > SofSoflong;
+	typedef sequence<sequence<sequence<long> > > SofSofSoflong;
+
+	typedef sequence<long long> Soflonglong;
+	typedef sequence<sequence<long long> > SofSoflonglong;
+	typedef sequence<sequence<sequence<long long> > > SofSofSoflonglong;
+
+	typedef sequence<double> Sofdouble;
+	typedef sequence<sequence<double> > SofSofdouble;
+	typedef sequence<sequence<sequence<double> > > SofSofSofdouble;
+
+	typedef sequence<float> Soffloat;
+	typedef sequence<sequence<float> > SofSoffloat;
+	typedef sequence<sequence<sequence<float> > > SofSofSoffloat;
+
+	typedef sequence<string> Sofstring;
+	typedef sequence<sequence<string> > SofSofstring;
+	typedef sequence<sequence<sequence<string> > > SofSofSofstring;
+
+	typedef sequence<boolean> Sofboolean;
+	typedef sequence<sequence<boolean> > SofSofboolean;
+	typedef sequence<sequence<sequence<boolean> > > SofSofSofboolean;
+
+
+	struct IDLAngle {
+		double value;
+	};
+	typedef sequence < IDLAngle > SofIDLAngle;
+	typedef sequence <sequence < IDLAngle > > SofSofIDLAngle;
+	typedef sequence <sequence <sequence < IDLAngle > > > SofSofSofIDLAngle;
+
+	struct IDLAngularRate {
+		double value;
+	};
+
+	typedef sequence < IDLAngularRate > SofIDLAngularRate;
+	typedef sequence <sequence < IDLAngularRate > > SofSofIDLAngularRate;
+	typedef sequence <sequence <sequence < IDLAngularRate > > > SofSofSofIDLAngularRate;
+
+	struct IDLArrayTime {
+		long long value;
+	};
+	typedef sequence < IDLArrayTime > SofIDLArrayTime;
+	typedef sequence <sequence < IDLArrayTime > > SofSofIDLArrayTime;
+	typedef sequence <sequence <sequence < IDLArrayTime > > > SofSofSofIDLArrayTime;
+
+ 	struct IDLArrayTimeInterval {
+	     long long start;
+	     long long duration;
+   	 };
+	typedef sequence < IDLArrayTimeInterval > SofIDLArrayTimeInterval;
+	typedef sequence <sequence < IDLArrayTimeInterval > > SofSofIDLArrayTimeInterval;
+	typedef sequence <sequence <sequence < IDLArrayTimeInterval > > > SofSofSofIDLArrayTimeInterval;
+
+	struct IDLComplex {
+		double re;
+		double im;
+	};
+	typedef sequence < IDLComplex > SofIDLComplex;
+	typedef sequence <sequence < IDLComplex > > SofSofIDLComplex;
+	typedef sequence <sequence <sequence < IDLComplex > > > SofSofSofIDLComplex;
+
+	struct IDLEntity {
+		string entityId;
+		string entityIdEncrypted;
+		string entityTypeName;
+		string entityVersion;
+		string instanceVersion;
+	};
+	typedef sequence < IDLEntity > SofIDLEntity;
+	typedef sequence <sequence < IDLEntity > > SofSofIDLEntity;
+	typedef sequence <sequence <sequence < IDLEntity > > > SofSofSofIDLEntity;
+
+
+	struct IDLEntityId {
+		string value;
+	};
+	typedef sequence < IDLEntityId > SofIDLEntityId;
+	typedef sequence <sequence < IDLEntityId > > SofSofIDLEntityId;
+	typedef sequence <sequence <sequence < IDLEntityId > > > SofSofSofIDLEntityId;
+
+	struct IDLEntityRef {
+		string entityId;
+		string partId;
+		string entityTypeName;
+		string instanceVersion;
+	};
+	typedef sequence < IDLEntityRef > SofIDLEntityRef;
+	typedef sequence <sequence < IDLEntityRef > > SofSofIDLEntityRef;
+	typedef sequence <sequence <sequence < IDLEntityRef > > > SofSofSofIDLEntityRef;
+
+
+	struct IDLFlux {
+		double value;
+	};
+	typedef sequence < IDLFlux > SofIDLFlux;
+	typedef sequence <sequence < IDLFlux > > SofSofIDLFlux;
+	typedef sequence <sequence <sequence < IDLFlux > > > SofSofSofIDLFlux;
+
+	struct IDLFrequency {
+		double value;
+	};
+	typedef sequence < IDLFrequency > SofIDLFrequency;
+	typedef sequence <sequence < IDLFrequency > > SofSofIDLFrequency;
+	typedef sequence <sequence <sequence < IDLFrequency > > > SofSofSofIDLFrequency;
+
+	struct IDLHumidity {
+		double value;
+	};
+	typedef sequence < IDLHumidity > SofIDLHumidity;
+	typedef sequence <sequence < IDLHumidity > > SofSofIDLHumidity;
+	typedef sequence <sequence <sequence < IDLHumidity > > > SofSofSofIDLHumidity;
+
+	struct IDLInterval {
+		long long value;
+	};
+	typedef sequence < IDLInterval > SofIDLInterval;
+	typedef sequence <sequence < IDLInterval > > SofSofIDLInterval;
+	typedef sequence <sequence <sequence < IDLInterval > > > SofSofSofIDLInterval;
+
+	struct IDLLength {
+		double value;
+	};
+	typedef sequence < IDLLength > SofIDLLength;
+	typedef sequence <sequence < IDLLength > > SofSofIDLLength;
+	typedef sequence <sequence <sequence < IDLLength > > > SofSofSofIDLLength;
+
+	struct IDLPressure {
+		double value;
+	};
+	typedef sequence < IDLPressure > SofIDLPressure;
+	typedef sequence <sequence < IDLPressure > > SofSofIDLPressure;
+	typedef sequence <sequence <sequence < IDLPressure > > > SofSofSofIDLPressure;
+
+	struct IDLSpeed {
+		double value;
+	};
+	typedef sequence < IDLSpeed > SofIDLSpeed;
+	typedef sequence <sequence < IDLSpeed > > SofSofIDLSpeed;
+	typedef sequence <sequence <sequence < IDLSpeed > > > SofSofSofIDLSpeed;
+
+	struct IDLTag {
+		string value;
+		string type_value;
+	};
+	typedef sequence < IDLTag > SofIDLTag;
+	typedef sequence <sequence < IDLTag > > SofSofIDLTag;
+	typedef sequence <sequence <sequence < IDLTag > > > SofSofSofIDLTag;
+
+	struct IDLTemperature {
+		double value;
+	};
+	typedef sequence < IDLTemperature > SofIDLTemperature;
+	typedef sequence <sequence < IDLTemperature > > SofSofIDLTemperature;
+	typedef sequence <sequence <sequence < IDLTemperature > > > SofSofSofIDLTemperature;
+
+};
+
+#endif

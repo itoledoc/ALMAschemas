@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File DetectorBandType.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:dtcrbt="http://Alma/XENUM/DetectorBandTypeMod" targetNamespace="http://Alma/XENUM/DetectorBandTypeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:dtcrbt="http://Alma/XENUM/DetectorBandTypeMod" 
+                         targetNamespace="http://Alma/XENUM/DetectorBandTypeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="DetectorBandType">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="BASEBAND">
+			<xsd:enumeration value="BASEBAND" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Detector in Baseband Processor </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="DOWN_CONVERTER">
+			<xsd:enumeration value="DOWN_CONVERTER" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Detector in Down - Converter </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="HOLOGRAPHY_RECEIVER">
+			<xsd:enumeration value="HOLOGRAPHY_RECEIVER" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Detector in Holography Receiver </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SUBBAND">
+			<xsd:enumeration value="SUBBAND" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Detector in subband (tunable digital filter). </xsd:documentation>
@@ -90,9 +95,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="DetectorBandTypes">
+	<xsd:simpleType name ="DetectorBandTypes">
 		<xsd:restriction base="dtcrbt:DetectorBandTypeList">
-			<xsd:maxLength value="4" />
+			<xsd:maxLength value = "4" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

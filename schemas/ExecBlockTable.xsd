@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,18 +30,24 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File ExecBlockTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:excblk="http://Alma/XASDM/ExecBlockTable" xmlns:ent="Alma/CommonEntity" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/ExecBlockTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:excblk="http://Alma/XASDM/ExecBlockTable"
+					   xmlns:ent="Alma/CommonEntity"
+					   targetNamespace="http://Alma/XASDM/ExecBlockTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for ArrayTime -->
-		<!-- No specific import for Angle -->
-		<!-- No specific import for String -->
-		<!-- No specific import for int -->
-		<!-- No specific import for Tag -->
-		<!-- No specific import for Length -->
 		<!-- No specific import for boolean -->
+		<!-- No specific import for Angle -->
+		<!-- No specific import for ArrayTime -->
+		<!-- No specific import for Length -->
+		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
 		<!-- No specific import for EntityRef -->
-	
+		<!-- No specific import for int -->
 	
 	
 	
@@ -50,52 +56,140 @@
 	
 	<xs:complexType name="stupidEntityRefT">
 		<xs:sequence>
-			<xs:element name="EntityRef" type="ent:EntityRefT" />
+			<xs:element name="EntityRef" type="ent:EntityRefT"/>
 		</xs:sequence>
 	</xs:complexType>
+	
 	
     <xs:element name="ExecBlockTable">
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="execBlockId" type="xs:string" />
-         <xs:element name="startTime" type="xs:string" />
-         <xs:element name="endTime" type="xs:string" />
-         <xs:element name="execBlockNum" type="xs:string" />
-         <xs:element name="execBlockUID" type="excblk:stupidEntityRefT" />
-         <xs:element name="projectUID" type="excblk:stupidEntityRefT" />
-         <xs:element name="configName" type="xs:string" />
-         <xs:element name="telescopeName" type="xs:string" />
-         <xs:element name="observerName" type="xs:string" />
-         <xs:element name="numObservingLog" type="xs:string" />
-         <xs:element name="observingLog" type="xs:string" />
-         <xs:element name="sessionReference" type="excblk:stupidEntityRefT" />
-         <xs:element name="baseRangeMin" type="xs:string" />
-         <xs:element name="baseRangeMax" type="xs:string" />
-         <xs:element name="baseRmsMinor" type="xs:string" />
-         <xs:element name="baseRmsMajor" type="xs:string" />
-         <xs:element name="basePa" type="xs:string" />
-         <xs:element name="aborted" type="xs:string" />
-         <xs:element name="numAntenna" type="xs:string" />
-     	 <xs:element name="releaseDate" type="xs:string" minOccurs="0" />
-     	 <xs:element name="schedulerMode" type="xs:string" minOccurs="0" />
-     	 <xs:element name="siteAltitude" type="xs:string" minOccurs="0" />
-     	 <xs:element name="siteLongitude" type="xs:string" minOccurs="0" />
-     	 <xs:element name="siteLatitude" type="xs:string" minOccurs="0" />
-     	 <xs:element name="observingScript" type="xs:string" minOccurs="0" />
-     	 <xs:element name="observingScriptUID" type="excblk:stupidEntityRefT" minOccurs="0" />
-         <xs:element name="antennaId" type="xs:string" />
-         <xs:element name="sBSummaryId" type="xs:string" />
-     	 <xs:element name="scaleId" type="xs:string" minOccurs="0" />
+         <xs:element name="execBlockId" type=
+"xs:string"
+
+/>
+         <xs:element name="startTime" type=
+"xs:string"
+
+/>
+         <xs:element name="endTime" type=
+"xs:string"
+
+/>
+         <xs:element name="execBlockNum" type=
+"xs:string"
+
+/>
+         <xs:element name="execBlockUID" type=
+"excblk:stupidEntityRefT"
+
+/>
+         <xs:element name="projectUID" type=
+"excblk:stupidEntityRefT"
+
+/>
+         <xs:element name="configName" type=
+"xs:string"
+
+/>
+         <xs:element name="telescopeName" type=
+"xs:string"
+
+/>
+         <xs:element name="observerName" type=
+"xs:string"
+
+/>
+         <xs:element name="numObservingLog" type=
+"xs:string"
+
+/>
+         <xs:element name="observingLog" type=
+"xs:string"
+
+/>
+         <xs:element name="sessionReference" type=
+"excblk:stupidEntityRefT"
+
+/>
+         <xs:element name="baseRangeMin" type=
+"xs:string"
+
+/>
+         <xs:element name="baseRangeMax" type=
+"xs:string"
+
+/>
+         <xs:element name="baseRmsMinor" type=
+"xs:string"
+
+/>
+         <xs:element name="baseRmsMajor" type=
+"xs:string"
+
+/>
+         <xs:element name="basePa" type=
+"xs:string"
+
+/>
+         <xs:element name="aborted" type=
+"xs:string"
+
+/>
+         <xs:element name="numAntenna" type=
+"xs:string"
+
+/>
+     	 <xs:element name="releaseDate" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="schedulerMode" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="siteAltitude" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="siteLongitude" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="siteLatitude" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="observingScript" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="observingScriptUID" type=
+"excblk:stupidEntityRefT"
+
+  minOccurs="0"/>
+         <xs:element name="antennaId" type=
+"xs:string"
+
+/>
+         <xs:element name="sBSummaryId" type=
+"xs:string"
+
+/>
+     	 <xs:element name="scaleId" type=
+"xs:string"
+
+  minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

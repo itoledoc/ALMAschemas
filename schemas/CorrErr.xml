@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- $Id: CorrErr.xml,v 1.16 2010/09/09 13:04:09 jperez Exp $ -->
+<Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="Alma/ACSError"
+      xsi:schemaLocation="Alma/ACSError ACSError.xsd"
+      name="CorrErr"
+      type="20000"
+      _prefix="alma">
+    <ErrorCode
+        name="Error"
+        shortDescription="Failed to handle an interface method invocation."
+        description="During the execution of an ObservationControl or
+                     ObservationQuery interface method, the correlator software
+                     has detected an error condition which prevents successful
+                     completion. Contextual information about the exact error
+                     condition is added, at run time, as a string data field by
+                     the name Control::EX_USER_ERROR_MSG and, finally, the
+                     present error code is thrown as a CORBA exception."/>
+</Type>
+
+<!--___oOo___-->

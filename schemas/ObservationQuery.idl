@@ -1,0 +1,378 @@
+#ifndef OBSERVATION_QUERY_IDL
+#define OBSERVATION_QUERY_IDL
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * "@(#) $Id: ObservationQuery.idl,v 1.13 2011/11/01 14:15:16 ramestic Exp $"
+ *
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ */
+
+#include <acscommon.idl>
+#include <asdmIDLTypes.idl>
+#include "PathCorrResult.idl"
+#include "CorrConfig.idl"
+#include <CorrErr.idl>
+#include <ControlBasicInterfaces.idl>
+#include <ControlDataInterfaces.idl>
+#include <CorrStateModel.idl>
+#include "CorrelatorArray.idl"
+#include <almaEnumerations_IF.idl>
+
+#pragma prefix "alma"
+
+module Correlator
+{
+    /** Observation Query Interface. This interface allows queries of the
+     ** observation configuration statuses held in the correlator (via the
+     ** CCC).
+     */
+    interface ObservationQuery : CorrelatorPrivate::CorrStateModel
+    {
+        /** Correlator observation configuration structure which defines:
+	    \verbatim
+	    subarrayID - subarray identifier for this configuration 
+	    startTime - time at which configuration started - 0 if idle
+	    corrConfig - correlator configuration 
+	    \endverbatim
+	**/
+	struct corrObservationConfig_t
+	{
+	    string subarrayID;
+	    ACS::Time startTime;
+            ACS::TimeInterval duration;
+	    Correlator::CorrelatorConfiguration corrConfig;
+	};
+	
+	/// List of correlator configurations ready to run
+	typedef sequence<ObservationQuery::corrObservationConfig_t> 
+	    queuedCorrObservationConfigs_t;
+	
+	/// List of correlator configurations currently active
+	typedef sequence<ObservationQuery::corrObservationConfig_t> 
+	    corrObservationConfigsInUse_t;
+
+        /** Correlator observation configuration ID structure which defines:
+	    \verbatim
+	    startTime - time at which configuration started - 0 if idle
+	    corrConfigID - correlator configuration identifier
+	    \endverbatim
+	**/
+	struct corrConfigID_t
+	{
+	    ACS::Time startTime;
+	    long corrConfigID;
+	};
+
+	/// List of correlator configuration IDs and associated start times
+	typedef sequence<ObservationQuery::corrConfigID_t> corrConfigIDSeq_t;
+		
+        /** Correlator subarray ID with associated observation ID configurations structure which defines:
+	    \verbatim
+	    subarrayID - subarray identifier  
+	    corrConfigIDs - sequence of correlator configuration IDs and associated start times
+	    \endverbatim
+	**/
+	struct corrConfigIDs_t
+	{
+	    string subarrayID;
+	    corrConfigIDSeq_t corrConfigIDs;
+	};
+	
+	/// List of subarray IDs with associated configuration IDs and start times
+	typedef sequence<ObservationQuery::corrConfigIDs_t> 
+	    corrConfigsIDs_t;
+		
+	/** Get all active correlator configurations
+	 ** @return A sequence of ObservationQuery::corrObservationConfig_t
+	 ** @exception NoArraysEx No subarrays have been created in the correlator.
+	 ** @exception NoConfigsEx No configurations are associated with the existing subarrays.
+	 */
+	corrObservationConfigsInUse_t getActiveConfigs()
+	    raises(CorrErr::ErrorEx);
+	
+	/** Get correlator configurations queued up for a specific subarray.
+	 ** These configurations have been received by the CCC and may or may not be running.
+	 ** @param subarrayID Requested subarray ID.
+	 ** @return A sequence of ObservationQuery::corrObservationConfig_t
+	 ** @exception InvalidArrayEx The subarray ID is not defined.
+	 ** @exception NoConfigsEx No configurations are associated with the specified  subarray.
+	 */
+	queuedCorrObservationConfigs_t getSubarrayQueuedConfigs(in string subarrayID)
+	    raises(CorrErr::ErrorEx);
+	
+	/** Get correlator configurations queued up for all subarrays.  These
+	 ** configurations have been received by the CCC may or may not be
+	 ** running .
+	 ** @return A sequence of ObservationQuery::corrObservationConfig_t
+	 ** @exception NoArraysEx No subarrays have been created in the
+	 ** correlator.
+	 ** @exception NoConfigsEx No configurations exist in correlator memory.
+	 */
+	queuedCorrObservationConfigs_t getQueuedConfigs()
+	    raises(CorrErr::ErrorEx);
+
+	/** Get all active configuration IDs (i.e. those configurations that are
+         ** currently running).
+	 ** @return A sequence of corrConfigID_t 
+	 ** @exception NoArraysEx No subarrays have been created in the
+	 ** correlator.
+	 ** @exception NoConfigsEx No configurations are associated with the
+	 ** existing subarrays.
+	 */
+	corrConfigsIDs_t getActiveConfigIDs()
+	    raises(CorrErr::ErrorEx);
+
+	/** Get all configuration IDs that have been queued for a specific
+         ** subarray.
+	 ** @param subarrayID Subarray identifier for which a configuration is
+	 ** requested.
+	 ** @return A sequence of corrConfigID_t
+	 ** @exception InvalidArrayEx Specified subarray has not been created in
+	 ** the correlator.
+	 ** @exception NoConfigsEx No configurations are associated with the
+	 ** specified subarray.
+	 */
+	corrConfigsIDs_t getSubarrayQueuedConfigIDs(in string subarrayID)
+	    raises(CorrErr::ErrorEx);
+
+	/** Get all queued (including active) configuration IDs
+	 ** @return A sequence of corrConfigID_t 
+	 ** @exception NoArraysEx No subarrays have been created in the
+	 ** correlator.
+	 ** @exception NoConfigsEx No configurations are associated with the
+	 ** existing subarrays.
+	 */
+	corrConfigsIDs_t getQueuedConfigIDs()
+	    raises(CorrErr::ErrorEx);
+	
+	/** Get active (i.e. running a subscan) correlator configurations for
+         ** given subarray.
+	 ** @param subarrayID Subarray identifier for which a configuration is
+	 ** requested.
+	 ** @return ObservationQuery::corrObservationConfig_t. 
+	 ** @exception InvalidArrayID The subarray ID is not defined.
+	 ** @exception ArrayNotRunning The arrray is not running a subscan at
+	 ** present.
+	 */
+	 corrObservationConfig_t getSubarrayActiveConfig(in string subarrayID) 
+	    raises(CorrErr::ErrorEx);
+	
+	 /** Returns a sequence of subarrays as described above
+	  */
+	 CorrelatorArraySeq getArrays();
+
+        /** Data structure used to publish figures of merit associated to
+         ** base-lines in a sub-array.
+         */
+        struct FigureOfMeritStructure
+        {
+            /** Sub-array to which the included data relates to.
+             */
+            string subArrayId;
+
+            /** Individual values within the following two sequences are
+             ** ordered in a similar way as defined in the Binary Data
+             ** Format document. Given that in the present case there is no 
+             ** spectral channel dimension we end up with the following
+             ** two axes for auto and cross data results, respectively:
+             **
+             **        ANT-BAB-SPW-BIN-APC-POL
+             **        BAL-BAB-SPW-BIN-APC-POL
+             **
+             ** (BDF document under configuration control as 
+             **  ICD/HLA/ASDMBinaries/doc/bdf.doc)
+             */
+
+            /** A sequence of floating point numbers containing figure
+             ** of merits for each correlation function for all auto-antenna
+             ** base-lines in the sub-array.
+             */
+            ACS::floatSeq autoData;
+
+            /** A sequence of floating point numbers containing figure
+             ** of merits for each correlation function for all cross-antenna
+             ** base-lines in the sub-array.
+             */
+            ACS::floatSeq crossData;
+        };
+
+        /** Types of figures of merit that CDP cluster knows how to compute for
+         ** each power spectrum in a sub-array.  Add here reference to Denis'
+         ** email or the email's text itself.  
+         **
+         ** 1/ Signal to Noise ratio of the
+         ** cross-correlated amplitude. For 1 baseline, 1 baseband, 1
+         ** polarization, you'd get one number that would encode how much signal
+         ** to noise we are seeing on this particular source. Then 4 of 5 colors
+         ** would simply be a set of ranges in this signal to noise
+         ** estimate. between 0 and 1 sigma = black, between 1 sigma and 3 sigma
+         ** = yellow, between 3sigma and 10sigma = blue, between 10sigma and 100
+         ** sigma = green.  etc...
+
+         ** How do we calculate this: For each time sample, calculate the mean
+         ** and standard deviation of the cross correlated amplitude over all
+         ** the channels.  If I grab a specific data set where we observed a
+         ** quasar with 2GHz bandwidth per baseline, 128 channels, and 0.96s
+         ** integration, I get time1, signal = mean(amp[0,5:120,0])= 0.00914,
+         ** and noise = std(amp[0,5:120,0])=0.00017 ---> S/N = 53., time 2 : ,
+         ** signal = mean(amp[0,5:120,1])= 0.00914, and noise =
+         ** std(amp[0,5:120,1])=0.00024 ---> S/N = 38.
+
+         ** As expected a high signal to noise. all that was needed was the
+         ** channel average ( mean and standard deviation of the cross-corr
+         ** amplitude over spectral channel excluding edge channels ). This is
+         ** the best metric we've come up with so far...
+         **
+         ** 2/ comparison of the noise level with the theoretical noise level:  
+         **
+         ** Here we want to compare the observed noise level with the expected
+         ** noise level.  For the spectral setup of the observation, calculate
+         ** the expected noise for each time sample. For 1 time sample of the
+         ** cross correlated amplitude, the noise in each of the channels should
+         ** be = 1 / sqrt(nu * t). nu is the channel width (full bandwidth /
+         ** number of channels) and t is the integration time of that time
+         ** sample.  And then compare this predicted sigma with the actual sigma
+         ** (the standard deviation of the cross correlated amplitude over all
+         ** the channels).  This is a second metric that we've thought of.
+        */
+        enum FigureOfMeritType
+        {
+            SIGNAL_TO_NOISE_RATIO,
+            FRACTIONAL_NOISE_LEVEL
+        };
+
+        /** Alternatively to data events requested and published as 
+         ** described above (in a per base-line basis), there is a sub-array
+         ** oriented request interface that makes the CDP master to start
+         ** publishing notification events containing a figure-of-merit for
+         ** all selected correlation functions in the sub-array. The selection
+         ** always include all base-lines in the sub-array but only those
+         ** items (base-band, spectrail window, bin, etc.) matching the input
+         ** parameters passed through the present method.
+         ** Events are produced in a per integration basis but not faster
+         ** than once a second; that is, if the integration duration is
+         ** shorter than one second then some integrations will be skipped in
+         ** order not to exceed this frequency limit.
+         **
+         ** TBD: does  the figure-of-merit apply to auto-correlations?
+         ** TBD: should the figure-of-merit be computed in the same way for
+         ** auto-correlations?
+         **
+         ** In TDM the bandpass edges are not consider during the figure
+         ** of merit calculation. A hardcoded fraction of TBD % spectral
+         ** channels is dropped at both extremes of the spectrum before going
+         ** through the calculation. In FDM all avalibale (after TFB sub-bands
+         ** stitching) is considered during the calculation.
+         **
+         ** Note this implementation detail: given that figures of merit
+         ** need to be computed only for the requested items it is feasible
+         ** to foresee all computations to be completed in the CDP master
+         ** itself, because there are at most only 2080 floating point numbers
+         ** to calculate.
+         **
+         ** Note about selection: data events are produce for those spectral
+         ** items specifified by the input parameters to this method. If a
+         ** sub-scan does not match those parameters (e.g. input parameter
+         ** request uncorrected APC and the spectral specification for the
+         ** current sub-scan specifies only corrected data) then no matching
+         ** actually happens and, therefore, no data is published.
+         **
+         ** @param subArrayId sub-array identifier.
+         ** @param fom figure of merit type. It must be a value in the
+         ** enumeration type FigureOfMeritType defined above.
+         ** @param basebandName base-band name.
+         ** @param spectralWindowName spectral window name (e.g. SW-1).
+         ** @param binIndex bin index, in case of observations not including
+         ** any binning then zero is a valid number.
+         ** @param apc atmospheric correction type (corrected or uncorrected),
+	     ** @exception InvalidArrayEx The subarray identifier is not defined.
+         */
+        void requestFigureOfMerit(in string subArrayId,
+                                  in FigureOfMeritType fom,
+                                  in BasebandNameMod::BasebandName basebndName,
+                                  in string spectralWindowName,
+                                  in long binIndex,
+                                  in AtmPhaseCorrectionMod::AtmPhaseCorrection apc,
+                                  in StokesParameterMod::StokesParameter stokes)
+	    raises(CorrErr::ErrorEx);
+
+        /** APP phase correction type requested to be published.
+         ** Note that the ALL_PHASES option refers to the actual numbers
+         ** downloaded to the TFBs. All other options will publish partial
+         ** numbers, mainly intended for debugging purposes.
+         */
+        enum AppPhaseCorrectionType
+        {
+            NO_PHASES,      // disable all publishing
+            SLOW_PHASES,    // slow phasing loop updates (incremental) only
+            FAST_PHASES,    // fast phasing loop updates (fixed) only
+            ALL_PHASES      // all applied phases (i.e. combination of slow and fast loop)
+        };
+
+        /** Data structure used to publish APP phase corrections associated to
+         ** basebands in a sub-array. 32 values for each CAI in the sub-array
+         ** will be published, in alphabetical order of antenna names (excl.
+         ** sum antenna).
+         ** Phase values are in TFB integer format [1..4096], for every
+         ** cai/tfb/filter combination. Total data per baseband/polz is up to
+         ** 64*1*32 2B shorts (4KB), with a min interval of 1sec.
+         */
+	typedef sequence<short> PhaseValues_t;
+        struct AppPhaseCorrectionStructure
+        {
+            ACS::Time timestamp; //phase application timestamp
+            string subArrayId;
+            BasebandNameMod::BasebandName bbName;
+            PolarizationTypeMod::PolarizationType polz;
+            AppPhaseCorrectionType type;
+            PhaseValues_t phaseValues;
+        };
+
+        /** The name of the data channel registered in the naming service.
+         */
+        const string CHANNELNAME_APP_DATA = "CORRAppEventChannel";
+
+        /** Request publishing of APP phase corrections through
+         ** AppPhaseCorrectionStructure events. These can be requested and
+         ** consumed by a front-end client (e.g. a GUI) to display phase
+         ** corrections as they are applied during an observation.
+         **
+         ** Requests are specific to one subarray and will be reset when the
+         ** subarray is destroyed. A new request for the same BaseBand-Polz
+         ** pair will override the previous one.
+         **
+         ** @param subArrayId Subarray identifier.
+         ** @param bbName Baseband Name (valid: BB_1, BB_2, BB_3, BB_4)
+         ** @param polz Polarization name (valid: X, Y)
+         ** @param type APP phase correction type (enum)
+         */
+        void requestAppPhaseCorrections(
+            in string subArrayId,
+            in BasebandNameMod::BasebandName bbName,
+            in PolarizationTypeMod::PolarizationType polz,
+            in AppPhaseCorrectionType type)
+	    raises(CorrErr::ErrorEx);
+
+    };
+};
+#endif

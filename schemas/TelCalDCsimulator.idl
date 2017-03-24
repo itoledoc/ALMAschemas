@@ -1,0 +1,74 @@
+/*
+ * ALMA - Atacama Large Millimiter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * All rights reserved
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ * 
+ * File DCsimulator.idl
+ * 
+ */
+
+#ifndef _DC_SIMULATOR_IDL_
+#define _DC_SIMULATOR_IDL_
+
+#include <baci.idl>
+#include <acscomponent.idl>
+#include <asdmIDL.idl>
+
+#pragma prefix "alma"
+
+/** @file DCSimulator.idl
+ *  DataCapturer simulator
+ *  @version 1.00 Jul 1, 2004
+ *  @author Dominique Broguiere
+ */
+
+module telcal
+{
+  //////////////////////////////////////////////////////////////////////////
+  //                            DCsimulator Interface                      */
+  //////////////////////////////////////////////////////////////////////////
+
+  interface DCsimulator: ACS::ACSComponent  {
+
+    asdmIDL::ASDMDataSetIDL getInitialMetaData(in long scanNum, in long subscanNum);
+    asdmIDL::ASDMDataSetIDL getFinalMetaData(in long scanNum, in long subscanNum);
+
+    asdmIDL::ASDMDataSetIDL getFinalMetaDataQL(in long scanNum);
+
+    // Other methods
+    // Read metadata and correlator data from ASDM data and binary file
+    void initDataSet(in string metaData,in string corrData);
+  }; 
+
+
+
+  //////////////////////////////////////////////////////////////////////////
+  //                            Exceptions                                */
+  //////////////////////////////////////////////////////////////////////////
+
+  /* TBD */                                                                                             
+  //////////////////////////////////////////////////////////////////////////
+  //                            Events                                    */
+  //////////////////////////////////////////////////////////////////////////
+
+  /* TBD */
+
+};
+#endif

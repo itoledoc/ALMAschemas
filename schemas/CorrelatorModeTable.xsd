@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,22 +30,39 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File CorrelatorModeTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cormod="http://Alma/XASDM/CorrelatorModeTable" xmlns:ent="Alma/CommonEntity" xmlns:fltmod="http://Alma/XENUM/FilterModeMod" xmlns:axinam="http://Alma/XENUM/AxisNameMod" xmlns:accmod="http://Alma/XENUM/AccumModeMod" xmlns:crlnam="http://Alma/XENUM/CorrelatorNameMod" xmlns:bbnam="http://Alma/XENUM/BasebandNameMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/CorrelatorModeTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:cormod="http://Alma/XASDM/CorrelatorModeTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:axinam="http://Alma/XENUM/AxisNameMod"
+	xmlns:accmod="http://Alma/XENUM/AccumModeMod"
+	xmlns:crlnam="http://Alma/XENUM/CorrelatorNameMod"
+	xmlns:fltmod="http://Alma/XENUM/FilterModeMod"
+	xmlns:bbnam="http://Alma/XENUM/BasebandNameMod"
+					   targetNamespace="http://Alma/XASDM/CorrelatorModeTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- We need the schema of FilterMode -->
-		<xs:import namespace="http://Alma/XENUM/FilterModeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/FilterMode.xsd" />
 		<!-- We need the schema of AxisName -->
-		<xs:import namespace="http://Alma/XENUM/AxisNameMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/AxisName.xsd" />
+		<xs:import namespace="http://Alma/XENUM/AxisNameMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/AxisName.xsd"/>
 		<!-- We need the schema of AccumMode -->
-		<xs:import namespace="http://Alma/XENUM/AccumModeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/AccumMode.xsd" />
-		<!-- No specific import for String -->
-		<!-- No specific import for int -->
-		<!-- No specific import for Tag -->
+		<xs:import namespace="http://Alma/XENUM/AccumModeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/AccumMode.xsd"/>
 		<!-- We need the schema of CorrelatorName -->
-		<xs:import namespace="http://Alma/XENUM/CorrelatorNameMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CorrelatorName.xsd" />
+		<xs:import namespace="http://Alma/XENUM/CorrelatorNameMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/CorrelatorName.xsd"/>
+		<!-- We need the schema of FilterMode -->
+		<xs:import namespace="http://Alma/XENUM/FilterModeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/FilterMode.xsd"/>
+		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
 		<!-- We need the schema of BasebandName -->
-		<xs:import namespace="http://Alma/XENUM/BasebandNameMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/BasebandName.xsd" />
+		<xs:import namespace="http://Alma/XENUM/BasebandNameMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/BasebandName.xsd"/>
+		<!-- No specific import for int -->
 	
 	
 	
@@ -58,25 +75,55 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="correlatorModeId" type="xs:string" />
-         <xs:element name="numBaseband" type="xs:string" />
-         <xs:element name="basebandNames" type="xs:string" />
-         <xs:element name="basebandConfig" type="xs:string" />
-         <xs:element name="accumMode" type="accmod:AccumMode" />
-         <xs:element name="binMode" type="xs:string" />
-         <xs:element name="numAxes" type="xs:string" />
-         <xs:element name="axesOrderArray" type="xs:string" />
-         <xs:element name="filterMode" type="xs:string" />
-         <xs:element name="correlatorName" type="crlnam:CorrelatorName" />
+         <xs:element name="correlatorModeId" type=
+"xs:string"
+
+/>
+         <xs:element name="numBaseband" type=
+"xs:string"
+
+/>
+         <xs:element name="basebandNames" type=
+"xs:string"
+
+/>
+         <xs:element name="basebandConfig" type=
+"xs:string"
+
+/>
+         <xs:element name="accumMode" type=
+"accmod:AccumMode"
+
+/>
+         <xs:element name="binMode" type=
+"xs:string"
+
+/>
+         <xs:element name="numAxes" type=
+"xs:string"
+
+/>
+         <xs:element name="axesOrderArray" type=
+"xs:string"
+
+/>
+         <xs:element name="filterMode" type=
+"xs:string"
+
+/>
+         <xs:element name="correlatorName" type=
+"crlnam:CorrelatorName"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,14 +30,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File StateTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:state="http://Alma/XASDM/StateTable" xmlns:ent="Alma/CommonEntity" xmlns:caldev="http://Alma/XENUM/CalibrationDeviceMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/StateTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:state="http://Alma/XASDM/StateTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:caldev="http://Alma/XENUM/CalibrationDeviceMod"
+					   targetNamespace="http://Alma/XASDM/StateTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- We need the schema of CalibrationDevice -->
-		<xs:import namespace="http://Alma/XENUM/CalibrationDeviceMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalibrationDevice.xsd" />
-		<!-- No specific import for String -->
-		<!-- No specific import for Tag -->
 		<!-- No specific import for boolean -->
+		<!-- We need the schema of CalibrationDevice -->
+		<xs:import namespace="http://Alma/XENUM/CalibrationDeviceMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalibrationDevice.xsd"/>
+		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
 		<!-- No specific import for float -->
 	
 	
@@ -48,21 +57,39 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="stateId" type="xs:string" />
-         <xs:element name="calDeviceName" type="caldev:CalibrationDevice" />
-         <xs:element name="sig" type="xs:string" />
-         <xs:element name="ref" type="xs:string" />
-         <xs:element name="onSky" type="xs:string" />
-     	 <xs:element name="weight" type="xs:string" minOccurs="0" />
+         <xs:element name="stateId" type=
+"xs:string"
+
+/>
+         <xs:element name="calDeviceName" type=
+"caldev:CalibrationDevice"
+
+/>
+         <xs:element name="sig" type=
+"xs:string"
+
+/>
+         <xs:element name="ref" type=
+"xs:string"
+
+/>
+         <xs:element name="onSky" type=
+"xs:string"
+
+/>
+     	 <xs:element name="weight" type=
+"xs:string"
+
+  minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

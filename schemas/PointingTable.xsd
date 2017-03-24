@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,17 +30,26 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File PointingTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pntng="http://Alma/XASDM/PointingTable" xmlns:ent="Alma/CommonEntity" xmlns:direfc="http://Alma/XENUM/DirectionReferenceCodeMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/PointingTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:pntng="http://Alma/XASDM/PointingTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:direfc="http://Alma/XENUM/DirectionReferenceCodeMod"
+					   targetNamespace="http://Alma/XASDM/PointingTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for ArrayTime -->
-		<!-- We need the schema of DirectionReferenceCode -->
-		<xs:import namespace="http://Alma/XENUM/DirectionReferenceCodeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/DirectionReferenceCode.xsd" />
+		<!-- No specific import for ArrayTimeInterval -->
+		<!-- No specific import for boolean -->
 		<!-- No specific import for Angle -->
+		<!-- No specific import for ArrayTime -->
 		<!-- No specific import for String -->
 		<!-- No specific import for int -->
-		<!-- No specific import for boolean -->
-		<!-- No specific import for ArrayTimeInterval -->
+		<!-- We need the schema of DirectionReferenceCode -->
+		<xs:import namespace="http://Alma/XENUM/DirectionReferenceCodeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/DirectionReferenceCode.xsd"/>
 	
 	
 	
@@ -52,33 +61,87 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="timeInterval" type="xs:string" />
-         <xs:element name="numSample" type="xs:string" />
-         <xs:element name="encoder" type="xs:string" />
-         <xs:element name="pointingTracking" type="xs:string" />
-         <xs:element name="usePolynomials" type="xs:string" />
-         <xs:element name="timeOrigin" type="xs:string" />
-         <xs:element name="numTerm" type="xs:string" />
-         <xs:element name="pointingDirection" type="xs:string" />
-         <xs:element name="target" type="xs:string" />
-         <xs:element name="offset" type="xs:string" />
-     	 <xs:element name="overTheTop" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sourceOffset" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sourceOffsetReferenceCode" type="direfc:DirectionReferenceCode" minOccurs="0" />
-     	 <xs:element name="sourceOffsetEquinox" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sampledTimeInterval" type="xs:string" minOccurs="0" />
-     	 <xs:element name="atmosphericCorrection" type="xs:string" minOccurs="0" />
-         <xs:element name="antennaId" type="xs:string" />
-         <xs:element name="pointingModelId" type="xs:string" />
+         <xs:element name="timeInterval" type=
+"xs:string"
+
+/>
+         <xs:element name="numSample" type=
+"xs:string"
+
+/>
+         <xs:element name="encoder" type=
+"xs:string"
+
+/>
+         <xs:element name="pointingTracking" type=
+"xs:string"
+
+/>
+         <xs:element name="usePolynomials" type=
+"xs:string"
+
+/>
+         <xs:element name="timeOrigin" type=
+"xs:string"
+
+/>
+         <xs:element name="numTerm" type=
+"xs:string"
+
+/>
+         <xs:element name="pointingDirection" type=
+"xs:string"
+
+/>
+         <xs:element name="target" type=
+"xs:string"
+
+/>
+         <xs:element name="offset" type=
+"xs:string"
+
+/>
+     	 <xs:element name="overTheTop" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sourceOffset" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sourceOffsetReferenceCode" type=
+"direfc:DirectionReferenceCode"
+
+  minOccurs="0"/>
+     	 <xs:element name="sourceOffsetEquinox" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sampledTimeInterval" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="atmosphericCorrection" type=
+"xs:string"
+
+  minOccurs="0"/>
+         <xs:element name="antennaId" type=
+"xs:string"
+
+/>
+         <xs:element name="pointingModelId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

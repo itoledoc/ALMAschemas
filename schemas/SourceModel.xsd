@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File SourceModel.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sourcm="http://Alma/XENUM/SourceModelMod" targetNamespace="http://Alma/XENUM/SourceModelMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:sourcm="http://Alma/XENUM/SourceModelMod" 
+                         targetNamespace="http://Alma/XENUM/SourceModelMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="SourceModel">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="GAUSSIAN">
+			<xsd:enumeration value="GAUSSIAN" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Gaussian source </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="POINT">
+			<xsd:enumeration value="POINT" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Point Source </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="DISK">
+			<xsd:enumeration value="DISK" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Uniform Disk </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="SourceModels">
+	<xsd:simpleType name ="SourceModels">
 		<xsd:restriction base="sourcm:SourceModelList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

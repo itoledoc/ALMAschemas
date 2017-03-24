@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File ProcessorType.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:procrt="http://Alma/XENUM/ProcessorTypeMod" targetNamespace="http://Alma/XENUM/ProcessorTypeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:procrt="http://Alma/XENUM/ProcessorTypeMod" 
+                         targetNamespace="http://Alma/XENUM/ProcessorTypeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="ProcessorType">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="CORRELATOR">
+			<xsd:enumeration value="CORRELATOR" >
 		
 				<xsd:annotation>
 					<xsd:documentation>A digital correlator </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="RADIOMETER">
+			<xsd:enumeration value="RADIOMETER" >
 		
 				<xsd:annotation>
 					<xsd:documentation>A radiometer </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SPECTROMETER">
+			<xsd:enumeration value="SPECTROMETER" >
 		
 				<xsd:annotation>
 					<xsd:documentation>An (analogue) multi-channel spectrometer </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="ProcessorTypes">
+	<xsd:simpleType name ="ProcessorTypes">
 		<xsd:restriction base="procrt:ProcessorTypeList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

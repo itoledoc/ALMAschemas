@@ -40,10 +40,10 @@
                        version="3 -1">
  	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for String -->
-		<!-- No specific import for int -->
 		<!-- No specific import for ArrayTimeInterval -->
+		<!-- No specific import for String -->
 		<!-- No specific import for float -->
+		<!-- No specific import for int -->
 	
 	
 	

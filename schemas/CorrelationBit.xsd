@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File CorrelationBit.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:crlbit="http://Alma/XENUM/CorrelationBitMod" targetNamespace="http://Alma/XENUM/CorrelationBitMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:crlbit="http://Alma/XENUM/CorrelationBitMod" 
+                         targetNamespace="http://Alma/XENUM/CorrelationBitMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="CorrelationBit">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="BITS_2x2">
+			<xsd:enumeration value="BITS_2x2" >
 		
 				<xsd:annotation>
 					<xsd:documentation>two bit correlation </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BITS_3x3">
+			<xsd:enumeration value="BITS_3x3" >
 		
 				<xsd:annotation>
 					<xsd:documentation> three bit correlation </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BITS_4x4">
+			<xsd:enumeration value="BITS_4x4" >
 		
 				<xsd:annotation>
 					<xsd:documentation>four bit correlation </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="CorrelationBits">
+	<xsd:simpleType name ="CorrelationBits">
 		<xsd:restriction base="crlbit:CorrelationBitList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

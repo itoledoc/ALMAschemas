@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File SyscalMethod.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sycalm="http://Alma/XENUM/SyscalMethodMod" targetNamespace="http://Alma/XENUM/SyscalMethodMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:sycalm="http://Alma/XENUM/SyscalMethodMod" 
+                         targetNamespace="http://Alma/XENUM/SyscalMethodMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="SyscalMethod">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="TEMPERATURE_SCALE">
+			<xsd:enumeration value="TEMPERATURE_SCALE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Use single direction data to compute ta* scale </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SKYDIP">
+			<xsd:enumeration value="SKYDIP" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Use a skydip (observing the sky at various elevations) to get atmospheric opacity </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SIDEBAND_RATIO">
+			<xsd:enumeration value="SIDEBAND_RATIO" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Measure the sideband gain ratio. </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="SyscalMethods">
+	<xsd:simpleType name ="SyscalMethods">
 		<xsd:restriction base="sycalm:SyscalMethodList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

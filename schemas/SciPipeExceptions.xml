@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Type xmlns="Alma/ACSError" xsi:schemaLocation="Alma/ACSError ACSError.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	  name="SciPipeExceptions" 
+	  type="50001" 
+	  _prefix="alma">
+	  
+    <!-- these are the codes for the ERRORS -->
+	<ErrorCode name="InvalidStateError" 
+               shortDescription="The science pipeline is in an invalid state." 
+               description="The science pipeline is in an invalid state."/>
+	<ErrorCode name="QueueOperationsError" 
+               shortDescription="A pipeline queue operations error ocurred" 
+               description="A pipeine queue operations error ocurred"/>
+	<ErrorCode name="AuthorizationFailureError" 
+               shortDescription="Insufficient authorization for operation" 
+               description="Insufficient authorization for operation."/>
+	<ErrorCode name="InvalidProcessingRequestError" 
+               shortDescription="The pipeline processing request is invalid." 
+               description="The pipeline processing request is invalid."/>
+	<ErrorCode name="ProcessingError" 
+               shortDescription="A pipeline processing error occurred" 
+               description="A pipeline processing error occurred"/>
+	<ErrorCode name="NotInQueueError" 
+               shortDescription="The processing request is not in the queue." 
+               description="The processing request is not in the queue."/>
+        <ErrorCode name="ArchiveExportError"
+	       shortDescription="An archive data export error occurred."
+	       description="An archive data export error occurred."/>
+ 
+</Type>
+

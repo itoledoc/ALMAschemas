@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,18 +30,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File WVMCalTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wvmcl="http://Alma/XASDM/WVMCalTable" xmlns:ent="Alma/CommonEntity" xmlns:wvrmet="http://Alma/XENUM/WVRMethodMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/WVMCalTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:wvmcl="http://Alma/XASDM/WVMCalTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:wvrmet="http://Alma/XENUM/WVRMethodMod"
+					   targetNamespace="http://Alma/XASDM/WVMCalTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for Tag -->
-		<!-- No specific import for String -->
-		<!-- No specific import for int -->
+		<!-- No specific import for ArrayTimeInterval -->
 		<!-- No specific import for Temperature -->
 		<!-- We need the schema of WVRMethod -->
-		<xs:import namespace="http://Alma/XENUM/WVRMethodMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/WVRMethod.xsd" />
+		<xs:import namespace="http://Alma/XENUM/WVRMethodMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/WVRMethod.xsd"/>
 		<!-- No specific import for Frequency -->
-		<!-- No specific import for ArrayTimeInterval -->
+		<!-- No specific import for String -->
+		<!-- No specific import for Tag -->
 		<!-- No specific import for float -->
+		<!-- No specific import for int -->
 	
 	
 	
@@ -54,26 +63,59 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="timeInterval" type="xs:string" />
-         <xs:element name="wvrMethod" type="wvrmet:WVRMethod" />
-         <xs:element name="polyFreqLimits" type="xs:string" />
-         <xs:element name="numInputAntenna" type="xs:string" />
-         <xs:element name="numChan" type="xs:string" />
-         <xs:element name="numPoly" type="xs:string" />
-         <xs:element name="pathCoeff" type="xs:string" />
-         <xs:element name="refTemp" type="xs:string" />
-         <xs:element name="antennaId" type="xs:string" />
-         <xs:element name="inputAntennaId" type="xs:string" />
-         <xs:element name="spectralWindowId" type="xs:string" />
+         <xs:element name="timeInterval" type=
+"xs:string"
+
+/>
+         <xs:element name="wvrMethod" type=
+"wvrmet:WVRMethod"
+
+/>
+         <xs:element name="polyFreqLimits" type=
+"xs:string"
+
+/>
+         <xs:element name="numInputAntenna" type=
+"xs:string"
+
+/>
+         <xs:element name="numChan" type=
+"xs:string"
+
+/>
+         <xs:element name="numPoly" type=
+"xs:string"
+
+/>
+         <xs:element name="pathCoeff" type=
+"xs:string"
+
+/>
+         <xs:element name="refTemp" type=
+"xs:string"
+
+/>
+         <xs:element name="antennaId" type=
+"xs:string"
+
+/>
+         <xs:element name="inputAntennaId" type=
+"xs:string"
+
+/>
+         <xs:element name="spectralWindowId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

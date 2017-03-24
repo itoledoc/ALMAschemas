@@ -1,0 +1,399 @@
+// @(#) $Id: ControlArrayInterfaces.idl 236868 2016-10-26 16:10:12Z rmarson $
+//
+// ALMA - Atacama Large Millimeter Array
+// (c) Associated Universities Inc., 2007 - 2010, 2012, 2016
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+
+#ifndef CONTROLARRAYINTERFACES_IDL
+#define CONTROLARRAYINTERFACES_IDL
+
+#include <ControlAntennaInterfaces.idl>
+#include <DataCaptureInterfaces.idl>
+#include <TMCDBDataStructures.idl>
+#include <TMCDBComponent.idl>
+#include <almaEnumerations_IF.idl>
+
+#pragma prefix "alma"
+
+
+/**
+ * This IDL module contains the public IDL interfaces implemented
+ * by the Control system.  These external interfaces are used by
+ * ALMA subsystems outside of Control and are defined in the CVS
+ * IDL/CONTROL module.
+ * <p>
+ *
+ */
+module Control
+{
+    //////////////
+    // Typedefs //
+    //////////////
+    typedef string ArrayId;
+    typedef sequence< ArrayId > ArraySeq;
+
+    ////////////////////////////////
+    //    Events and Structures   //
+    ////////////////////////////////
+    /**
+     * This array blanking structure is sent by the Array object for a period of
+     * 21 TEs. Each arrau will accumulate the blanking flags for every 21 TEs
+     * which is 1.008 seconds. Then it will set the teOffsetBitMask to a '1' or
+     * '0' signifying that TE interval (relative to the start time) is valid or
+     * not.
+     */
+    struct ArrayBlankingEvent
+    {
+        /**
+         * Time stamp of the begining of the event interval.
+         */
+        ACS::Time timeStamp;
+        /**
+         * Array ID as a string
+         */
+        ArrayId antennaName;
+        /**
+         * The bitmask for each TE interval LSB is the 1-st TE.
+         */
+        DataValidBitMask teOffsetBitMask;
+    };
+
+    /**
+     * A list of bands for the specified antenna. 
+     */
+    struct AntennaBands {
+        string antennaName; // eg., CM12
+        ReceiverBandMod::SofReceiverBand bands;
+    };
+    /**
+     * A list of bands for the antennas in an array. 
+     */
+    typedef sequence<AntennaBands> ArrayBands;
+
+    ////////////////
+    // Interfaces //
+    ////////////////
+    /**
+     * The array monitor interface can be used to get information about the
+     * current state of an array, both automatic and manual arrays.
+     * None of these methods modify the array.
+     */
+    interface ArrayMonitor: ACS::ACSComponent
+    {
+        /**
+         * Return the name of this array.
+         */
+        string getName();
+
+        /**
+         * Return the name of this array.
+         */
+        string getArrayName();
+
+        /**
+         * Return the name of the component that manages this array.
+         *
+         */
+        string getArrayComponentName();
+
+        /**
+         * Return the current state of this array.
+         */
+        SystemState getArrayState();
+
+        /**
+         * Return the current substate of this array.
+         */
+        SystemSubstate getArraySubstate();
+
+        /**
+         * Return the list of resources in this array that are in an error state.
+         * An empty list is returned if there are no resources in error.
+         */
+        BadResourceSeq getBadResources();
+
+        /**
+         * Return a list of names of the antennas that are allocated to this array.
+         * The names are in the order of increasing antenna number.
+         */
+        AntennaSeq getAntennas();
+        ResourceSeq getAntennaComponents();
+
+        /**
+         *  Return a sequence of antenna state Event structures
+         * for each antenna in the array
+         */
+        AntennaStateEventSeq getAntennaStates();
+
+        /**
+         * Return true if and only if this array is busy.
+         */
+        boolean isBusy();
+
+        /**
+         * Return true if and only if this array is a manual array.
+         */
+        boolean isManual();
+
+        /**
+         * Return true if and only if this array is an automatic array.
+         */
+        boolean isAutomatic();
+
+        /**
+         * Return the configured photonic references in this array.
+         */
+        ResourceSeq getPhotonicReferences();
+        /**
+         * Description to show in the OMC.
+         *
+         */
+        string getShortDescription();
+
+        /**
+         * Return true if a special Correlator sum antenna is to be used for
+         * this array.
+         */
+        boolean getAppSumAntenna();
+
+        /**
+         * Indicates if the Array can be safely released without releasing
+         * DataCapturer while it is still archiving the ASDM.
+         */
+        boolean canBeReleased();
+
+                /**
+         * Returns the powered bands for the antennas in the array. If an
+         * antenna is not responding it is not listed in the list. No
+         * exceptions are thrown.
+         */
+        ArrayBands getPoweredBands();
+
+        /**
+         * Returns the available bands for the antennas in the array. This will
+         * be a superset of the powered bands. If an antenna is not responding
+         * it is not listed in the list. No exceptions are thrown.
+         */
+        ArrayBands getAvailableBands();
+
+    };
+
+    /**
+     * The automatic array monitor interface extends the array monitor
+     * interface and can be used to get information about the current
+     * state of an automatic array.
+     * None of these methods modify the array.
+     */
+    interface AutomaticArrayMonitor: ArrayMonitor
+    {
+        /**
+         * Return the reference to the scheduling block that is currently
+         * executing, if any.
+         * If there is no scheduling block executing, an empty string is returned.
+         * @throw InaccessibleException Thrown if the Control System is
+         * in an inaccessible state.
+         */
+        asdmIDLTypes::IDLEntityRef getSB() raises(InaccessibleException);
+
+        /**
+         * Return the reference to the execution block that is currently being
+         * created while executing a scheduling block, if any.
+         * If there is no scheduling block executing, an empty string is returned.
+         * @throw InaccessibleException Thrown if the Control System is
+         * in an inaccessible state.
+         */
+        asdmIDLTypes::IDLEntityRef getExecBlock() raises(InaccessibleException);
+
+        /**
+         * Return the reference to the session to which the execution of this
+         * scheduling block belongs, if any.
+         * If there is no scheduling block executing, an empty string is returned.
+         * @throw InaccessibleException Thrown if the Control System is
+         * in an inaccessible state.
+         */
+        asdmIDLTypes::IDLEntityRef getSession() raises(InaccessibleException);
+
+    };
+
+    /**
+     * Base interface for operations that modify the Array.
+     */
+    interface ArrayCommand
+    {
+        /**
+         * Antenna components will call this method to report changes in the
+         * pointing model.
+         * @param antennaName The name of the antenna e.g., "DV01"
+         * @param receiverBand The receiver band that uses this model.
+         * @param primaryModel The primary antenna pointing model. Normally
+         * users do not change this.
+         * @param auxModel The auxiliary antenna pointing model. Used to
+         * locally improve the pointing.
+         * If the auxiliary pointing model is non-zero length it should be stored
+         * and associated with the primary pointing model with association nature
+         * "LOCAL_POINTING_MODEL" *unless* the primary pointing model is zero
+         * length. Pointing models of zero length are not stored.
+         */
+        void reportPointingModel(in string antennaName,
+            in ReceiverBandMod::ReceiverBand recvBand,
+            in TMCDB::PointingModel primaryModel,
+            in TMCDB::PointingModel auxModel);
+
+        /**
+         * Antenna components will call this to report changes in the focus
+         * model.
+         * @param antennaName The name of the antenna e.g., "DV01"
+         * @param receiverBand The receiver band that uses this model.
+         * @param focusModel The antenna focus model. Normally users do not change this.
+         */
+        void reportFocusModel(in string antennaName,
+            in ReceiverBandMod::ReceiverBand recvBand,
+            in TMCDB::FocusModel focsModel);
+
+        /**
+         * Antenna components will call this to report changes to the 
+         * sub-reflector position.
+         * @param subrefPosition. See DataCaptureInterfaces.idl for a
+         * description of all the fields in this structure.
+         */
+        void reportSubreflectorPosition(in FocusData subrefPosition);
+
+        /// Start or stop the flagging of the data.
+        /// \param startStop: true = start, false = stop the flagging of data.
+        /// \param timeStamp: The begin or end of the data flagging.
+        /// \param componentName: Something like "CONTROL/Willy/IFProc0" or
+        /// "CONTROL/Foo/DRXBBPr3".
+        /// \param description: This is a free format string which contains the
+        /// reason for the flagging of the data.
+        void flagData(in boolean startStop, in ACS::Time timeStamp,
+            in string componentName, in string description);
+
+        /**
+         * Use the special Correlator sum antenna for this array. Normally
+         * this is the antenna located on CAI-63; the pad location will be set
+         * to the reference array position.
+         * \param active: True if sum antenna is to be used; false otherwise.
+         */
+        void setAppSumAntenna(in boolean active);
+
+        /**
+         * On each antenna in the array first power down the bands specified in
+         * the bandsToPowerDown parameter and then power up the bands in the
+         * bandsToPowerUp parameter.
+         *
+         * It is not an error, on any antenna to attempt to power down a band
+         * that is not installed or already powered down.
+         *
+         * It an error if, on any antenna in the array, any of the specified
+         * bands cannot be powered on.
+         */
+        void setPoweredBands(in ReceiverBandMod::SofReceiverBand bandsToPowerUp, 
+                             in ReceiverBandMod::SofReceiverBand bandsToPowerDown)
+            raises(InvalidRequest, InaccessibleException);
+
+    };
+
+    /**
+     * The automatic array command interface extends the automatic array command
+     * interface and provides the ability to start and stop the execution of
+     * of scheduling blocks.  These methods are used by the Scheduling subsystem.
+     */
+    interface AutomaticArrayCommand: ArrayCommand
+    {
+        /**
+         * Immediately begin the execution of the scheduling block whose
+         * reference is the specified sbId on this array.
+         * \param sbId The reference to the scheduling block to be executed.
+         * \param sessionId The reference to the session to which this execution
+         * belongs.  This
+         * item is needed for the quick-look pipeline.
+         * @throw InvalidRequest Thrown if either the sbId or sessionId
+         * are invalid, or if the array is not idle.
+         * @throw InaccessibleException Thrown if the Array is
+         * in an inaccessible state.
+         */
+        void observeNow(in asdmIDLTypes::IDLEntityRef sbId,
+            in asdmIDLTypes::IDLEntityRef sessionId)
+            raises(InvalidRequest, InaccessibleException);
+
+        /**
+         * Begin the execution of the scheduling block whose
+         * reference is the specified sbId on this array at the specified time.
+         * \param sbId The reference to the scheduling block to be executed.
+         * \param sessionId The reference to the session to which this execution
+         * belongs.  This
+         * item is needed for the quick-look pipeline.
+         * \param when The time at which this scheduling block is to begin execution.
+         * @throw InvalidRequest Thrown if either the sbId or sessionId
+         * are invalid, if the array is not idle, or if the time is in the past
+         * or is not valid.
+         * @throw InaccessibleException Thrown if the Array is
+         * in an inaccessible state.
+         */
+        void observe(in asdmIDLTypes::IDLEntityRef sbId,
+            in asdmIDLTypes::IDLEntityRef sessionId, in ACS::Time when)
+            raises(InvalidRequest, InaccessibleException);
+
+        /**
+         *
+         */
+        void stop() raises(InvalidRequest, InaccessibleException);
+
+        /**
+         *
+         */
+        void stopNow() raises(InvalidRequest, InaccessibleException);
+    };
+
+    /**
+     * The manual array monitor interface extends the array monitor interface and
+     * can be used to get information about the current state of a manual array.
+     * None of these methods modify the array.
+     */
+    interface ManualArrayMonitor: ArrayMonitor
+    {
+        /**
+         * Return the id of the staff member who is responsible for operating
+         * this manual array.
+         */
+        string getStaffId();
+
+    };
+
+    /**
+     * This interface defines operations that modify the Array but are
+     * specific for the Manual Mode.
+     */
+    interface ManualArrayCommand: ArrayCommand
+    {
+        /**
+         * Configures the manual array to perform observations that will
+         * produce an ASDM. This method is called by SCHEDULING when the user
+         * assigns a project and a scheduling block to a manual array.
+         */
+        void configure(in asdmIDLTypes::IDLEntityRef sbID)
+            raises(InvalidRequest, InaccessibleException);
+    };
+
+    /**
+     * This interface defines the complete Automatic Array, integrating both
+     * the monitor and the command interfaces.
+     */
+    interface AutomaticArray: AutomaticArrayMonitor, AutomaticArrayCommand
+    {
+    };
+};
+#endif

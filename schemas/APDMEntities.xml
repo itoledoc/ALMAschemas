@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<EntitybuilderSettings>
+
+    <EntitySchema schemaName="ObsAttachment.xsd" xmlNamespace="Alma/ObsPrep/ObsAttachment"/>
+    <EntitySchema schemaName="ObsProject.xsd" xmlNamespace="Alma/ObsPrep/ObsProject"/>
+    <EntitySchema schemaName="ObsProposal.xsd" xmlNamespace="Alma/ObsPrep/ObsProposal"/>
+    <EntitySchema schemaName="SchedBlock.xsd" xmlNamespace="Alma/ObsPrep/SchedBlock"/>
+    <EntitySchema schemaName="ObsReview.xsd" xmlNamespace="Alma/ObsPrep/ObsReview"/>
+    <EntitySchema schemaName="ValueTypes.xsd" xmlNamespace="Alma/ValueTypes"/>
+    <EntitySchema schemaName="ProjectStatus.xsd" xmlNamespace="Alma/Scheduling/ProjectStatus"/>
+    <EntitySchema schemaName="OUSStatus.xsd" xmlNamespace="Alma/Scheduling/OUSStatus"/>
+    <EntitySchema schemaName="SBStatus.xsd" xmlNamespace="Alma/Scheduling/SBStatus"/>
+<!--    
+    <EntitySchema schemaName="xlink.xsd" xmlNamespace="Alma/Xlink"/>
+    <EntitySchema schemaName="PPResults.xsd" xmlNamespace="Alma/Scheduling/PPResults"/>
+    <EntitySchema schemaName="SBExecRec.xsd" xmlNamespace="Alma/ObsPrep/SBExecRec"/>
+    <EntitySchema schemaName="CorrConfig.xsd" xmlNamespace="Alma/Correlator/CorrConfigXML"/>
+-->    
+    
+    <XmlNamespace2JPackage xmlNamespace="Alma/ObsPrep/ObsAttachment" jPackage="alma.entity.xmlbinding.obsattachment"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/ObsPrep/ObsProject" jPackage="alma.entity.xmlbinding.obsproject"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/ObsPrep/ObsProposal" jPackage="alma.entity.xmlbinding.obsproposal"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/ObsPrep/SchedBlock" jPackage="alma.entity.xmlbinding.schedblock"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/ObsPrep/ObsReview" jPackage="alma.entity.xmlbinding.obsreview"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/ValueTypes" jPackage="alma.entity.xmlbinding.valuetypes"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/Scheduling/ProjectStatus" jPackage="alma.entity.xmlbinding.projectstatus"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/Scheduling/OUSStatus" jPackage="alma.entity.xmlbinding.ousstatus"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/Scheduling/SBStatus" jPackage="alma.entity.xmlbinding.sbstatus"/>
+<!--    
+    <XmlNamespace2JPackage xmlNamespace="Alma/Xlink" jPackage="alma.entity.xmlbinding.xlink"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/Scheduling/PPResults" jPackage="alma.entity.xmlbinding.ppresults"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/ObsPrep/SBExecRec" jPackage="alma.entity.xmlbinding.sbexecrec"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/Correlator/CorrConfigXML" jPackage="alma.entity.xmlbinding.corrconfigxml"/>
+-->    
+
+</EntitybuilderSettings>
+

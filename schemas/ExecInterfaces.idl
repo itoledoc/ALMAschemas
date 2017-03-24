@@ -1,0 +1,102 @@
+#ifndef _EXECINTERFACES_IDL_
+#define _EXECINTERFACES_IDL_
+
+#include <baci.idl>
+#include <xmlentity.idl>
+#include <acscomponent.idl>
+#include <ControlArrayInterfaces.idl>
+#include <ControlAntennaInterfaces.idl>
+
+#pragma prefix "alma"
+
+module exec {
+
+// =================================================================
+// DataStructures and Enumeration types
+// =================================================================
+
+
+    //! msc 2013-06: the Control enums should support NULL (or UNKNOWN, or alike).
+    //! i need to be able to express that a field is not set, and having a
+    //! NULL value is by far the easiest solution for that. i'm basically  
+    //! redefining the Control enums here, for the time being. the extra modules are my
+    //! answer to an IDL restriction: "identifier Unknown defined twice in same scope".
+    //!
+    //! msc 2014-03: moved these enums to EXEC's public IDL for use by shared Navigator.
+
+    #pragma prefix ""  //! suppress the "alma" prefix for the module name
+    module AntMode2     { enum AntennaMode     { Online, Offline, Unknown   }; };
+    module AntState2    { enum AntennaState    { Inaccessable, Operational, Shutdown, Degraded, Unknown }; };
+    module AntSubstate2 { enum AntennaSubstate { Error, NoError, Unknown    }; };
+
+
+
+    typedef string EntityId;
+    typedef sequence <EntityId> EntityIdSeq;
+
+    enum SubSystem { CONTROL_SUBSYSTEM, CORRELATOR_SUBSYSTEM,
+		     TELCAL_SUBSYSTEM, QUICKLOOK_SUBSYSTEM,
+		     SCHEDULING_SUBSYSTEM, PIPELINE_SUBSYSTEM,
+		     OTHER_SUBSYSTEM };
+
+    enum ReqType { URGENT_REQUEST, NORMAL_REQUEST, INFO_REQUEST }; 
+
+
+
+// =================================================================
+// Scheduling_to_Operator
+// =================================================================
+
+//! Operator provides interaction with the operator
+
+interface Scheduling_to_Operator {
+
+    //! Ask a simple yes/no question to the operator.
+    //! The request is processed asynchronously since we don't know
+    //! how much time the operator will take to answer it.
+    //!
+    //! \param  request      string with question or request
+    //! \param  arrId      identifier of array associated to request
+    //! \param  subsys       identification of subsystem making the request
+    //! \param  type         indicates the type of request
+    //! \param  defAnswer    indicates how the subsystem will proceed on timeout
+    //! \param  timeoutSecs  timeout period in sec.
+    //! \param  cb           Acs callback object
+    //! \param  cbDesc       Acs callback descriptor
+    //!
+    //! The answer is either 'YES', 'NO', or 'TIMEOUT'
+    //!
+    oneway void askOperator(
+		in string     request,
+		in Control::ArrayId arrId,
+		in SubSystem  subsys,
+		in ReqType    type,
+		in boolean    defAnswer,
+		in long       timeoutSecs,
+		in ACS::CBstring cb,
+		in ACS::CBDescIn cbDesc
+	);
+
+    //! Ask the operator if an antenna can be made active.
+    //! The request is processed asynchronously since we don't know
+    //! how much time the operator will take to answer it.
+    //!
+    //! \param antId    identifier of ALMA antenna
+    //! \param timeoutSecs  timeout period in seconds
+    //! \param  cb          Acs callback object
+    //! \param  cbDesc      Acs callback descriptor
+    //!
+    //! The answer is either 'YES', 'NO', or 'TIMEOUT'
+    //!
+    oneway void confirmAntennaActive(
+		in Control::AntennaId antId,
+		in long           timeoutSecs,
+		in ACS::CBstring  cb,
+		in ACS::CBDescIn  cbDesc
+	);
+
+};
+
+
+};
+#endif

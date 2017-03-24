@@ -1,0 +1,1413 @@
+// $Id: ControlDataInterfaces.idl 226121 2015-12-11 16:33:54Z rmarson $
+//
+// ALMA - Atacama Large Millimeter Array
+// (c) Associated Universities Inc., 2007 - 2011, 2013, 2014, 2015
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA
+
+#ifndef CONTROLDATAINTERFACES_MIDL
+#define CONTROLDATAINTERFACES_MIDL
+
+#include <ControlSimpleTypeDefs.idl>
+#include <ControlArrayInterfaces.idl>
+#include <archive_xmlstore_if.idl>
+#include <almaEnumerations_IF.idl>
+#include <acserr.idl>
+#include <xmlentity.idl> // for xmlentity::XmlEntityStruct
+
+
+#pragma prefix "alma"
+
+
+/**
+ * This IDL module contains the public IDL interfaces implemented
+ * by the Control system which Deal with the transfer of Data.  These
+ * external interfaces are used primarily by DataCapture but can be
+ * used by all ALMA subsystems outside of Control and are defined in
+ * the CVS IDL/CONTROL module.
+ * <p>
+ *
+ */
+module Control
+{
+
+    //////////////////////////////////////////////////////////////
+    // Typedefs to promote better type safety and documentation.//
+    //////////////////////////////////////////////////////////////
+    typedef string FieldSource;
+    typedef string SpectralSpec;
+    typedef sequence<SpectralSpec> SpectralSpecSeq;
+    typedef sequence<FieldSource> FieldSourceSeq;
+
+    /* ************************
+     *        Events
+     * ************************/
+
+    /**
+     * Whenever a scheduling block has begun execution, an ExecBlockStart
+     * event is published.
+     */
+    struct ExecBlockStartedEvent
+    {
+        /**
+         * The reference to the exec block that was created as the
+         * result of executing this scheduling block.
+         */
+        asdmIDLTypes::IDLEntityRef execId;
+        /**
+         * The reference to the scheduling block being executed.
+         */
+        asdmIDLTypes::IDLEntityRef sbId;
+        /**
+         * The reference to the session to which the execution of this
+         *scheduling block belongs.
+         */
+        asdmIDLTypes::IDLEntityRef sessionId;
+        /**
+         * The name of the array on which this scheduling block is being executed.
+         */
+        ArrayId arrayName;
+        /**
+         * The time at this execution stated.
+         */
+        ACS::Time startTime;
+    };
+
+    // This appears to be an identical definition to the
+    // ACSErr::ErrorLinkedList from acserr.idl. Because this is defined *after*
+    // the definition of an ErrorTrace it can be included in an event. ICT-3870
+    // describes this issue further.
+    typedef sequence<ACSErr::ErrorTrace> ErrorTraceType;
+
+    /**
+     * Whenever a scheduling block has completed a single execution, an
+     * ExecBlockEnd event is published.
+     */
+    struct ExecBlockEndedEvent
+    {
+        /**
+         * The reference to the exec block that has been completed.
+         */
+        asdmIDLTypes::IDLEntityRef execId;
+
+        /**
+         * The reference to the scheduling block that has ceased execution.
+         */
+        asdmIDLTypes::IDLEntityRef sbId;
+
+        /**
+         * The reference to the session to which the execution of this
+         * scheduling block belongs.
+         */
+        asdmIDLTypes::IDLEntityRef sessionId;
+
+        /**
+         * The name of the array on which this scheduling block was executed.
+         */
+        ArrayId arrayName;
+
+        /**
+         * The name of the DataCapturer component used during the execution
+         * of the scheduling block.
+         */
+        string dataCapturerId;
+
+
+        /**
+         * The resulting completion status of this execution. See ICT-3870 for
+         * why an ACSErr::Completion cannot be used.
+         */
+        ACSErr::CompletionType type;
+        ACSErr::CompletionCode code;
+        ErrorTraceType errorTrace;
+
+        /**
+         * The time this execution ended.
+         */
+        ACS::Time endTime;
+    };
+
+    struct ScanIntentData
+    {
+        /**
+         * The purpose of this scan.
+         */
+        ScanIntentMod::ScanIntent scanIntent;
+
+        /**
+         * Origin of the data used to derive the calibration
+         */
+        CalDataOriginMod::CalDataOrigin calDataOrig;
+
+        /**
+         * Indicates sets of calibration scans to be reduced together
+         */
+        CalibrationSetMod::CalibrationSet calSet;
+
+        /**
+         * Function of a scan in a calibration set (online only)
+         */
+        CalibrationFunctionMod::CalibrationFunction calFunction;
+
+        /**
+         * Motion of the Antenna during a calibration scan
+         */
+        AntennaMotionPatternMod::AntennaMotionPattern antennaMotionPattern;
+
+        /**
+         * Will the calibration be computed online?
+         */
+        boolean onlineCalibration;
+    };
+
+    typedef sequence <ScanIntentData> ScanIntentDataSeq;
+    typedef sequence <ScanIntentMod::ScanIntent> ScanIntentSeq;
+    typedef sequence <SubscanIntentMod::SubscanIntent> SubscanIntentSeq;
+    typedef sequence <SubscanIntentSeq> SubscanIntentSeqSeq;
+
+    /**
+     * Whenever a scan is started as the result of executing a script in the
+     * process of executing a scheduling block, a ScanStart event is published.
+     */
+    struct ScanStartedEvent
+    {
+        /**
+         * The reference to the exec block to which this scan belongs.
+         */
+        asdmIDLTypes::IDLEntityRef execId;
+
+        /**
+         * The name of the array on which this scan is being executed.
+         */
+        ArrayId arrayName;
+
+        /**
+         * The scan number that has been assigned to this scan.  Each scan
+         * has a unique, sequential number within this exec block.
+         */
+        long scanNumber;
+
+        /**
+         * The purposes of this scan.
+         */
+        ScanIntentDataSeq scanType;
+
+        /**
+         * The time this scan was started.
+         */
+        ACS::Time startTime;
+    };
+
+    /**
+     * Whenever a scan has ended as the result of executing a script in the
+     * process of executing a scheduling block, a ScanEnd event is published.
+     */
+    struct ScanEndedEvent
+    {
+        /**
+         * The reference to the exec block to which this scan belongs.
+         */
+        asdmIDLTypes::IDLEntityRef execId;
+
+        /**
+         * The name of the array on which this scan was executed.
+         */
+        ArrayId arrayName;
+
+        /**
+         * The scan number of the scan that has ended.
+         */
+        long scanNumber;
+
+        /**
+         * The resulting completion status of this scan. See ICT-3870 for
+         * why an ACSErr::Completion cannot be used.
+         */
+        ACSErr::CompletionType type;
+        ACSErr::CompletionCode code;
+        ErrorTraceType errorTrace;
+
+        /**
+         * The time this scan ended.
+         */
+        ACS::Time endTime;
+    };
+
+    /**
+     * Whenever a subscan is started as the result of executing a
+     * script in the process of executing a scheduling block, a
+     * SubscanStart event is published.
+     */
+    struct SubscanStartedEvent
+    {
+        /**
+         * The reference to the exec block to which this subscan belongs.
+         */
+        asdmIDLTypes::IDLEntityRef execId;
+
+        /**
+         * The name of the array on which this subscan is being executed.
+         */
+        ArrayId arrayName;
+
+        /**
+         * The number of the scan to which this subscan belongs.
+         */
+        long scanNumber;
+
+        /**
+         * The number of the subscan.  Subscan are sequentially number within
+         * a given scan.
+         */
+        long subscanNumber;
+
+        /**
+         * The time at which this scan started.
+         */
+        ACS::Time startTime;
+    };
+
+    /**
+     * Whenever a subscan has ended as the result of executing a script in the
+     * process of exeucting a scheduling block, a SubscanEnd event is published.
+     */
+    struct SubscanEndedEvent
+    {
+        /**
+         * The reference to of the exec block to which this subscan belongs.
+         */
+        asdmIDLTypes::IDLEntityRef execId;
+
+        /**
+         * The name of the array on which this subscan was executed.
+         */
+        ArrayId arrayName;
+
+        /**
+         * The number of the scan to which this subscan belongs.
+         */
+        long scanNumber;
+
+        /**
+         * The number of the subscan.
+         */
+        long subscanNumber;
+
+        /**
+         * The resulting completion status of this sub-scan. See ICT-3870 for
+         * why an ACSErr::Completion cannot be used.
+         */
+        ACSErr::CompletionType type;
+        ACSErr::CompletionCode code;
+        ErrorTraceType errorTrace;
+
+        /**
+         * The time at which this subscan ended.
+         */
+        ACS::Time endTime;
+    };
+
+    /********************************
+     *         Structures
+     * ******************************/
+
+    // An offset in an unspecified coordinate system.  In horizon coordinates
+    // the latitude is the same as the elevation and the longitude is, for
+    // small angles, the same as the azimuth.  In equatorial coordinates the
+    // latitude is the same as the declination and the longitude is, for small
+    // angles, the same as the right-ascension. The angles are in radians.
+    struct Offset {
+        double lng;
+        double lat;
+    };
+
+    enum SourceOffsetFrame {
+        HORIZON,// latitude = elevation
+        EQUATORIAL, // latitude = declination
+        GALACTIC // latitude = galactic latitude (using the CASA definition)
+    };
+
+    /// This PatternSpec struct is used to specify a pattern to the
+    /// MountController . The units are always radians except for the
+    /// frequencies which are Hz.
+    struct SinusoidSpec {
+        double ampLong;
+        double freqLong;
+        double phaseLong;
+        double ampLat;
+        double freqLat;
+        double phaseLat;
+    };
+    typedef sequence<SinusoidSpec> SinusoidSpecSeq;
+
+    struct PatternSpec {
+        // Normally this sequence is length 1 or 2. But it can be 0 or any bigger number
+        SinusoidSpecSeq frequencies; 
+
+        // The rotation of the pattern with respect to axes
+        double rotation;
+
+        // The offset of this pattern, with respect the object being tracked,
+        // is specified separately. Often this is done using the
+        // {longitude,latitude}Offset fields in the SourceOffset structure.
+    };
+
+    /// This struct contains either an offset & the rate of change of that
+    /// offset or a pattern. Either are in the specified coodinate system. The
+    /// time origin is specified elsewhere ie., in a structure that contains a
+    /// SourceOffset). All numerical units are radians or radians per second.
+    struct SourceOffset {
+        // The offset in the direction perpendicular to the latitudeOffset
+        double longitudeOffset;
+        // The offset in elevation or declination or ...
+        double latitudeOffset;
+
+        // The rate of change of the offset in the respective direction.
+        double longitudeVelocity;
+        double latitudeVelocity;
+
+        // If a pattern is defined the previous 4 fields are *not* used. A
+        // pattern is defined if its frequencies field has a non-zero length.
+        PatternSpec pattern;
+
+        // The offset reference frame. This defines the orientation of the
+        // latitude and longitude axes.
+        SourceOffsetFrame frame;
+    };
+
+    // A sequence of SourceOffset structs.
+    typedef sequence<SourceOffset> SourceOffsetSeq;
+
+    /// A direction in equatorial coordinates. The angles are in radians.
+    struct EquatorialDirection
+    {
+        double ra;
+        double dec;
+    };
+
+    // A sequence of EquatorialDirection structs.
+    typedef sequence<EquatorialDirection> EquatorialDirectionSeq;
+
+    /// A direction in horizon coordinates. The angles are in radians.
+    struct HorizonDirection
+    {
+        double az;
+        double el;
+    };
+
+    /// This data structure is used by Control to convey, to data
+    /// capture, a row in the pointing table. Fields that are not
+    /// specified here are supplied by data capture. A more precise
+    /// meaning of these fields is given in
+    /// http://almasw.hq.eso.org/almasw/bin/view/TELCAL/PointingTable
+    /// In summary it is:
+    /// * target: is the field center direction (given in the Field
+    /// Table), possibly affected by optional mapping sourceOffset. This
+    /// column is in horizontal coordinates.
+    /// * sourceOffset: The (antenna-based) mapping offsets in
+    /// the field, These are in the equatorial system, and used, for
+    /// instance, in on-the-fly mapping.
+    /// * offset: additional offsets in horizontal coordinates (usually
+    /// meant for measuring the pointing corrections, mapping the antenna
+    /// beam, ...). This does not include any offsets applied as part of
+    /// any pointing model.
+    /// * pointingDirection: is the commanded direction of the antenna. It
+    /// is obtained by adding the target and both offset columns, and
+    /// then applying the relevant pointing models (referenced by
+    /// PointingModelId). The pointing model can be the composition of
+    /// the absolute pointing model and of a local pointing model. In
+    /// that case their coefficients will both be in the PointingModel
+    /// table
+    /// * encoder : the values measured from the antenna. They may be
+    /// however affected by metrology, if applied. This column will
+    /// contain positions obtained using the AZ_POSN_RSP & EL_POSN_RSP
+    /// monitor points of the ACU and not the GET_AZ_ENC & GET_EL_ENC
+    /// monitor points (as these do not include the metrology
+    /// corrections). It is agreed that the the vendor pointing model
+    /// will never be applied.
+    /// * refraction : the value added to the commanded position (target +
+    /// offset) to compensate for refraction in the atmosphere. The azimuth
+    /// term should always be zero.
+    ///
+    /// In addition this structure contains:
+    /// * timestamp: The time the specified position is applied by the ACU
+    /// or measured by the ACU. The control system schedules commands a
+    /// few seconds in advance and measured values take a short while
+    /// before they are available to be sent to data capture. The
+    /// commanded and measured values in each AntennaPointingData have
+    /// had these delays removed and the timestamp corresponds the time
+    /// "on the antenna".
+    struct PointingData2
+    {
+        /// The data is valid for +/- 24ms about this time
+        ACS::Time timestamp;
+        HorizonDirection target;
+        EquatorialDirection sourceOffset;
+        HorizonDirection offset;
+        HorizonDirection pointingDirection;
+        HorizonDirection encoder;
+        HorizonDirection refraction;
+    };
+
+    /// A sequence of PointingData2 structs. Typically it contains all
+    /// the data for one subscan.
+    typedef sequence<PointingData2> PointingData2Seq;
+
+    /// A sequence that associates the pointing data with a specific
+    /// antenna. The antennaName is a short string like "TM01" that is
+    /// the antenna name. Change this to an enum when a suitable one is
+    /// defined.
+    struct AntennaPointingData
+    {
+        string antennaName;
+        PointingData2Seq data;
+    };
+
+    /// Control uses this sequence to send in one function call, for all
+    /// antennas in an array and for each 48ms interval in a subscan, all
+    /// the pointing data to data capture. This is done when endSubscan
+    /// is called.
+    typedef sequence<AntennaPointingData> AntennaPointingDataSeq;
+
+    /**
+     * This structure is a collection of data about
+     * the site that Data Capture needs.
+     */
+    struct SiteData
+    {
+        string telescopeName;
+        string arrayConfigurationName;
+        asdmIDLTypes::IDLLength minBaseRange;
+        asdmIDLTypes::IDLLength maxBaseRange;
+        asdmIDLTypes::IDLLength baseRmsMinor;
+        asdmIDLTypes::IDLLength baseRmsMajor;
+        asdmIDLTypes::IDLAngle basePa;
+        asdmIDLTypes::IDLAngle siteLongitude;
+        asdmIDLTypes::IDLAngle siteLatitude;
+        asdmIDLTypes::IDLLength siteAltitude;
+        ACS::Time releaseDate;
+    };
+
+    /**********************************
+     *      Total Power Interface
+     * *********************************/
+
+    /// What is this for?
+    const long NUMBER_POWER_COUNTERS = 4;
+
+    /**
+     * This structure is for total power data that
+     * Control sends to Data Capture.
+     */
+    struct TotalPowerData
+    {
+        /**
+         * The name of the antenna sending this data.
+         */
+        string antennaName;
+
+        /**
+         * The time at which the data was sampled.
+         */
+        ACS::Time time;
+
+        /**
+         * The sampling interval, i.e. the duration between
+         * this sample and the previous sample.
+         */
+        ACS::Time interval;
+
+        /**
+         * The sequence of power counters for horizontal polarization;
+         */
+        FloatSeq powerH;
+
+        /**
+         * The sequence of power counters for vertical polarization;
+         */
+        FloatSeq powerV;
+    };
+
+    /**************************************
+     *         Holography Section
+     * *************************************/
+
+    /**
+     *  This structure contains a single integration worth of
+     *  holography data
+     */
+    struct HolographyData
+    {
+        double qq;
+        double qr;
+        double qs;
+        double rr;
+        double rs;
+        double ss;
+        boolean flag; // This flag should be used to flag invalid data
+    };
+
+    typedef sequence<HolographyData> HolographyDataSeq;
+
+    /**
+     * This structure contains an Az and an El
+     */
+    struct PositionData
+    {
+        asdmIDLTypes::IDLAngle az;
+        asdmIDLTypes::IDLAngle el;
+    };
+
+    typedef sequence<PositionData> PositionDataSeq;
+
+    /**
+     * A sequence used for holding polynomials
+     */
+    typedef sequence<double> Polynomial;
+
+    /**
+     * Typedef Position Polynomial
+     */
+    struct PositionPolynomial
+    {
+        Polynomial az;
+        Polynomial el;
+    };
+
+    /**
+     * This structure contains the Holography Scan Data
+     */
+    struct HolographyScanData
+    {
+        string name;
+        asdmIDLTypes::IDLFrequency frequency;
+        long mapRowSize;
+        long mapColSize;
+        long numberCorr;
+        StringSeq holographyType;
+        asdmIDLTypes::IDLLength focusOffset;
+        asdmIDLTypes::IDLLength towerXPosition;
+        asdmIDLTypes::IDLLength towerYPosition;
+        asdmIDLTypes::IDLLength towerZPosition;
+    };
+
+    /**
+     * This structure is for holography data.
+     */
+    struct HolographySubScanData
+    {
+        /** String Giving the Antenna ID */
+        string antennaName;
+
+        /** The name of the subscan (povided by user) */
+        string subscanName;
+
+        /** The direction of the tower as seen from the antenna **/
+        PositionData towerDirection;
+
+        /** Start Time, this is the TE corresponding to the first element
+         of the holoData and encoderData structures */
+        ACS::Time startTime;
+
+        /** Stop time of the subscan */
+        ACS::Time endTime;
+
+        /** The integration time for each sample */
+        ACS::Time exposureDuration;
+
+        /** The holography data, length must be interval/exposureDuration */
+        HolographyDataSeq holoData;
+
+        /** The commanded position, expressed as a polynomial */
+        PositionDataSeq pointingDirection;
+
+        /** The enconder position data sampled every 24 ms */
+        PositionDataSeq encoderData;
+    };
+
+    /********************************
+     *       Optical Pointing
+     * *******************************/
+
+    /**
+     * This structure is for optical pointing data.
+     */
+    struct SubScanOpticalPointingData
+    {
+        string antennaName;
+        ACS::Time startTime;
+        ACS::Time endTime;
+        asdmIDLTypes::IDLAngle sourceAZ;
+        asdmIDLTypes::IDLAngle sourceEL;
+        asdmIDLTypes::IDLAngle offsetAZ;
+        asdmIDLTypes::IDLAngle offsetEL;
+        asdmIDLTypes::IDLAngle errorAZ;
+        asdmIDLTypes::IDLAngle errorEL;
+        asdmIDLTypes::IDLAngle xBeamWidth;
+        asdmIDLTypes::IDLAngle yBeamWidth;
+        asdmIDLTypes::IDLTemperature peakIntensity;
+
+        /// The following parameters are not used by data capture but are
+        /// made available for add-hoc use in a python script.
+
+        /// The signal to noise ratio
+        double SNR;
+        /// The X & Y -axis offset in pixels on the CCD screem
+        double peakPositionX;
+        double peakPositionY;
+        /// The Az and El offset because of the current pointing model
+        /// These values are in radians
+        double pointingModelOffsetAz;
+        double pointingModelOffsetEl;
+        /// The Az and El corrections due to the offset on the CCD.
+        /// These values are in radians.
+        double CCDOffsetAz;
+        double CCDOffsetEl;
+    };
+
+    /***********************************
+     *    Correlator Modes
+     * **********************************/
+
+    /**
+     * This structure is used to send detailed information about the integration
+     * from Control to Data Capture.  This information either comes from the
+     * correlator configuration or is derived from the correlator configuration
+     * using additional information from Control.
+     */
+    struct IntegrationDetails
+    {
+        /**
+         * The number of correlator bins used.
+         */
+        long numberBins;
+
+        /**
+         * The duration of bin 0.
+         */
+        ACS::Time bin0Duration;
+
+        /**
+         * the duration of bin 1.
+         */
+        ACS::Time bin1Duration;
+
+        /**
+         * The total number of correlator integrations.
+         */
+        long numberIntegrations;
+
+        /**
+         * The number of correlator dumps per integration.
+         */
+        long dumpsPerIntegration;
+
+        /**
+         * The duration of a correlator dump, which is bin0Duration + bin1Duration.
+         */
+        ACS::Time dumpDuration;
+
+        /**
+         * The total time for the subscan, which is:
+         * numberIntegrations * dumpsPerIntegration * dumpDuration.
+         */
+        ACS::Time totalTimeForSubscan;
+
+        /**
+         * The duration of an integration, which is:
+         * the dumpDuration * dumpsPerIntegration.
+         */
+        ACS::Time integrationDuration;
+
+        /**
+         * The duration of a sub-integration, which is the
+         * correlator channel average duration.
+         */
+        ACS::Time subIntegrationDuration;
+
+        /**
+         * The total number of correlator sub-integrations,
+         * which is totalTimeForSubscan / channelAverageDuration.
+         */
+        long numberSubintegrations;
+
+        /**
+         * The UID of the range entity for the binary data.
+         */
+        xmlstore::URI dataRangeUID;
+
+        /**
+         * The expected midpoints of the intervals corresponding to the data-OIDs.
+         */
+        ACSTimeSeq midPoint;
+
+        /**
+         * The integration number corresponding to the data-OIDs.  For
+         * sub-integrations, this will be the
+         * integration to which the sub-integration belongs.
+         */
+        LongSeq integrationNumber;
+
+        /**
+         * The subIntegration number corresponding to the data-OIDs.
+         * For sub-integrations, this number will be the number of the
+         * sub-integration within the integration.  For integrations,
+         * this number will be -1.
+         */
+        LongSeq subIntegrationNumber;
+    };
+
+    struct SubScanCorrelatorData
+    {
+        /** Unique data identifier for channel average data.
+         */
+        xmlstore::UniqueIdentifier channelAverageUID;
+
+        /** Unique data identifier for full resolution data.
+         */
+        xmlstore::UniqueIdentifier fullResolutionUID;
+
+        /** Unique data identifier for wvr data.
+         */
+        xmlstore::UniqueIdentifier wvrUID;
+
+        /** The total number of integrations in the subscan
+	 */
+        long totalIntegrations;
+
+        /** The total number of sub-integrations per integration in the sub-scan
+	 */
+        long numberSubIntegrationsPerIntegration;
+
+        /** If true some or all of the integrations have non-zero baseline flags.
+         */
+        boolean flagRowIntegrations;
+
+        /** If true some or all of the sub-integrations have non-zero baseline flags.
+         */
+        boolean flagRowSubIntegrations;
+
+        /** Size, in bytes, of binary full resolution data sent to Archive in
+         ** the subscan.
+         */
+        long long binaryDataSizeOfFullResolution;
+        
+        /** Size, in bytes, of binary channel average data sent to Archive in
+         ** the subscan.
+         */
+        long long binaryDataSizeOfChannelAverage;
+
+        /** If true some or all of the WVR data have non-zero baseline flags.
+         */
+        boolean flagRowWVRData;
+
+        /** Size, in bytes, of WVR data sent to Archive in the subscan.
+         */
+        long long binaryDataSizeOfWVRData;
+
+        /** WVR TIM dimension, that is, number of WVR integrations over
+         ** the sub-scan duration. The actual value depends on the sub-scan
+         ** duration, WVR interval and time aligment between WVR integrations
+         ** and sub-scan starting time.
+         */
+        unsigned long wvrNumTimes;
+
+        /** WVR time centroid of all WVR integrations over sub-scan. MJD.
+         */
+        unsigned long long wvrTime;
+
+        /** Total WVR time span over all WVR integrations. Flagged and non
+         ** flagged integrations are taken into account. Nanoseconds.
+         */
+        unsigned long long wvrInterval;
+    };
+
+    /***********************************
+     *  Total Power
+     * **********************************/
+
+    /**
+     * Specifies which smoothing function to use.
+     */
+    enum eWindows
+    {
+        UNIFORM,
+        HANNING,
+        HAMMING,
+        BARTLETT,
+        BLACKMAN,
+        BLACKMAN_HARRIS,
+        WELCH
+    };
+
+    struct SpectralSetup
+    {
+        double centerFrequency;
+        double refFrequency;
+        double totalBandwidth;
+        double effectiveBandwidth;
+        NetSidebandMod::NetSideband netSideband;
+    };
+
+    typedef sequence<SpectralSetup> SpectralSetupSeq;
+    typedef sequence<StokesParameterMod::StokesParameter> StokesParameterSeq;
+    typedef sequence<PolarizationTypeMod::PolarizationType> PolarizationTypeSeq;
+    typedef sequence<PolarizationTypeSeq> PolarizationTypeSeqSeq;
+
+    struct TotalPowerPolarization
+    {
+        /** 0 or 1 */
+        long polarization;
+        long numCorr;
+        StokesParameterSeq corrType;
+        PolarizationTypeSeqSeq corrProduct;
+        SpectralSetupSeq spectSetup;
+    };
+
+    typedef sequence<TotalPowerPolarization> TotalPowerPolarizationSeq;
+
+    struct TotalPowerBaseBandConfig
+    {
+        /**
+         * The baseband index (1-4) to be configured.
+         */
+        long baseBandIndex;
+
+        /**
+         * Baseband name.
+         */
+        BasebandNameMod::BasebandName baseBandName;
+
+        /**
+         * Bin0Duration and Bin1Duration define the amount of accumulation
+         * time for 1 or 2 bins depending on BinMode and CAM. The units are
+         * 100 ns (ACS::TimeInterval units).  The sum of these two amounts is
+         * the integration duration.
+         * Bin0Duration defines the accumulation duration for bin 0 while
+         * Bin1Duration defines the dump duration for bin 1.
+         */
+        ACS::TimeInterval bin0Duration;
+
+        /** @see Bin0Duration */
+        ACS::TimeInterval bin1Duration;
+
+        /**
+         * The number of times the bin switching cycle sequence
+         * repeats during an integration
+         */
+        long numSwitchCycles;
+
+        /**
+         * An enumerated value representing the data smoothing function to use.
+         */
+        eWindows windowFunction;
+
+        /**
+         * Polarization configurations.
+         */
+        TotalPowerPolarizationSeq polarizations;
+    };
+
+    typedef sequence<TotalPowerBaseBandConfig> TotalPowerBaseBandConfigSeq;
+
+    struct TotalPowerConfiguration
+    {
+        /**
+         * The integration duration as an ACS::TimeInterval.
+         */
+        ACS::TimeInterval integrationDuration;
+
+        /**
+         * The subscan duration as a count of integrations. The subscan
+         * duration in units of time is the
+         * IntegrationDuration * SubScanDuration.
+         */
+        long subScanDuration;
+
+        /**
+         * Up to 4 basebands can be configured in a single total power
+         * configuration
+         */
+        TotalPowerBaseBandConfigSeq baseBands;
+    };
+
+    struct PointingData
+    {
+        asdmIDLTypes::IDLAngle az;
+        asdmIDLTypes::IDLAngle el;
+        ACS::Time time;
+    };
+
+    typedef sequence<PointingData> PointingDataSeq;
+
+    struct SubscanFocusData
+    {
+        asdmIDLTypes::IDLLength xFocusPosition;
+        asdmIDLTypes::IDLLength yFocusPosition;
+        asdmIDLTypes::IDLLength zFocusPosition;
+        asdmIDLTypes::IDLLength xFocusOffset;
+        asdmIDLTypes::IDLLength yFocusOffset;
+        asdmIDLTypes::IDLLength zFocusOffset;
+        boolean focusTracking;
+    };
+
+    typedef sequence <ACS::longSeqSeq> longSeqSeqSeq;
+
+    struct SubScanTotalPowerRow
+    {
+        /// Because this is on a subscan basis we don't need integration number
+
+        /// Antenna-based actual time centroid of each integration (applies to
+        /// all basebands)
+        ACS::TimeSeq timeCentroids;
+
+        /// Antenna-based actual duration of each integration (applies to all
+        /// basebands)
+        ACS::TimeIntervalSeq exposures;
+
+        /// Antenna flags for each antenna
+        ACS::longSeq flagAntenna;
+
+        /// Polarization flags for each antenna and polarization
+        ACS::longSeqSeq flagPolarization;
+
+        /// Baseband flags for each antenna, polarization, and baseband
+        longSeqSeqSeq flagBaseband;
+
+        /// Correlator-induced flag for entire
+        boolean flagRow;
+
+        /// The commanded position, expressed as a polynomial
+        PointingDataSeq pointingDirection;
+
+        /// The encoder position data sampled every 24 ms
+        PointingDataSeq encoderData;
+
+        /// Focus Structure for this subscan
+        SubscanFocusData focusData;
+    };
+
+    /// ------------------------- LO Chain ---------------------------
+
+    /// LO offset mode enumeration.
+    enum LOOffsettingMode
+    {
+      LOOffsettingMode_NONE,
+      LOOffsettingMode_TWO_LOS,
+      LOOffsettingMode_THREE_LOS
+    };
+
+    /**
+     * Input specification of first LO sideband selection.
+     * NoPreference will generate solutions for both sidebands if possible
+     * (sideband is within frontend range and frontend supports both sidebands).
+     */
+    enum SidebandPreference
+    {
+        Upper,
+        Lower,
+        NoPreference
+    };
+
+    /**
+     * Input specification of Band2/Band3 preference where they overlap
+     * in frequency.
+     * The overlap frequency range is limited so AutoChoice is almost always
+     * the correct choice.
+     */
+    enum Band2Band3Overlap
+    {
+        Band2,
+        Band3,
+        AutoChoice
+    };
+
+    /**
+     * Input specification for a baseband in the SSB use case
+     */
+    struct SSBbasebandSpec
+    {
+        /// 0 disables band
+        double skyFreqHz;
+
+        /// 0 to 100
+        double weight;
+
+        /// 0 selects center of IF band
+        double ifFreqHz;
+
+        SidebandPreference sidebandPref;
+    };
+
+    /**
+     * Building block for input spec for the DSB use case
+     * @see DSBbasebandSpec
+     */
+    struct BasebandSpec
+    {
+        /// 0 disables band
+        double skyFreqHz;
+
+        /// 0 to 100
+        double weight;
+
+        /// 0 selects center of IF band
+        double ifFreqHz;
+    };
+
+    /**
+     * Input specification for a baseband in the DSB use case
+     */
+    struct DSBbasebandSpec
+    {
+        BasebandSpec USB;
+        BasebandSpec LSB;
+    };
+
+    /// Input specification for all basebands, SSB use case
+    typedef sequence<SSBbasebandSpec> SSBbasebandSpecSeq;
+
+    /// Input specification for all basebands, DSB use case
+    typedef sequence<DSBbasebandSpec> DSBbasebandSpecSeq;
+
+    /**
+     * Input specification of sky frequency sideband.
+     * USB:    Sky freq is above LO1
+     * LSB:    Sky freq is below LO1
+     * DSB:    Sky freqs are in both sidebands of LO1
+     */
+    enum SkyFreqSideband
+    {
+        USB,
+        LSB,
+        DSB
+    };
+
+    /// The tuning parameters for one baseband (erroneously called LO2).
+    struct LO2Parameters
+    {
+        /// Digital Yig Tuned Oscillator - this is the LO2 (Hz)
+        double DYTOFrequency;
+
+        /// Fine tuned synthesizer (Hz)
+        double FTSFrequency;
+
+        /// True when the FTS freq is added to Nx125MHz to get DYTO
+        boolean tuneHigh;
+
+        /// Sky frequency sideband; sky freq above LO1 (USB) or below (LSB)
+        Control::SkyFreqSideband skyFreqSideband;
+
+        /// True when the 12GHz filter is used
+        boolean use12GHzFilter;
+
+        /// Input requested that this baseband be used.
+        /// Not used to set the hardware.
+        boolean isUsed;
+    };
+
+    /// There are four second LO's
+    typedef LO2Parameters AllLO2Parameters[4];
+
+    /// There are many ways to set up the LO hardware to observe a specified
+    /// frequency. This struct can be used to completely define a unique LO
+    /// setup up. In general each of these parameters are used to set the
+    /// hardware, with a few exceptions of parameters that are needed to
+    /// reconstruct the input (these are noted).
+    struct TuningParameters
+    {
+        /// The receiver cartridge.
+        ReceiverBandMod::ReceiverBand receiverBand;
+
+        /// The Laser Synthesizer frequency
+        double LSFrequency;
+
+        /// First LO Offset Generator (FTS1) Frequency
+        double FLOOGFrequency;
+
+        /// True if the FLOOG frequency is added to make the 1st LO driver.
+        boolean tuneHigh;
+
+        /// The LO driver is multiplied by the coldMultiplier to give the 1st
+        /// LO.  This is a hardware characteristic and does not set hardware,
+        /// but is needed to calculate the LO setup and to set FLOOG offset
+        /// frequencies.
+        short coldMultiplier;
+
+        /// IF processor sideband selection for basebands 0 & 1
+        boolean band0band1selectUSB;
+
+        /// IF processor sideband selection for basebands 2 & 3
+        boolean band2band3selectUSB;
+
+        /// Tuning Parameters for all four second LO's.
+        AllLO2Parameters LO2;
+
+        /// Weighted error; weighted average of abs(actual-requested) frequency
+        /// over all basebands. This is one measure of the goodness of the
+        /// tuning.
+        double weightedError;
+
+        /// Score is measure of desirability of one tuning over another.
+        /// A higher score is better
+
+        double score;
+
+        /// Solution index, starting with zero.
+        /// A value of -1 means this is a direct spec of the hw, not a solution
+        short index;
+    };
+
+    typedef sequence<TuningParameters> AllTuningParameters;
+
+    /// The front-end mixer mode is, for nearly all ALMA observations,
+    /// NORMAL. NORMAL corresponds to the highest sensitivity way to operate
+    /// the front-end. Some observations, in particular solar observations,
+    /// need less sensitivity and may specify one of the other mixer modes to
+    /// bias the SIS mixers at a different, and less sensitive, operating
+    /// point. If a mixer mode, other than NORMAL is specified, and the current
+    /// band does not support it, the software may default to using NORMAL
+    /// mode.
+    enum FEMixerMode {    	
+        NORMAL, // First Photon Step
+        MD1, // Second Photon Step
+        MD2 // Above Step Gap
+    };
+
+    /// ------------------------- Weather  ---------------------------
+
+    /// This structure represents the data collected by the production ALMA
+    /// weather station and some derived quantities. Its used in the
+    /// transmission of the weather data from the control subsystem to the ASDM
+    /// (via data capture).
+    ///
+    /// A flag is false if the corresponding value is good.  Simulated values
+    /// are considered good data and there is no way to tell, from the data in
+    /// this structure, if a value is simulated or measured. This can be done
+    /// using the CurrentWeather interface.
+    struct WeatherData
+    {
+        /// The name of the weather station. e.g., "WSA71"
+        string name;
+
+        /// The mean timestamp of all the valid data in this structure.
+        ACS::Time timestamp;
+
+        /// The time interval over which all the good weather data in this
+        /// structure was measured.
+        ACS::TimeInterval timeInterval;
+
+        /// Air temperature in degrees Celsius
+        double temperature;
+        boolean temperatureFlag;
+
+        /// The relative-humidity is between 0 and 1.
+        double humidity;
+        boolean humidityFlag;
+
+        /// Barometric pressure, in Pascals. 1 hectoPascal is 100 Pascals.
+        double pressure;
+        boolean pressureFlag;
+
+        ///  Wind-speed, in m/s
+        double windSpeed;
+        boolean windSpeedFlag;
+
+        /// The wind direction, in radians. 0 is from the North and pi/2 is
+        /// from the East.
+        double windDirection;
+        boolean windDirectionFlag;
+
+        ///  The maximum wind-speed, in m/s, over the time-interval.
+        double windMax;
+        boolean windMaxFlag;
+    };
+
+    typedef sequence<WeatherData> WeatherDataSeq;
+
+    /// The WeatherStationCharacteristics structure is used by Control in
+    /// sending data about weather stations to data capture at the beginning of
+    /// a scheduling block execution.
+    struct WeatherStationCharacteristics
+    {
+        /// The name of the weather station. e.g., "WSA71"
+        string weatherStationName;
+
+        /// The position in meters of the weather station from the centre of
+        /// the earth. This is the same coordinate system as is used for the
+        /// antenna pads and z is towards the North pole.
+        double xPosition;
+        double yPosition;
+        double zPosition;
+    };
+
+    typedef sequence< WeatherStationCharacteristics >
+        WeatherStationCharacteristicsSeq;
+
+    /// ------------------------- WVR  ---------------------------
+
+    /// This structure contains information about the water vapour radiometers
+    /// that needs to go into the ASDM (via data capture). This is static data
+    /// that should not change within the execution of a scheduling block. The
+    /// frequencies will be slightly different for each WVR.
+    struct WVRConfig
+    {
+
+        /// The name of the antenna. e.g., "DV04"
+        string name;
+
+        /// The frequency of the LO. This will always be near the water vapour
+        /// line at 183.3 GHz;
+        double LOFreq;
+
+        /// The IF frequency at the centre of each channel. There are always
+        /// exactly four channels and the values are nominally
+        /// [1.25, 3.25, 5.5, 7.25] GHz
+        ACS::doubleSeq chanFreqIF;
+
+        /// The width of each channel.There are always exactly four channels
+        /// and the values are nominally [1.5, 2.5, 2.0, 1.5] GHz
+        ACS::doubleSeq chanWidths;
+    };
+
+    typedef sequence<WVRConfig> WVRConfigSeq;
+
+    /// ------------------------- LLC Structure  ---------------------------
+
+    /** This structure contains the information which should be passed to data
+     * capture whenever a LLC Reset is performed
+     */
+    struct LLCStretcherResetData
+    {
+        /// This is the name of the antenna
+        string antennaName;
+
+        /// This is the change in the fringe counter during the reset
+        long fringeCounter;
+
+        /// This is the change in the fast stretcher voltage
+        double fastStretcherVoltageChange;
+    };
+
+    typedef sequence<LLCStretcherResetData> LLCStretcherResetDataSeq;
+
+    /// ------------------------- Phasing System Structures  ---------------------------
+
+    // Defines all relevant array parameters per baseband, to be set at the
+    // beginning of an observation.
+    struct AppArrayParams {
+        BasebandNameMod::BasebandName baseband;
+        AntennaSeq phasedArray;
+        AntennaSeq efficiencyArray;
+        string refAntenna;
+    };
+
+    typedef sequence<AppArrayParams> AppArrayParamsSeq;
+
+    // Defines phasing efficiencies per channel per antenna per BB
+    struct AppPhasingEfficiency {
+        string compAntennaName;
+        ACS::floatSeq efficiency;
+    };
+
+    typedef sequence<AppPhasingEfficiency> AppPhasingEfficiencySeq;
+
+    // Defines quality value per antenna per BB
+    struct AppAntennaQuality {
+        string antennaName;
+        float quality;
+    };
+
+    typedef sequence<AppAntennaQuality> AppAntennaQualitySeq;
+
+    // Defines calculation mode to be applied in the CORR Software (fast loop and other options).
+    struct AppCorrMode {
+        BasebandNameMod::BasebandName baseband;  //for internal reference only, can be deduced from AppMode
+        boolean isEnabled;          //true if any fast phase corrections are to be applied
+        ACS::TimeInterval interval; //time interval for expected fast loop phase applications
+        boolean useWVR;             //whether to use WVR corrections
+        boolean absoluteWVR;        //whether to use absolute or relative WVR corrections
+        boolean keepPhases;         //whether to keep slow phases in between subscan sequences, within the same correlator subarray
+        boolean useRDC;             //whether to apply residual delay corrections in the CDP
+                                    // (this is the smaller residual part of the delayServer corrections)
+        boolean useBBD;             //whether to apply baseband delay corrections in the CDP
+                                    // (this is the fixed instrumental delay from the TMCDB)
+    };
+
+    typedef sequence<AppCorrMode> AppCorrModeSeq;
+
+    // Defines calculation mode to be applied in TelCal (slow loop).
+    struct AppTelcalMode {
+        boolean isActive;       //true if in active mode, passive mode otherwise (driven by scan intent)
+        boolean useSourceModel; //whether to use a source model for phase solutions
+        string sourceModelAux;  //auxiliary string to facilitate source model access/query
+    };
+
+    // Defines efficiency thresholds to update the phasedArray.
+    struct AppVomMode {
+        boolean isEnabled;          //true if any slow loop adjustments are to be applied (i.e. phases or sum mask)
+        double lowerThreshold;      //efficiency: evaluate removing antenna from phasedArray
+        double upperThreshold;      //efficiency: evaluate adding antenna to phasedArray
+        short scansPerAdjustment;   //places a limit on frequency of phasedArray adjustments
+        float qualityThresholdAny;  //antennas of lesser quality are considered unusable
+        float qualityThresholdEff;  //same idea, but applies to the efficiencyArray antennas
+        float qualityThresholdRef;  //same idea, but applies to the refAntenna
+    };
+
+    // Defines phase packaging method, to be considered by TelCal and CCC.
+    // NumValues are computed from numChannels and numReceptors
+    // (from SpectralSpec) using enum rules.
+    //   numChannels (channel averages; 1-640)
+    //   numReceptors (polarizations; 1,2)
+    //   numValues (provided phases)
+    const string appPackModeOnePerAnt  = "ONE_PER_ANT";  //one per polarization per antenna
+    const string appPackModePerAverage = "PER_AVERAGE";  //one per polarization per channel avg per antenna
+    const string appPackModeTwoPerAnt  = "TWO_PER_ANT";  //two per polarization per antenna
+
+    // Phasing mode structure that gathers the modes in which the different
+    // parts of the system will operate. The two string values are just a
+    // reference to be incorporated into the ASDM, representing the rest of the
+    // structures.
+    struct AppMode {
+        BasebandNameMod::BasebandName baseband;
+        string phasingMode;  //corresponding ASDM field
+
+        AppTelcalMode telcalMode;
+        AppCorrMode corrMode;
+        AppVomMode vomMode;
+    };
+
+    typedef sequence<AppMode> AppModeSeq;
+
+    /// Defines a VLBI recording schedule for one specific baseband.
+    struct VLBISchedule {
+        BasebandNameMod::BasebandName baseband; //baseband name, mapped to a quadrant
+        string scheduleXML;
+    };
+
+    typedef sequence<VLBISchedule> VLBIScheduleSeq;
+
+    /// Defines the status of a VLBI scan.
+    struct VLBIScanStatus {
+        BasebandNameMod::BasebandName baseband; //baseband name, mapped to a quadrant
+        string scanName;
+        string statusPolX;
+        string statusPolY;
+    };
+
+    typedef sequence<VLBIScanStatus> VLBIScanStatusSeq;
+
+};
+#endif // CONTROLDATAINTERFACES_MIDL

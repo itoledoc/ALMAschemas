@@ -1,0 +1,294 @@
+// @(#) $Id: ControlDelayInterfaces.idl 211881 2014-12-02 19:58:44Z rmarson $
+//
+// ALMA - Atacama Large Millimeter Array
+// (c) Associated Universities Inc., 2007, 2013 - 2014
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+
+#ifndef _CONTROLDELAYINTERFACES_IDL_
+#define _CONTROLDELAYINTERFACES_IDL_
+
+#include <acscommon.idl> // For ACS::Time
+
+#pragma prefix "alma"
+
+/**
+ * This IDL module contains the public IDL interfaces implemented
+ * by the Control system which are part of the Delay system.  In
+ * particular the DelayEvents and UVWs are defined here.  These 
+ * external interfaces are used by ALMA subsystems outside of Control 
+ * and are defined in the CVS IDL/CONTROL module.
+ * <p>
+ */
+module Control {
+  /**
+   * Structure for specifying fine delay values.
+   */
+  struct FineDelayValue 
+  {
+    /**
+     * Relative ms till these are valid
+     */
+    unsigned short relativeStartTime;
+    /**
+     * Three bits of delay values
+     */ 
+    octet fineDelay;
+  };
+  
+  /** 
+   * Structure for defining coarse delay values.
+   */
+  struct CoarseDelayValue 
+  {
+    /**
+     * Relative ms till these are valid
+     */
+    unsigned short relativeStartTime;
+    /**
+     * Quantized delay (250 ps samples)
+     */
+    unsigned long coarseDelay; 
+  };
+  
+  /** 
+   * Structure for defining total delay values.
+   */
+  struct TotalDelayValue
+  {
+    /**
+     * Absolute time of this delay value
+     */
+    ACS::Time time;
+    /**
+     * Total Delay Value
+     */
+    double totalDelay;
+  };
+  
+  typedef sequence < FineDelayValue > FineDelayValueSeq;
+  typedef sequence < CoarseDelayValue > CoarseDelayValueSeq;
+  typedef sequence < TotalDelayValue > TotalDelaySeq;
+  
+  /**
+   * The DelayTable gives a set of values suitable for polynomial
+   * interpolation this provides delay at any point
+   */
+  struct DelayTable
+  {
+    ACS::Time      startTime;
+    ACS::Time      stopTime;
+    TotalDelaySeq  delayValues;
+  };
+  
+  
+  typedef sequence < DelayTable > DelayTableSeq;
+
+  /**
+   * NOTE: The following information is out of date!
+   * This event carries the total delay as well as quantized delays for t
+   * correlator, digitizer clock and FTS.  These values are valid from
+   * [startTime,stopTime).
+   * <p>
+   * The ABM's, CCC & CDP will subscribe to an event channel which
+   * utilizes this delay structure.
+   * As proposed by D'Addario in 'Notes on Delay Tracking for ALMA:
+   * Resolution & Tolerance', 2003-Feb-08, up to 5 fine delays (1/8 of a
+   * sample) adjustments may be required in a 48ms TE. Also the bulk
+   * delay (an integral number of 8 ns samples) adjusted in the correlator
+   * needs to change in coordination with the fine delay .In light of
+   * this, the following delay model structure is calculated and
+   * transmitted by the model server. It is proposed that this event is
+   * sent once every 5-60 seconds sufficiently well in advance of when
+   * it is needed (so that there is a high probability that it arrives
+   * in time). The fine delay is expected to change on average eight
+   * times more frequently than the coarse delay hence separate
+   * strucures are used for the fine and coarse delay. Assuming that on
+   * average the fine delay rate needs to be updated every 21.6
+   * milli-seconds and the coarse delay needs to be updated eight times
+   * less frequently the average data rate using this structure is:
+   *<ul>
+   *<li>   sizeof(FineDelayValue) = 3;
+   *<li>   number of fineDelaysValues/sec = 1/(21E-3) = 46.3
+   *<li>   sizeof(coarseDelaysValue) = 4;
+   *<li>   number of fineDelaysValues/sec = 1/(8*21E-3) = 5.79
+   *<li>   total data for ten second interval =
+   *   10 * (3 * 46.3 + 4 * 5.79) + 8 + 2 + 4 + 4 + 5 * 8
+   *       = 1679 bytes or 168bytes/sec
+   *</ul>
+   *   (This assumes the length of each sequence is encoded using an integer)
+   *   For 64 antennas this becomes 64 * 168 = 10.7kbytes/sec
+   */
+  struct AntennaDelayEvent {
+    /**
+     * Array time at which this block becomes valid
+     */
+    ACS::Time startTime; 
+    /**
+     * Array time for which this block becomes invalid
+     */
+    ACS::Time stopTime;
+    /**
+     * ID of antenna for which this applies
+     */
+    string antennaName; 
+    /**
+     * Sequence of coarse delay values
+     */
+    CoarseDelayValueSeq coarseDelays;
+    /**
+     * Sequence of fine delay values
+     */
+    FineDelayValueSeq fineDelays;
+    /**
+     * Total delay table corresponding to the polynomial
+     * approximation order plus 1 entries
+     */
+    DelayTableSeq delayTables; 
+  };
+  
+  typedef sequence < AntennaDelayEvent > AntennaDelayEventSeq;
+  
+  struct ArrayDelayEvent {
+    /**
+     * Name of the array for which these events are valid
+     */
+    string arrayName;
+
+    /**	
+     * Sequence number of this event
+     */
+    long sequenceNumber;
+    
+    /**
+     * The Delay Events for each sequence
+     */
+    AntennaDelayEventSeq antennaDelayEvents;
+  };
+  
+
+  struct UVWEntry {
+    /**
+     * Array time for which this UVW set is calculated
+     */
+    ACS::Time validTime; 
+
+    /**
+     * The component of the baseline in the direction orthogonal to 
+     * both the source direction and the z axis of the geocentric earth
+     * X,Y,Z co-ordinate system.
+     */
+    double U;
+
+    /**
+     * The component of the baseline in the direction perpendicular to the 
+     * sorce direction and in the plane of the source direction and the
+     * z axis of the geocentric earth
+     * X,Y,Z co-ordinate system.
+     */
+    double V;
+
+    /**
+     * The component of the baseline in the direction of the source
+     */
+    double W;
+
+  };
+    
+
+  typedef sequence<UVWEntry> UVWEntrySeq;
+
+  /**  
+   * The AntennaUVWTable holds the UVW points for a single antenna
+   * and is valid from startTime to stopTime.  It is expected that the
+   * UVW triplet for any given time is found from this set by interpolation
+   * thus it is possible that the valid time for any particular Entry
+   * may fall outside the interval [sartTime, stopTime)
+   */
+  
+
+  struct AntennaUVWTable {
+    /**
+     * Array time at which this block becomes valid
+     */
+    ACS::Time startTime; 
+    /**
+     * Array time for which this block becomes invalid
+     */
+    ACS::Time stopTime;
+
+    /**
+     * Sequence of UVWEvents, which are valid for the duration of this table
+     */
+    UVWEntrySeq uvwEntries;
+  };
+
+  typedef sequence <AntennaUVWTable> AntennaUVWTableSeq;
+
+
+  /**
+   * An Antenna UVW Event bundles together all of the 
+   * AntennaUVWTables which could be used in the duration of the
+   * ArrayUVWEnvent.
+   */
+  struct AntennaUVWEvent {
+    /**
+     * ID of antenna for which this applies
+     */
+    string antennaName; 
+    
+    /**
+     * Sequece of uvwTables which cover the duration of the ArrayUVWEvent
+     */
+    AntennaUVWTableSeq uvwTables;
+  };
+
+  typedef sequence <AntennaUVWEvent> AntennaUVWEventSeq;
+
+
+  /** 
+   * Collection of antenna UVW Events corresponding to a single array.
+   * Note: It is possible that these will "overlap" in time.  In this case
+   * the last one recieved has the correct information.
+   */
+  struct ArrayUVWEvent {
+    /**
+     * Name of the array for which these events are valid
+     */
+    string arrayName;
+    
+    /**
+     * Array time at which this block becomes valid
+     */
+    ACS::Time startTime;
+ 
+    /**
+     * Array time for which this block becomes invalid
+     */
+    ACS::Time stopTime;
+    
+    /**	
+     * Sequence number of this event
+     */
+    long sequenceNumber;
+
+    /**
+     * Sequence of antennaUVWEvents, one per antenna in the array.
+     */
+    AntennaUVWEventSeq antennaUVWEvents;
+  };
+}; // End of module Control
+
+#endif

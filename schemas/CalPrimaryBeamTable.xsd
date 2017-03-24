@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,25 +30,41 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File CalPrimaryBeamTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:clprbm="http://Alma/XASDM/CalPrimaryBeamTable" xmlns:ent="Alma/CommonEntity" xmlns:cpbdsc="http://Alma/XENUM/PrimaryBeamDescriptionMod" xmlns:poltyp="http://Alma/XENUM/PolarizationTypeMod" xmlns:recvrb="http://Alma/XENUM/ReceiverBandMod" xmlns:antmak="http://Alma/XENUM/AntennaMakeMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/CalPrimaryBeamTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:clprbm="http://Alma/XASDM/CalPrimaryBeamTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:cpbdsc="http://Alma/XENUM/PrimaryBeamDescriptionMod"
+	xmlns:recvrb="http://Alma/XENUM/ReceiverBandMod"
+	xmlns:antmak="http://Alma/XENUM/AntennaMakeMod"
+	xmlns:poltyp="http://Alma/XENUM/PolarizationTypeMod"
+					   targetNamespace="http://Alma/XASDM/CalPrimaryBeamTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
 		<!-- We need the schema of PrimaryBeamDescription -->
-		<xs:import namespace="http://Alma/XENUM/PrimaryBeamDescriptionMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/PrimaryBeamDescription.xsd" />
-		<!-- No specific import for ArrayTime -->
+		<xs:import namespace="http://Alma/XENUM/PrimaryBeamDescriptionMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/PrimaryBeamDescription.xsd"/>
 		<!-- No specific import for Angle -->
-		<!-- No specific import for int -->
+		<!-- No specific import for ArrayTime -->
+		<!-- We need the schema of ReceiverBand -->
+		<xs:import namespace="http://Alma/XENUM/ReceiverBandMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverBand.xsd"/>
+		<!-- No specific import for double -->
+		<!-- We need the schema of AntennaMake -->
+		<xs:import namespace="http://Alma/XENUM/AntennaMakeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/AntennaMake.xsd"/>
+		<!-- No specific import for Frequency -->
 		<!-- No specific import for String -->
 		<!-- We need the schema of PolarizationType -->
-		<xs:import namespace="http://Alma/XENUM/PolarizationTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/PolarizationType.xsd" />
-		<!-- We need the schema of ReceiverBand -->
-		<xs:import namespace="http://Alma/XENUM/ReceiverBandMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverBand.xsd" />
-		<!-- We need the schema of AntennaMake -->
-		<xs:import namespace="http://Alma/XENUM/AntennaMakeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/AntennaMake.xsd" />
-		<!-- No specific import for Frequency -->
-		<!-- No specific import for EntityRef -->
-		<!-- No specific import for double -->
+		<xs:import namespace="http://Alma/XENUM/PolarizationTypeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/PolarizationType.xsd"/>
 		<!-- No specific import for float -->
+		<!-- No specific import for EntityRef -->
+		<!-- No specific import for int -->
+	
 	
 	
 	
@@ -60,45 +76,104 @@
 	
 	<xs:complexType name="stupidEntityRefT">
 		<xs:sequence>
-			<xs:element name="EntityRef" type="ent:EntityRefT" />
+			<xs:element name="EntityRef" type="ent:EntityRefT"/>
 		</xs:sequence>
 	</xs:complexType>
-	
 	
 	
     <xs:element name="CalPrimaryBeamTable">
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="antennaName" type="xs:string" />
-         <xs:element name="receiverBand" type="recvrb:ReceiverBand" />
-         <xs:element name="startValidTime" type="xs:string" />
-         <xs:element name="endValidTime" type="xs:string" />
-         <xs:element name="antennaMake" type="antmak:AntennaMake" />
-         <xs:element name="numSubband" type="xs:string" />
-         <xs:element name="frequencyRange" type="xs:string" />
-         <xs:element name="numReceptor" type="xs:string" />
-         <xs:element name="polarizationTypes" type="xs:string" />
-         <xs:element name="mainBeamEfficiency" type="xs:string" />
-         <xs:element name="beamDescriptionUID" type="clprbm:stupidEntityRefT" />
-         <xs:element name="relativeAmplitudeRms" type="xs:string" />
-         <xs:element name="direction" type="xs:string" />
-         <xs:element name="minValidDirection" type="xs:string" />
-         <xs:element name="maxValidDirection" type="xs:string" />
-         <xs:element name="descriptionType" type="cpbdsc:PrimaryBeamDescription" />
-         <xs:element name="imageChannelNumber" type="xs:string" />
-         <xs:element name="imageNominalFrequency" type="xs:string" />
-         <xs:element name="calDataId" type="xs:string" />
-         <xs:element name="calReductionId" type="xs:string" />
+         <xs:element name="antennaName" type=
+"xs:string"
+
+/>
+         <xs:element name="receiverBand" type=
+"recvrb:ReceiverBand"
+
+/>
+         <xs:element name="startValidTime" type=
+"xs:string"
+
+/>
+         <xs:element name="endValidTime" type=
+"xs:string"
+
+/>
+         <xs:element name="antennaMake" type=
+"antmak:AntennaMake"
+
+/>
+         <xs:element name="numSubband" type=
+"xs:string"
+
+/>
+         <xs:element name="frequencyRange" type=
+"xs:string"
+
+/>
+         <xs:element name="numReceptor" type=
+"xs:string"
+
+/>
+         <xs:element name="polarizationTypes" type=
+"xs:string"
+
+/>
+         <xs:element name="mainBeamEfficiency" type=
+"xs:string"
+
+/>
+         <xs:element name="beamDescriptionUID" type=
+"clprbm:stupidEntityRefT"
+
+/>
+         <xs:element name="relativeAmplitudeRms" type=
+"xs:string"
+
+/>
+         <xs:element name="direction" type=
+"xs:string"
+
+/>
+         <xs:element name="minValidDirection" type=
+"xs:string"
+
+/>
+         <xs:element name="maxValidDirection" type=
+"xs:string"
+
+/>
+         <xs:element name="descriptionType" type=
+"cpbdsc:PrimaryBeamDescription"
+
+/>
+         <xs:element name="imageChannelNumber" type=
+"xs:string"
+
+/>
+         <xs:element name="imageNominalFrequency" type=
+"xs:string"
+
+/>
+         <xs:element name="calDataId" type=
+"xs:string"
+
+/>
+         <xs:element name="calReductionId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,16 +30,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File FieldTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:field="http://Alma/XASDM/FieldTable" xmlns:ent="Alma/CommonEntity" xmlns:direfc="http://Alma/XENUM/DirectionReferenceCodeMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/FieldTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:field="http://Alma/XASDM/FieldTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:direfc="http://Alma/XENUM/DirectionReferenceCodeMod"
+					   targetNamespace="http://Alma/XASDM/FieldTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for ArrayTime -->
-		<!-- We need the schema of DirectionReferenceCode -->
-		<xs:import namespace="http://Alma/XENUM/DirectionReferenceCodeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/DirectionReferenceCode.xsd" />
 		<!-- No specific import for Angle -->
-		<!-- No specific import for int -->
-		<!-- No specific import for String -->
+		<!-- No specific import for ArrayTime -->
 		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
+		<!-- No specific import for int -->
+		<!-- We need the schema of DirectionReferenceCode -->
+		<xs:import namespace="http://Alma/XENUM/DirectionReferenceCodeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/DirectionReferenceCode.xsd"/>
 	
 	
 	
@@ -50,29 +59,71 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="fieldId" type="xs:string" />
-         <xs:element name="fieldName" type="xs:string" />
-         <xs:element name="numPoly" type="xs:string" />
-         <xs:element name="delayDir" type="xs:string" />
-         <xs:element name="phaseDir" type="xs:string" />
-         <xs:element name="referenceDir" type="xs:string" />
-     	 <xs:element name="time" type="xs:string" minOccurs="0" />
-     	 <xs:element name="code" type="xs:string" minOccurs="0" />
-     	 <xs:element name="directionCode" type="direfc:DirectionReferenceCode" minOccurs="0" />
-     	 <xs:element name="directionEquinox" type="xs:string" minOccurs="0" />
-     	 <xs:element name="assocNature" type="xs:string" minOccurs="0" />
-     	 <xs:element name="assocFieldId" type="xs:string" minOccurs="0" />
-     	 <xs:element name="ephemerisId" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sourceId" type="xs:string" minOccurs="0" />
+         <xs:element name="fieldId" type=
+"xs:string"
+
+/>
+         <xs:element name="fieldName" type=
+"xs:string"
+
+/>
+         <xs:element name="numPoly" type=
+"xs:string"
+
+/>
+         <xs:element name="delayDir" type=
+"xs:string"
+
+/>
+         <xs:element name="phaseDir" type=
+"xs:string"
+
+/>
+         <xs:element name="referenceDir" type=
+"xs:string"
+
+/>
+     	 <xs:element name="time" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="code" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="directionCode" type=
+"direfc:DirectionReferenceCode"
+
+  minOccurs="0"/>
+     	 <xs:element name="directionEquinox" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="assocNature" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="assocFieldId" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="ephemerisId" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sourceId" type=
+"xs:string"
+
+  minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

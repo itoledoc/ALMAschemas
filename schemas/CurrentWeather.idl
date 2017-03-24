@@ -1,0 +1,330 @@
+// @(#) $Id: CurrentWeather.idl 236869 2016-10-26 16:15:21Z rmarson $
+//
+// ALMA - Atacama Large Millimeter Array
+// (c) Associated Universities Inc., 2008 - 2009, 2015, 2016
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+//
+#ifndef CURRENTWEATHER_IDL
+#define CURRENTWEATHER_IDL
+
+#pragma prefix "alma"
+
+#include <ControlExceptions.idl> // for the exception declarations
+#include <acscommon.idl> // for ACS::Time
+#include <acscomponent.idl>
+
+
+module Control
+{
+    /// This interface provides functions that return the current
+    /// weather for ALMA. It aggregates the information from a number of
+    /// weather stations and provides and the best estimate of the
+    /// weather at any particular location for ALMA. It is a read-only
+    /// interface and to manipulate the type of information that is
+    /// returned by these functions, such as turning on simulation or
+    /// enabling specific weather stations, you need to use the
+    /// WeatherStationController interface.
+
+    interface CurrentWeather : ACS::ACSComponent
+    {
+        /// The functions in this section allow you to get the pressure
+        
+        struct Pressure {
+            double value; // The pressure in Pascals (1 hPa = 100Pa)
+            ACS::Time timestamp; // When this value was measured. Zero if
+            // the value is not meaningful e.g., the weather station is disabled.
+        };
+
+        /// Return the pressure, in Pascals (1 hectoPascal is 100 Pascals), at
+        /// the specified antenna. All names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the antenna name is not recognized.
+        Pressure getPressureAtAntenna(in string antennaName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the pressure, in Pascals (1 hectoPascal is 100 Pascals), at
+        /// the specified pad . This is an interpolated value that is the best
+        /// estimate for the value at this location. It ignores any disabled
+        /// weather stations. All names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the pad name is not recognized.
+        Pressure getPressureAtPad(in string padName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the pressure, in Pascals (1 hectoPascal is 100 Pascals), at
+        /// the specified weather station. All names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the weather station name is not recognized.
+        Pressure getPressure(in string wsName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// The functions in this section allow you to get the wind-speed
+
+        struct WindSpeed {
+            double value; // The wind-speed in meters per second
+            ACS::Time timestamp; // When this value was measured. Zero if
+            // the value is not meaningful e.g., the weather station is disabled.
+        };
+
+        /// Return the wind-speed, in m/s, at the specified antenna. All
+        /// names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the antenna name is not recognized.
+        WindSpeed getWindSpeedAtAntenna(in string antennaName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+    
+        /// Return the wind-speed, in m/s, at the specified pad. This is
+        /// an interpolated value that is the best estimate for the value at
+        /// this location and ignores any disabled weather stations. All names
+        /// are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the pad name is not recognized.
+        WindSpeed getWindSpeedAtPad(in string padName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the wind-speed, in m/s, at the specified weather
+        /// station. All names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the weather station name is not recognized.
+        WindSpeed getWindSpeed(in string wsName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// The functions in this section allow you to get the wind direction
+
+        struct WindDirection {
+            double value; // The wind-direction in radians. 0 is from the
+                          // North and pi/2 is from the East
+            ACS::Time timestamp; // When this value was measured. Zero if
+            // the value is not meaningful e.g., the weather station is disabled.
+        };
+
+        /// Return the wind direction, in radians, at the specified antenna. 0
+        /// is from the North and pi/2 is from the East.  All names are case
+        /// insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the antenna name is not recognized.
+        WindDirection getWindDirectionAtAntenna(in string antennaName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the wind direction, in radians, at the specified pad. 0 is
+        /// from the North and pi/2 is from the East. This is an interpolated
+        /// value that is the best estimate for the value at this location and
+        /// ignores any disabled weather stations. All names are case
+        /// insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the pad name is not recognized.
+        WindDirection getWindDirectionAtPad(in string padName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the wind-direction, in radians, at the specified weather
+        /// station. 0 is from the North and pi/2 is from the East. All names
+        /// are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the weather station name is not recognized.
+        WindDirection getWindDirection(in string wsName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// The functions in this section allow you to get the temperature
+
+        struct Temperature {
+            double value; // The temperature in degrees C.
+            ACS::Time timestamp; // When this value was measured. Zero if
+            // the value is not meaningful e.g., the weather station is disabled.
+        };
+
+        /// Return the temperature, in degrees C, at the specified antenna. All
+        /// names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the antenna name is not recognized.
+        Temperature getTemperatureAtAntenna(in string antennaName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the temperature, in degrees C, at the specified pad. This is
+        /// an interpolated value that is the best estimate for the value at
+        /// this location and ignores any disabled weather stations. All names
+        /// are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the pad name is not recognized.
+        Temperature getTemperatureAtPad(in string padName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the temperature, in degrees C, at the specified weather
+        /// station. All names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the weather station name is not recognized.
+        Temperature getTemperature(in string wsName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// The functions in this section allow you to get the dew point
+
+        struct DewPoint {
+            double value; // The dew point in degrees C.
+            ACS::Time timestamp; // When this value was measured. Zero if
+            // the value is not meaningful e.g., the weather station is disabled.
+        };
+
+        /// Return the dew point, in degrees C, at the specified antenna. All
+        /// names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the antenna name is not recognized.
+        DewPoint getDewPointAtAntenna(in string antennaName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the dew point, in degrees C, at the specified pad. This is
+        /// an interpolated value that is the best estimate for the value at
+        /// this location and ignores any disabled weather stations. All names
+        /// are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the pad name is not recognized.
+        DewPoint getDewPointAtPad(in string padName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the dew point, in degrees C, at the specified weather
+        /// station. All names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the weather station name is not recognized.
+        DewPoint getDewPoint(in string wsName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the relativehumidity, between 0 and 1, at the specified
+        /// weather station. All names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the weather station name is not recognized.
+
+
+        /// The functions in this section allow you to get the relative
+        /// humidity.
+        struct Humidity {
+            double value; // The relative humidity (normally between 0 an 1)
+            ACS::Time timestamp; // When this value was measured. Zero if
+            // the value is not meaningful e.g., the weather station is disabled.
+        };
+
+        /// Return the relative humidity (normally between 0 and 1), at the
+        /// specified antenna . All names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the antenna name is not recognized.
+        Humidity getHumidityAtAntenna(in string antennaName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+        
+        /// Return the relative humidity (normally between 0 and 1), at the
+        /// specified pad . This is an interpolated value that is the best
+        /// estimate for the value at this location and ignores any disabled
+        /// weather stations. All names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the pad name is not recognized.
+        Humidity getHumidityAtPad(in string padName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the  relative humidity (normally between 0 and 1), at
+        /// the specified weather station. All names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the weather station name is not recognized.
+        Humidity getHumidity(in string wsName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+
+        /// The functions in this section allow you to get all weather parameters
+        struct Weather {
+            Pressure p; // Current pressure
+            WindSpeed ws; // Current wind speed
+            WindDirection wd; // Current wind direction
+            Temperature t; // Current temperature
+            DewPoint dp; // Current dew point
+            Humidity h; // Current humidity
+        };
+
+        /// Return all weather parameters, at the specified antenna. This is an
+        /// interpolated value that is the best estimate for the value at this
+        /// location and ignores any disabled weather stations. All names are
+        /// case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the antenna name is not recognized.
+        Weather getWeatherAtAntenna(in string antennaName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return all weather parameters, at the specified pad. This is an
+        /// interpolated value that is the best estimate for the value at this
+        /// location and ignores any disabled weather stations. All names are
+        /// case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the pad name is not recognized.
+        Weather getWeatherAtPad(in string padName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return all weather parameters at the specified weather station. All
+        /// names are case insensitive.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the weather station name is not recognized.
+        Weather getWeather(in string wsName) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// Return the weather station that will be used for the specified pad
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the pad name is not recognized.
+        string getWeatherStationForPad(in string padName)
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        /// The functions in this section provide information on the
+        /// individual weather stations that compose this weather station
+        /// controller.
+        struct Location {
+            string name;  // weather station name
+            // The distance, in meters, from the centre of the earth. These
+            // are in the ITRF reference frame
+            double x; 
+            double y; 
+            double z; 
+        };
+        typedef sequence<Location> LocationSeq;
+
+        /// Returns the location of all the weather stations that the
+        /// weather station controller is aware of.
+        LocationSeq weatherStationLocations();
+
+        /// Returns true if the specified weather station is enabled
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If the weather station name is not recognized.
+        boolean isEnabled(in string wsName)
+            raises(ControlExceptions::IllegalParameterErrorEx);
+
+        
+        /// The functions in this section allow you to get the precipitable
+        /// water vapour (PWV). This comes from the water vapour radiometer
+        /// (WVR) on each 12m antenna.
+        struct PWV {
+            double value; // The precipitable water vapour in Pascals (1 mmHg = 760./101325 Pa)
+            ACS::Time timestamp; // When this value was measured. Zero if
+            // the value is not meaningful e.g., the antenna does not have a working water vapour radiometer
+        };
+
+        struct AntennaPWV {
+            string antennaName; 
+            PWV p;
+        };
+        typedef sequence<AntennaPWV> AntennaPWVSeq;
+        
+        /// Return the PWV, in Pascals, from the WVR on the specified
+        /// antennas. All names are case insensitive. If no antenna name is
+        /// specified then values from all antennas are averaged. Antennas with
+        /// a disabled WVR are excluded from the average.
+        /// \exception ControlExceptions::IllegalParameterErrorEx
+        /// If any antenna name is not recognized.
+        AntennaPWVSeq getPWV(in ACS::stringSeq antNames) 
+            raises(ControlExceptions::IllegalParameterErrorEx);
+    };
+};
+#endif // CURRENTWEATHER_IDL

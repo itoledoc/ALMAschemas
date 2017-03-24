@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File SpectralResolutionType.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sprslt="http://Alma/XENUM/SpectralResolutionTypeMod" targetNamespace="http://Alma/XENUM/SpectralResolutionTypeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:sprslt="http://Alma/XENUM/SpectralResolutionTypeMod" 
+                         targetNamespace="http://Alma/XENUM/SpectralResolutionTypeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="SpectralResolutionType">
 	
 		<xsd:annotation>
@@ -40,15 +45,15 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="CHANNEL_AVERAGE">
+			<xsd:enumeration value="CHANNEL_AVERAGE" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BASEBAND_WIDE">
+			<xsd:enumeration value="BASEBAND_WIDE" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="FULL_RESOLUTION">
+			<xsd:enumeration value="FULL_RESOLUTION" >
 		
 			</xsd:enumeration>
      
@@ -70,9 +75,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="SpectralResolutionTypes">
+	<xsd:simpleType name ="SpectralResolutionTypes">
 		<xsd:restriction base="sprslt:SpectralResolutionTypeList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

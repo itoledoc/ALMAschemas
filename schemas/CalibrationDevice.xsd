@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File CalibrationDevice.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:caldev="http://Alma/XENUM/CalibrationDeviceMod" targetNamespace="http://Alma/XENUM/CalibrationDeviceMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:caldev="http://Alma/XENUM/CalibrationDeviceMod" 
+                         targetNamespace="http://Alma/XENUM/CalibrationDeviceMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="CalibrationDevice">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="AMBIENT_LOAD">
+			<xsd:enumeration value="AMBIENT_LOAD" >
 		
 				<xsd:annotation>
 					<xsd:documentation>An absorbing load at the ambient temperature. </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="COLD_LOAD">
+			<xsd:enumeration value="COLD_LOAD" >
 		
 				<xsd:annotation>
 					<xsd:documentation>A cooled absorbing load. </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="HOT_LOAD">
+			<xsd:enumeration value="HOT_LOAD" >
 		
 				<xsd:annotation>
 					<xsd:documentation>A heated absorbing load. </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="NOISE_TUBE_LOAD">
+			<xsd:enumeration value="NOISE_TUBE_LOAD" >
 		
 				<xsd:annotation>
 					<xsd:documentation>A noise tube. </xsd:documentation>
@@ -72,7 +77,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="QUARTER_WAVE_PLATE">
+			<xsd:enumeration value="QUARTER_WAVE_PLATE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>A transparent plate that introduces a 90-degree phase difference between othogonal polarizations. </xsd:documentation>
@@ -80,7 +85,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SOLAR_FILTER">
+			<xsd:enumeration value="SOLAR_FILTER" >
 		
 				<xsd:annotation>
 					<xsd:documentation>An optical attenuator (to protect receiver from solar heat). </xsd:documentation>
@@ -88,7 +93,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="NONE">
+			<xsd:enumeration value="NONE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>No device, the receiver looks at the sky (through the telescope). </xsd:documentation>
@@ -114,9 +119,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="CalibrationDevices">
+	<xsd:simpleType name ="CalibrationDevices">
 		<xsd:restriction base="caldev:CalibrationDeviceList">
-			<xsd:maxLength value="7" />
+			<xsd:maxLength value = "7" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

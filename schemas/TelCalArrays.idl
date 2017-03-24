@@ -1,0 +1,103 @@
+/*
+ * ALMA - Atacama Large Millimiter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * All rights reserved
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ * 
+ * File TelCalArrays.idl
+ * 
+ */
+
+#ifndef _TELCAL_ARRAYS_IDL_
+#define _TELCAL_ARRAYS_IDL_
+
+#include <baci.idl>
+#include <acscomponent.idl>
+#include <TelCalErrType.idl>
+
+#pragma prefix "alma"
+
+/** @file TelCalArrays.idl
+ *  TelCalArrays IDL File
+ */
+module telcal
+{
+
+  //////////////////////////////////////////////////////////////////////////
+  //                      interface                      */
+  //////////////////////////////////////////////////////////////////////////
+  
+  /** This interface is implemented by the TELCAL_ARRAY_MANAGER component, 
+   * which deals with a pool of TELCAL receivers (TELCAL_DATAMANAGER_1, 
+   * TELCAL_DATAMANAGER_2,...) according to the number of arrays running in 
+   * parallel.
+   * The component is driven by the array events (createdArrayEvent / 
+   * destroyedArrayEvent).
+   * The interface is used by the TELCAL_MASTER component for the shutdown of 
+   * the subsystem. It could also be used for a  stop/restart of a component, 
+   * when an error is detected.
+   */
+
+  interface TelCalArrays: ACS::ACSComponent
+  {
+    /** 
+     * Disconnect all the connected receivers
+     * It is used by  TELCAL_MASTER_COMPONENT during shutdown_pass1
+     */
+    void disconnectAll()
+      raises (TelCalErrType::DisconnectErrorEx);
+
+    /** 
+     * Close all the receivers 
+     * It is used by  TELCAL_MASTER_COMPONENT during shutdown_pass1
+     */
+    void closeAllReceivers();
+    //raises (TelCalErrType::DisconnectErrorEx);
+
+    /** 
+     * Close a receiver
+     */
+    void closeReceiver(in string receiver);
+    //  raises (TelCalErrType::DisconnectErrorEx);
+
+
+    /////////////////////////////////////////////////////////
+    //     Common methods                 
+    ////////////////////////////////////////////////////////
+
+    /** 
+     * Get status for a receiver (connected/ not connected)
+     */
+    string getStatus(in string receiver);
+
+    /** 
+     * Set dual/single stream mode for TELCAL_DATAMANAGER_xx receivers 
+     * If dualStreamMode is true, the TELCAL_DATAMANAGER_xx receiver components are connected to two streams : correlator and TP streams
+     */
+    void setDualStreamMode(in boolean dualStreamMode); // true or false
+ 
+    /** 
+     * Get dual/single stream mode for TELCAL_DATAMANAGER_xx receivers 
+     */
+    boolean getDualStreamMode(); // true or false 
+
+  };  
+};
+
+#endif

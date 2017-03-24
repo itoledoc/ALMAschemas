@@ -1,0 +1,85 @@
+/******************************************************************************** $Id: JacPrep,v 1.13 2010/01/04 15:34:48 gchiozzi Exp $
+* DO NOT EDIT
+* Automatically generated from ../idl/ArrayTime.midl
+* on Wed Mar 22 15:33:44 2017
+*******************************************************************************/
+#ifndef _ArrayTime_midl_
+#define _ArrayTime_midl_
+#ifndef _ACS_PREPROCESSED_
+#define _ACS_PREPROCESSED_
+#endif
+#include <baci.idl>
+#include <enumpropMACRO.idl>
+#include <enumpropStd.idl>
+#include <ControlTimeSourceInterfaces.idl>
+#include "CorrErr.idl"
+
+
+
+
+
+
+
+
+
+#pragma prefix "alma"
+
+module Correlator
+{
+
+
+
+    enum ArrayTimeModes {SOFT, FW, HARD};
+
+    typedef sequence<ArrayTimeModes> ArrayTimeModesSeq; interface CBArrayTimeModes : ACS::Callback { oneway void working(in ArrayTimeModes value, in ACSErr::Completion c, in ACS::CBDescOut desc); oneway void done(in ArrayTimeModes value, in ACSErr::Completion c, in ACS::CBDescOut desc); };
+typedef CBArrayTimeModes ArrayTimeModesCB; interface AlarmArrayTimeModes : ACS::Callback { oneway void alarm_raised(in ArrayTimeModes value, in ACSErr::Completion c, in ACS::CBDescOut desc); oneway void alarm_cleared(in ArrayTimeModes value, in ACSErr::Completion c, in ACS::CBDescOut desc); };
+ typedef AlarmArrayTimeModes ArrayTimeModesAlarm; interface PArrayTimeModes: ACS::TypelessProperty { ArrayTimeModes get_sync(out ACSErr::Completion c); void get_async(in ACS::CBpattern cb, in ACS::CBDescIn desc); long get_history(in long n_last_values, out ArrayTimeModesSeq vs, out ACS::TimeSeq ts); ACS::Monitorpattern create_monitor(in ACS::CBpattern cb, in ACS::CBDescIn desc); ACS::Monitor create_postponed_monitor (in ACS::Time start_time, in ACS::CBpattern cb, in ACS::CBDescIn desc); readonly attribute ACS::TimeInterval default_timer_trigger; readonly attribute ACS::TimeInterval min_timer_trigger; readonly attribute ArrayTimeModes default_value; readonly attribute ACS::stringSeq statesDescription; readonly attribute ACS::ConditionSeq condition; readonly attribute ArrayTimeModesSeq allStates; };
+ interface ROArrayTimeModes: PArrayTimeModes{ ACS::Subscription new_subscription_AlarmEnum(in ACS::Alarmpattern cb, in ACS::CBDescIn desc); readonly attribute ArrayTimeModesSeq alarm_on; readonly attribute ArrayTimeModesSeq alarm_off; };
+ interface RWArrayTimeModes: PArrayTimeModes { ACSErr::Completion set_sync(in ArrayTimeModes value); void set_async(in ArrayTimeModes value, in ACS::CBvoid cb, in ACS::CBDescIn desc); void set_nonblocking(in ArrayTimeModes value);};
+
+    enum ArrayTimeTypes {LOCALCPU, ARRAY};
+
+    typedef sequence<ArrayTimeTypes> ArrayTimeTypesSeq; interface CBArrayTimeTypes : ACS::Callback { oneway void working(in ArrayTimeTypes value, in ACSErr::Completion c, in ACS::CBDescOut desc); oneway void done(in ArrayTimeTypes value, in ACSErr::Completion c, in ACS::CBDescOut desc); };
+typedef CBArrayTimeTypes ArrayTimeTypesCB; interface AlarmArrayTimeTypes : ACS::Callback { oneway void alarm_raised(in ArrayTimeTypes value, in ACSErr::Completion c, in ACS::CBDescOut desc); oneway void alarm_cleared(in ArrayTimeTypes value, in ACSErr::Completion c, in ACS::CBDescOut desc); };
+ typedef AlarmArrayTimeTypes ArrayTimeTypesAlarm; interface PArrayTimeTypes: ACS::TypelessProperty { ArrayTimeTypes get_sync(out ACSErr::Completion c); void get_async(in ACS::CBpattern cb, in ACS::CBDescIn desc); long get_history(in long n_last_values, out ArrayTimeTypesSeq vs, out ACS::TimeSeq ts); ACS::Monitorpattern create_monitor(in ACS::CBpattern cb, in ACS::CBDescIn desc); ACS::Monitor create_postponed_monitor (in ACS::Time start_time, in ACS::CBpattern cb, in ACS::CBDescIn desc); readonly attribute ACS::TimeInterval default_timer_trigger; readonly attribute ACS::TimeInterval min_timer_trigger; readonly attribute ArrayTimeTypes default_value; readonly attribute ACS::stringSeq statesDescription; readonly attribute ACS::ConditionSeq condition; readonly attribute ArrayTimeTypesSeq allStates; };
+ interface ROArrayTimeTypes: PArrayTimeTypes{ ACS::Subscription new_subscription_AlarmEnum(in ACS::Alarmpattern cb, in ACS::CBDescIn desc); readonly attribute ArrayTimeTypesSeq alarm_on; readonly attribute ArrayTimeTypesSeq alarm_off; };
+ interface RWArrayTimeTypes: PArrayTimeTypes { ACSErr::Completion set_sync(in ArrayTimeTypes value); void set_async(in ArrayTimeTypes value, in ACS::CBvoid cb, in ACS::CBDescIn desc); void set_nonblocking(in ArrayTimeTypes value);};
+
+
+
+
+
+    struct ArrayTimeClockData_t
+    {
+        ArrayTimeModes mode;
+        ArrayTimeTypes type;
+        long long t0;
+        long long cpu_on_last_te;
+        long long cpu_on_next_te;
+        unsigned long ticks;
+        unsigned long cpu_hz;
+    };
+
+    interface ArrayTime : ACS::CharacteristicComponent
+    {
+        readonly attribute ROArrayTimeModes mode;
+        readonly attribute ROArrayTimeTypes type;
+ void synchronizeTime(in Control::TimeSource timeSourceRef)
+            raises ( CorrErr::ErrorEx );
+        boolean isSynchronized() raises(CorrErr::ErrorEx);
+
+
+
+
+
+        void resynchronize() raises(CorrErr::ErrorEx);
+        void getClockData(
+            out ACS::Time receive,
+            out ArrayTimeClockData_t clockData,
+            out ACS::Time transmit)
+            raises(CorrErr::ErrorEx);
+    };
+
+};
+
+#endif

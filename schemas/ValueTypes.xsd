@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:val="Alma/ValueTypes" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="Alma/ValueTypes">  
 
   <!-- 'DoubleWithUnitT' is not derived from the UML model; 
@@ -6,7 +7,7 @@
   <xsd:complexType name="DoubleWithUnitT"> 
     <xsd:simpleContent> 
       <xsd:extension base="xsd:double"> 
-        <xsd:attribute name="unit" type="xsd:string" use="required" /> 
+        <xsd:attribute name="unit" type="xsd:string" use="required"/> 
       </xsd:extension> 
     </xsd:simpleContent> 
   </xsd:complexType>  
@@ -18,11 +19,11 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="deg" />  
-              <xsd:enumeration value="rad" />  
-              <xsd:enumeration value="arcmin" />  
-              <xsd:enumeration value="arcsec" />  
-              <xsd:enumeration value="mas" /> 
+              <xsd:enumeration value="deg"/>  
+              <xsd:enumeration value="rad"/>  
+              <xsd:enumeration value="arcmin"/>  
+              <xsd:enumeration value="arcsec"/>  
+              <xsd:enumeration value="mas"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -37,11 +38,11 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="mm" />  
-              <xsd:enumeration value="cm" />  
-              <xsd:enumeration value="m" />  
-              <xsd:enumeration value="km" />  
-              <xsd:enumeration value="pc" /> 
+              <xsd:enumeration value="mm"/>  
+              <xsd:enumeration value="cm"/>  
+              <xsd:enumeration value="m"/>  
+              <xsd:enumeration value="km"/>  
+              <xsd:enumeration value="pc"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -56,9 +57,9 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="m/s" />  
-              <xsd:enumeration value="km/h" />  
-              <xsd:enumeration value="km/s" /> 
+              <xsd:enumeration value="m/s"/>  
+              <xsd:enumeration value="km/h"/>  
+              <xsd:enumeration value="km/s"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -73,10 +74,10 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="MHz" />  
-              <xsd:enumeration value="GHz" />  
-              <xsd:enumeration value="kHz" />  
-              <xsd:enumeration value="Hz" /> 
+              <xsd:enumeration value="MHz"/>  
+              <xsd:enumeration value="GHz"/>  
+              <xsd:enumeration value="kHz"/>  
+              <xsd:enumeration value="Hz"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -87,27 +88,27 @@
   <!-- generated from ValueType 'SkyCoordinates' -->  
   <xsd:complexType name="SkyCoordinatesT"> 
     <xsd:sequence> 
-      <xsd:element name="longitude" type="val:LongitudeT" />  
-      <xsd:element name="latitude" type="val:LatitudeT" />  
-      <xsd:element name="fieldName" type="xsd:string" /> 
+      <xsd:element name="longitude" type="val:LongitudeT"/>  
+      <xsd:element name="latitude" type="val:LatitudeT"/>  
+      <xsd:element name="fieldName" type="xsd:string"/> 
     </xsd:sequence>  
     <xsd:attribute name="system" default="J2000"> 
       <xsd:simpleType> 
         <xsd:restriction base="xsd:string"> 
-          <xsd:enumeration value="J2000" />  
-          <xsd:enumeration value="galactic" />  
-          <xsd:enumeration value="ecliptic" />  
-          <xsd:enumeration value="azel" />  
-          <xsd:enumeration value="ICRS" />  
-          <xsd:enumeration value="horizon" /> 
+          <xsd:enumeration value="J2000"/>  
+          <xsd:enumeration value="galactic"/>  
+          <xsd:enumeration value="ecliptic"/>  
+          <xsd:enumeration value="azel"/>  
+          <xsd:enumeration value="ICRS"/>  
+          <xsd:enumeration value="horizon"/> 
         </xsd:restriction> 
       </xsd:simpleType> 
     </xsd:attribute>  
     <xsd:attribute name="type"> 
       <xsd:simpleType> 
         <xsd:restriction base="xsd:string"> 
-          <xsd:enumeration value="ABSOLUTE" />  
-          <xsd:enumeration value="RELATIVE" /> 
+          <xsd:enumeration value="ABSOLUTE"/>  
+          <xsd:enumeration value="RELATIVE"/> 
         </xsd:restriction> 
       </xsd:simpleType> 
     </xsd:attribute> 
@@ -116,25 +117,25 @@
   <!-- generated from ValueType 'Velocity' -->  
   <xsd:complexType name="VelocityT"> 
     <xsd:sequence> 
-      <xsd:element name="centerVelocity" type="val:SpeedT" /> 
+      <xsd:element name="centerVelocity" type="val:SpeedT"/> 
     </xsd:sequence>  
     <xsd:attribute name="referenceSystem" default="lsrk"> 
       <xsd:simpleType> 
         <xsd:restriction base="xsd:string"> 
-          <xsd:enumeration value="bar" />  
-          <xsd:enumeration value="lsrk" />  
-          <xsd:enumeration value="topo" />  
-          <xsd:enumeration value="hel" />  
-          <xsd:enumeration value="lsr" /> 
+          <xsd:enumeration value="bar"/>  
+          <xsd:enumeration value="lsrk"/>  
+          <xsd:enumeration value="topo"/>  
+          <xsd:enumeration value="hel"/>  
+          <xsd:enumeration value="lsr"/> 
         </xsd:restriction> 
       </xsd:simpleType> 
     </xsd:attribute>  
     <xsd:attribute name="dopplerCalcType" default="OPTICAL"> 
       <xsd:simpleType> 
         <xsd:restriction base="xsd:string"> 
-          <xsd:enumeration value="RADIO" />  
-          <xsd:enumeration value="OPTICAL" />  
-          <xsd:enumeration value="RELATIVISTIC" /> 
+          <xsd:enumeration value="RADIO"/>  
+          <xsd:enumeration value="OPTICAL"/>  
+          <xsd:enumeration value="RELATIVISTIC"/> 
         </xsd:restriction> 
       </xsd:simpleType> 
     </xsd:attribute> 
@@ -147,8 +148,8 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="Jy" />  
-              <xsd:enumeration value="mJy" /> 
+              <xsd:enumeration value="Jy"/>  
+              <xsd:enumeration value="mJy"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -163,13 +164,13 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="ns" />  
-              <xsd:enumeration value="us" />  
-              <xsd:enumeration value="ms" />  
-              <xsd:enumeration value="s" />  
-              <xsd:enumeration value="min" />  
-              <xsd:enumeration value="h" />  
-              <xsd:enumeration value="d" /> 
+              <xsd:enumeration value="ns"/>  
+              <xsd:enumeration value="us"/>  
+              <xsd:enumeration value="ms"/>  
+              <xsd:enumeration value="s"/>  
+              <xsd:enumeration value="min"/>  
+              <xsd:enumeration value="h"/>  
+              <xsd:enumeration value="d"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -184,10 +185,10 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="arcsec/s" />  
-              <xsd:enumeration value="arcmin/s" />  
-              <xsd:enumeration value="deg/s" />  
-              <xsd:enumeration value="mas/yr" /> 
+              <xsd:enumeration value="arcsec/s"/>  
+              <xsd:enumeration value="arcmin/s"/>  
+              <xsd:enumeration value="deg/s"/>  
+              <xsd:enumeration value="mas/yr"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -202,10 +203,10 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="mas" />  
-              <xsd:enumeration value="arcsec" />  
-              <xsd:enumeration value="arcmin" />  
-              <xsd:enumeration value="fraction of main beam" /> 
+              <xsd:enumeration value="mas"/>  
+              <xsd:enumeration value="arcsec"/>  
+              <xsd:enumeration value="arcmin"/>  
+              <xsd:enumeration value="fraction of main beam"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -220,8 +221,8 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="Jy" />  
-              <xsd:enumeration value="mJy" /> 
+              <xsd:enumeration value="Jy"/>  
+              <xsd:enumeration value="mJy"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -236,11 +237,11 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="deg" />  
-              <xsd:enumeration value="rad" />  
-              <xsd:enumeration value="arcmin" />  
-              <xsd:enumeration value="arcsec" />  
-              <xsd:enumeration value="mas" /> 
+              <xsd:enumeration value="deg"/>  
+              <xsd:enumeration value="rad"/>  
+              <xsd:enumeration value="arcmin"/>  
+              <xsd:enumeration value="arcsec"/>  
+              <xsd:enumeration value="mas"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -255,11 +256,11 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="deg" />  
-              <xsd:enumeration value="rad" />  
-              <xsd:enumeration value="arcmin" />  
-              <xsd:enumeration value="arcsec" />  
-              <xsd:enumeration value="mas" /> 
+              <xsd:enumeration value="deg"/>  
+              <xsd:enumeration value="rad"/>  
+              <xsd:enumeration value="arcmin"/>  
+              <xsd:enumeration value="arcsec"/>  
+              <xsd:enumeration value="mas"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -274,13 +275,13 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="ns" />  
-              <xsd:enumeration value="us" />  
-              <xsd:enumeration value="ms" />  
-              <xsd:enumeration value="s" />  
-              <xsd:enumeration value="min" />  
-              <xsd:enumeration value="h" />  
-              <xsd:enumeration value="d" /> 
+              <xsd:enumeration value="ns"/>  
+              <xsd:enumeration value="us"/>  
+              <xsd:enumeration value="ms"/>  
+              <xsd:enumeration value="s"/>  
+              <xsd:enumeration value="min"/>  
+              <xsd:enumeration value="h"/>  
+              <xsd:enumeration value="d"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -295,13 +296,13 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="ns" />  
-              <xsd:enumeration value="us" />  
-              <xsd:enumeration value="ms" />  
-              <xsd:enumeration value="s" />  
-              <xsd:enumeration value="min" />  
-              <xsd:enumeration value="h" />  
-              <xsd:enumeration value="d" /> 
+              <xsd:enumeration value="ns"/>  
+              <xsd:enumeration value="us"/>  
+              <xsd:enumeration value="ms"/>  
+              <xsd:enumeration value="s"/>  
+              <xsd:enumeration value="min"/>  
+              <xsd:enumeration value="h"/>  
+              <xsd:enumeration value="d"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -312,51 +313,61 @@
   <!-- generated from ValueType 'Status' -->  
   <xsd:complexType name="StatusT"> 
     <xsd:sequence> 
-      <xsd:element name="ReadyTime" type="xsd:string" />  
-      <xsd:element name="StartTime" type="xsd:string" />  
-      <xsd:element name="EndTime" type="xsd:string" /> 
+      <xsd:element name="ReadyTime" type="xsd:string"/>  
+      <xsd:element name="StartTime" type="xsd:string"/>  
+      <xsd:element name="EndTime" type="xsd:string"/> 
     </xsd:sequence>  
     <xsd:attribute name="State"> 
       <xsd:simpleType> 
         <xsd:restriction base="xsd:string"> 
-          <xsd:enumeration value="Approved" />  
-          <xsd:enumeration value="Broken" />  
-          <xsd:enumeration value="Canceled" />  
-          <xsd:enumeration value="Deleted" />  
-          <xsd:enumeration value="FullyObserved" />  
-          <xsd:enumeration value="PartiallyObserved" />  
-          <xsd:enumeration value="Phase2Submitted" />  
-          <xsd:enumeration value="PipelineError" />  
-          <xsd:enumeration value="Processed" />  
-          <xsd:enumeration value="Ready" />  
-          <xsd:enumeration value="Repaired" />  
-          <xsd:enumeration value="Running" />  
-          <xsd:enumeration value="ObservingTimedOut" />  
-          <xsd:enumeration value="ToBeRepaired" />  
-          <xsd:enumeration value="Verified" />  
-          <xsd:enumeration value="AnyState" />  
-          <xsd:enumeration value="Phase1Submitted" />  
-          <xsd:enumeration value="NewPhase1" />  
-          <xsd:enumeration value="NewPhase2" />  
-          <xsd:enumeration value="ObservingTerminated" />  
-          <xsd:enumeration value="ObservingAborted" />  
-          <xsd:enumeration value="ObservingFailed" />  
-          <xsd:enumeration value="VerificationFailure" />  
-          <xsd:enumeration value="Suspended" />  
-          <xsd:enumeration value="Rejected" />  
-          <xsd:enumeration value="CSVReady" />  
-          <xsd:enumeration value="CSVRunning" />  
-          <xsd:enumeration value="CSVSuspended" />  
-          <xsd:enumeration value="Completed" />  
-          <xsd:enumeration value="Delivered" />  
-          <xsd:enumeration value="InProgress" />  
-          <xsd:enumeration value="PipelineProcessing" />  
-          <xsd:enumeration value="ReadyForProcessing" />  
-          <xsd:enumeration value="ReadyToDeliver" />  
-          <xsd:enumeration value="CalibratorCheck" />  
-          <xsd:enumeration value="QA2InProgress" />  
-          <xsd:enumeration value="ManualProcessing" />  
-          <xsd:enumeration value="ReprocessingRequired" /> 
+          <xsd:enumeration value="Approved"/>  
+          <xsd:enumeration value="Broken"/>  
+          <xsd:enumeration value="Canceled"/>  
+          <xsd:enumeration value="Deleted"/>  
+          <xsd:enumeration value="FullyObserved"/>  
+          <xsd:enumeration value="PartiallyObserved"/>  
+          <xsd:enumeration value="Phase2Submitted"/>  
+          <xsd:enumeration value="PipelineError"/>  
+          <xsd:enumeration value="Processed"/>  
+          <xsd:enumeration value="Ready"/>  
+          <xsd:enumeration value="Repaired"/>  
+          <xsd:enumeration value="Running"/>  
+          <xsd:enumeration value="ObservingTimedOut"/>  
+          <xsd:enumeration value="ToBeRepaired"/>  
+          <xsd:enumeration value="Verified"/>  
+          <xsd:enumeration value="AnyState"/>  
+          <xsd:enumeration value="Phase1Submitted"/>  
+          <xsd:enumeration value="NewPhase1"/>  
+          <xsd:enumeration value="NewPhase2"/>  
+          <xsd:enumeration value="ObservingTerminated"/>  
+          <xsd:enumeration value="ObservingAborted"/>  
+          <xsd:enumeration value="ObservingFailed"/>  
+          <xsd:enumeration value="VerificationFailure"/>  
+          <xsd:enumeration value="Suspended"/>  
+          <xsd:enumeration value="Rejected"/>  
+          <xsd:enumeration value="CSVReady"/>  
+          <xsd:enumeration value="CSVRunning"/>  
+          <xsd:enumeration value="CSVSuspended"/>  
+          <xsd:enumeration value="Completed"/>  
+          <xsd:enumeration value="Delivered"/>  
+          <xsd:enumeration value="InProgress"/>  
+          <xsd:enumeration value="PipelineProcessing"/>  
+          <xsd:enumeration value="ReadyForProcessing"/>  
+          <xsd:enumeration value="ReadyToDeliver"/>  
+          <xsd:enumeration value="CalibratorCheck"/>  
+          <xsd:enumeration value="QA2InProgress"/>  
+          <xsd:enumeration value="ManualProcessing"/>  
+          <xsd:enumeration value="ReprocessingRequired"/>  
+          <xsd:enumeration value="Waiting"/>  
+          <xsd:enumeration value="QA3InProgress"/>  
+          <xsd:enumeration value="PartiallyCompleted"/>  
+          <xsd:enumeration value="NotObserved"/>  
+          <xsd:enumeration value="ProcessingProblem"/>  
+          <xsd:enumeration value="Processing"/>  
+          <xsd:enumeration value="ReadyForReview"/>  
+          <xsd:enumeration value="Reviewing"/>  
+          <xsd:enumeration value="DeliveryInProgress"/>  
+          <xsd:enumeration value="DoNotObserve"/> 
         </xsd:restriction> 
       </xsd:simpleType> 
     </xsd:attribute> 
@@ -369,8 +380,8 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="K" />  
-              <xsd:enumeration value="mK" /> 
+              <xsd:enumeration value="K"/>  
+              <xsd:enumeration value="mK"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -385,11 +396,11 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="B/s" />  
-              <xsd:enumeration value="KB/s" />  
-              <xsd:enumeration value="MB/s" />  
-              <xsd:enumeration value="GB/s" />  
-              <xsd:enumeration value="TB/s" /> 
+              <xsd:enumeration value="B/s"/>  
+              <xsd:enumeration value="KB/s"/>  
+              <xsd:enumeration value="MB/s"/>  
+              <xsd:enumeration value="GB/s"/>  
+              <xsd:enumeration value="TB/s"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -404,11 +415,11 @@
         <xsd:attribute name="unit" use="required"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="B" />  
-              <xsd:enumeration value="KB" />  
-              <xsd:enumeration value="MB" />  
-              <xsd:enumeration value="GB" />  
-              <xsd:enumeration value="TB" /> 
+              <xsd:enumeration value="B"/>  
+              <xsd:enumeration value="KB"/>  
+              <xsd:enumeration value="MB"/>  
+              <xsd:enumeration value="GB"/>  
+              <xsd:enumeration value="TB"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -419,22 +430,22 @@
   <!-- generated from ValueType 'Magnitude' -->  
   <xsd:complexType name="MagnitudeT"> 
     <xsd:sequence> 
-      <xsd:element name="value" type="xsd:double" /> 
+      <xsd:element name="value" type="xsd:double"/> 
     </xsd:sequence> 
   </xsd:complexType>  
 
   <!-- generated from ValueType 'ExecBlockRef' -->  
   <xsd:complexType name="ExecBlockRefT"> 
     <xsd:sequence> 
-      <xsd:element name="ExecBlockId" type="xsd:string" /> 
+      <xsd:element name="ExecBlockId" type="xsd:string"/> 
     </xsd:sequence> 
   </xsd:complexType>  
 
   <!-- generated from ValueType 'KeywordValue' -->  
   <xsd:complexType name="KeywordValueT"> 
     <xsd:sequence> 
-      <xsd:element name="Keyword" type="xsd:string" />  
-      <xsd:element name="Value" type="xsd:string" /> 
+      <xsd:element name="Keyword" type="xsd:string"/>  
+      <xsd:element name="Value" type="xsd:string"/> 
     </xsd:sequence> 
   </xsd:complexType>  
 
@@ -445,13 +456,13 @@
         <xsd:attribute name="userUnit"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="deg" />  
-              <xsd:enumeration value="rad" />  
-              <xsd:enumeration value="arcmin" />  
-              <xsd:enumeration value="arcsec" />  
-              <xsd:enumeration value="mas" />  
-              <xsd:enumeration value="fraction of main beam" />  
-              <xsd:enumeration value="h" /> 
+              <xsd:enumeration value="deg"/>  
+              <xsd:enumeration value="rad"/>  
+              <xsd:enumeration value="arcmin"/>  
+              <xsd:enumeration value="arcsec"/>  
+              <xsd:enumeration value="mas"/>  
+              <xsd:enumeration value="fraction of main beam"/>  
+              <xsd:enumeration value="h"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -466,12 +477,12 @@
         <xsd:attribute name="userUnit"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="MHz" />  
-              <xsd:enumeration value="GHz" />  
-              <xsd:enumeration value="kHz" />  
-              <xsd:enumeration value="Hz" />  
-              <xsd:enumeration value="m/s" />  
-              <xsd:enumeration value="km/s" /> 
+              <xsd:enumeration value="MHz"/>  
+              <xsd:enumeration value="GHz"/>  
+              <xsd:enumeration value="kHz"/>  
+              <xsd:enumeration value="Hz"/>  
+              <xsd:enumeration value="m/s"/>  
+              <xsd:enumeration value="km/s"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 
@@ -486,11 +497,11 @@
         <xsd:attribute name="userUnit"> 
           <xsd:simpleType> 
             <xsd:restriction base="xsd:string"> 
-              <xsd:enumeration value="Jy" />  
-              <xsd:enumeration value="mJy" />  
-              <xsd:enumeration value="K" />  
-              <xsd:enumeration value="mK" />  
-              <xsd:enumeration value="uJy" /> 
+              <xsd:enumeration value="Jy"/>  
+              <xsd:enumeration value="mJy"/>  
+              <xsd:enumeration value="K"/>  
+              <xsd:enumeration value="mK"/>  
+              <xsd:enumeration value="uJy"/> 
             </xsd:restriction> 
           </xsd:simpleType> 
         </xsd:attribute> 

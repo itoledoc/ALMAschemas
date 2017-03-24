@@ -1,0 +1,294 @@
+#ifndef ACA_CCC_MONITOR_IDL
+#define ACA_CCC_MONITOR_IDL
+/**
+****************************************************************************
+*
+* Copyright (C) 2011 National Astronomical Observatory of Japan and Fujitsu LIMITED 
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+**/
+
+#include <ACACorrErr.idl>
+#include <CorrErr.idl>
+#include <CorrStateModel.idl>
+
+#pragma prefix "alma"
+
+module ACACorrelator
+{
+
+    /// The structure maintains hardware failure information on one time. 
+    struct HardwareFailure_t {
+        // The timestamp at the acs::time when the ACA correlator detected the failure.
+        ACS::Time timestamp;    
+
+        // A number uniquely assigned by the ACA correlator to identify
+        // the hardware failure information. It ranges 1 to 4294967295.
+        unsigned long failureID; 
+
+        // This defines the module type of the module where the hardware failure detected as follows
+        // - MCI module    : '0'
+        // - DFP module    : '1'
+        // - CIP module    : '2'
+        char  moduleType;
+    
+        // This specifies the module identifier of the module where the hardware failure detected as follows
+        // - MCI module    : "0x00"
+        // - DFP module    : "0x01" to '0x08"
+        // - CIP module    : "0x09" to '0x0C"
+        char  moduleID;               
+
+        //This defines the card identifier of the card within the module
+        // where the hardware failure is detected as follows:
+        // For MCI module
+        //    - POWCON card: "0x05" or "0x06"
+        // For DFP module
+        //    - FFT card:  "0x00" to "0x07"
+        //    - DTSR card: "0x08" or "0x09"
+        // For CIP module
+        //    - CIP card:  "0x00" to "0x07"
+        //    - MTI card:  "0x08" or "0x09"
+        char  cardID;                 
+
+        // reserve
+        char  reserve;
+
+        //The TE counter at the time when the ACA correlator detected the failure.
+        unsigned short teCounter;     
+
+        //Failure identifier code. detail for ACA-CCC protpcol plan("5.5.1 Failure code");
+        unsigned short failureCode;   
+
+        //Detail information. detailed for ACA-CCC protpcol plan("5.5.2 Detailed information");
+        unsigned long  detailInfo;  
+
+        //A number makes a count of every startups of the ACA correlator. It ranges 0 to 65535.
+        //Using the "Startup counter", the ACA-CCC could know in which running of the ACA correlator
+        //the hardware failure was detected
+        unsigned short startUpCounter;
+    };
+    typedef sequence<HardwareFailure_t> HardwareFailureSeq;
+
+    // Number of maximum hardware failure preservation(per correlator set) in CCC.
+    // - The value shuould define by 32 or more.
+    const unsigned long MAXIMUM_NUMBER_OF_HARDWARE_FAILURE_PRESEVATION = 128;
+
+
+    /** ACACCC_Monitor Interface.
+     ** This interface defines the monitor information for the
+     ** ACA correlator hardware and the ACA Correlator Control Computer (ACACCC).
+     ** It is the responsibility of the Control system to retrieve the relevant monitor
+     ** points and save them in the MonitorStore of the Archive as it does with
+     ** its other monitor data.
+     */
+    interface ACACCC_Monitor: CorrelatorPrivate::CorrStateModel
+    {
+        readonly attribute ACS::ROfloatSeq temp0_MCI;
+        readonly attribute ACS::ROfloatSeq temp0_DFP0;
+        readonly attribute ACS::ROfloatSeq temp0_DFP1;
+        readonly attribute ACS::ROfloatSeq temp0_DFP2;
+        readonly attribute ACS::ROfloatSeq temp0_DFP3;
+        readonly attribute ACS::ROfloatSeq temp0_DFP4;
+        readonly attribute ACS::ROfloatSeq temp0_DFP5;
+        readonly attribute ACS::ROfloatSeq temp0_DFP6;
+        readonly attribute ACS::ROfloatSeq temp0_DFP7;
+        readonly attribute ACS::ROfloatSeq temp0_CIP0;
+        readonly attribute ACS::ROfloatSeq temp0_CIP1;
+        readonly attribute ACS::ROfloatSeq temp0_CIP2;
+        readonly attribute ACS::ROfloatSeq temp0_CIP3;
+        readonly attribute ACS::ROfloatSeq temp1_MCI;
+        readonly attribute ACS::ROfloatSeq temp1_DFP0;
+        readonly attribute ACS::ROfloatSeq temp1_DFP1;
+        readonly attribute ACS::ROfloatSeq temp1_DFP2;
+        readonly attribute ACS::ROfloatSeq temp1_DFP3;
+        readonly attribute ACS::ROfloatSeq temp1_DFP4;
+        readonly attribute ACS::ROfloatSeq temp1_DFP5;
+        readonly attribute ACS::ROfloatSeq temp1_DFP6;
+        readonly attribute ACS::ROfloatSeq temp1_DFP7;
+        readonly attribute ACS::ROfloatSeq temp1_CIP0;
+        readonly attribute ACS::ROfloatSeq temp1_CIP1;
+        readonly attribute ACS::ROfloatSeq temp1_CIP2;
+        readonly attribute ACS::ROfloatSeq temp1_CIP3;
+        readonly attribute ACS::ROfloatSeq temp2_MCI;
+        readonly attribute ACS::ROfloatSeq temp2_DFP0;
+        readonly attribute ACS::ROfloatSeq temp2_DFP1;
+        readonly attribute ACS::ROfloatSeq temp2_DFP2;
+        readonly attribute ACS::ROfloatSeq temp2_DFP3;
+        readonly attribute ACS::ROfloatSeq temp2_DFP4;
+        readonly attribute ACS::ROfloatSeq temp2_DFP5;
+        readonly attribute ACS::ROfloatSeq temp2_DFP6;
+        readonly attribute ACS::ROfloatSeq temp2_DFP7;
+        readonly attribute ACS::ROfloatSeq temp2_CIP0;
+        readonly attribute ACS::ROfloatSeq temp2_CIP1;
+        readonly attribute ACS::ROfloatSeq temp2_CIP2;
+        readonly attribute ACS::ROfloatSeq temp2_CIP3;
+        readonly attribute ACS::ROfloatSeq temp3_MCI;
+        readonly attribute ACS::ROfloatSeq temp3_DFP0;
+        readonly attribute ACS::ROfloatSeq temp3_DFP1;
+        readonly attribute ACS::ROfloatSeq temp3_DFP2;
+        readonly attribute ACS::ROfloatSeq temp3_DFP3;
+        readonly attribute ACS::ROfloatSeq temp3_DFP4;
+        readonly attribute ACS::ROfloatSeq temp3_DFP5;
+        readonly attribute ACS::ROfloatSeq temp3_DFP6;
+        readonly attribute ACS::ROfloatSeq temp3_DFP7;
+        readonly attribute ACS::ROfloatSeq temp3_CIP0;
+        readonly attribute ACS::ROfloatSeq temp3_CIP1;
+        readonly attribute ACS::ROfloatSeq temp3_CIP2;
+        readonly attribute ACS::ROfloatSeq temp3_CIP3;
+        readonly attribute ACS::ROfloatSeq fanMotor0_MCI;
+        readonly attribute ACS::ROfloatSeq fanMotor0_DFP0;
+        readonly attribute ACS::ROfloatSeq fanMotor0_DFP1;
+        readonly attribute ACS::ROfloatSeq fanMotor0_DFP2;
+        readonly attribute ACS::ROfloatSeq fanMotor0_DFP3;
+        readonly attribute ACS::ROfloatSeq fanMotor0_DFP4;
+        readonly attribute ACS::ROfloatSeq fanMotor0_DFP5;
+        readonly attribute ACS::ROfloatSeq fanMotor0_DFP6;
+        readonly attribute ACS::ROfloatSeq fanMotor0_DFP7;
+        readonly attribute ACS::ROfloatSeq fanMotor0_CIP0;
+        readonly attribute ACS::ROfloatSeq fanMotor0_CIP1;
+        readonly attribute ACS::ROfloatSeq fanMotor0_CIP2;
+        readonly attribute ACS::ROfloatSeq fanMotor0_CIP3;
+        readonly attribute ACS::ROfloatSeq fanMotor1_MCI;
+        readonly attribute ACS::ROfloatSeq fanMotor1_DFP0;
+        readonly attribute ACS::ROfloatSeq fanMotor1_DFP1;
+        readonly attribute ACS::ROfloatSeq fanMotor1_DFP2;
+        readonly attribute ACS::ROfloatSeq fanMotor1_DFP3;
+        readonly attribute ACS::ROfloatSeq fanMotor1_DFP4;
+        readonly attribute ACS::ROfloatSeq fanMotor1_DFP5;
+        readonly attribute ACS::ROfloatSeq fanMotor1_DFP6;
+        readonly attribute ACS::ROfloatSeq fanMotor1_DFP7;
+        readonly attribute ACS::ROfloatSeq fanMotor1_CIP0;
+        readonly attribute ACS::ROfloatSeq fanMotor1_CIP1;
+        readonly attribute ACS::ROfloatSeq fanMotor1_CIP2;
+        readonly attribute ACS::ROfloatSeq fanMotor1_CIP3;
+        readonly attribute ACS::ROfloatSeq fanMotor2_MCI;
+        readonly attribute ACS::ROfloatSeq fanMotor2_DFP0;
+        readonly attribute ACS::ROfloatSeq fanMotor2_DFP1;
+        readonly attribute ACS::ROfloatSeq fanMotor2_DFP2;
+        readonly attribute ACS::ROfloatSeq fanMotor2_DFP3;
+        readonly attribute ACS::ROfloatSeq fanMotor2_DFP4;
+        readonly attribute ACS::ROfloatSeq fanMotor2_DFP5;
+        readonly attribute ACS::ROfloatSeq fanMotor2_DFP6;
+        readonly attribute ACS::ROfloatSeq fanMotor2_DFP7;
+        readonly attribute ACS::ROfloatSeq fanMotor2_CIP0;
+        readonly attribute ACS::ROfloatSeq fanMotor2_CIP1;
+        readonly attribute ACS::ROfloatSeq fanMotor2_CIP2;
+        readonly attribute ACS::ROfloatSeq fanMotor2_CIP3;
+        readonly attribute ACS::ROfloatSeq fanMotor3_MCI;
+        readonly attribute ACS::ROfloatSeq fanMotor3_DFP0;
+        readonly attribute ACS::ROfloatSeq fanMotor3_DFP1;
+        readonly attribute ACS::ROfloatSeq fanMotor3_DFP2;
+        readonly attribute ACS::ROfloatSeq fanMotor3_DFP3;
+        readonly attribute ACS::ROfloatSeq fanMotor3_DFP4;
+        readonly attribute ACS::ROfloatSeq fanMotor3_DFP5;
+        readonly attribute ACS::ROfloatSeq fanMotor3_DFP6;
+        readonly attribute ACS::ROfloatSeq fanMotor3_DFP7;
+        readonly attribute ACS::ROfloatSeq fanMotor3_CIP0;
+        readonly attribute ACS::ROfloatSeq fanMotor3_CIP1;
+        readonly attribute ACS::ROfloatSeq fanMotor3_CIP2;
+        readonly attribute ACS::ROfloatSeq fanMotor3_CIP3;
+        readonly attribute ACS::ROfloatSeq powerSupply0_MCI;
+        readonly attribute ACS::ROfloatSeq powerSupply0_DFP0;
+        readonly attribute ACS::ROfloatSeq powerSupply0_DFP1;
+        readonly attribute ACS::ROfloatSeq powerSupply0_DFP2;
+        readonly attribute ACS::ROfloatSeq powerSupply0_DFP3;
+        readonly attribute ACS::ROfloatSeq powerSupply0_DFP4;
+        readonly attribute ACS::ROfloatSeq powerSupply0_DFP5;
+        readonly attribute ACS::ROfloatSeq powerSupply0_DFP6;
+        readonly attribute ACS::ROfloatSeq powerSupply0_DFP7;
+        readonly attribute ACS::ROfloatSeq powerSupply0_CIP0;
+        readonly attribute ACS::ROfloatSeq powerSupply0_CIP1;
+        readonly attribute ACS::ROfloatSeq powerSupply0_CIP2;
+        readonly attribute ACS::ROfloatSeq powerSupply0_CIP3;
+        readonly attribute ACS::ROfloatSeq powerSupply1_MCI;
+        readonly attribute ACS::ROfloatSeq powerSupply1_DFP0;
+        readonly attribute ACS::ROfloatSeq powerSupply1_DFP1;
+        readonly attribute ACS::ROfloatSeq powerSupply1_DFP2;
+        readonly attribute ACS::ROfloatSeq powerSupply1_DFP3;
+        readonly attribute ACS::ROfloatSeq powerSupply1_DFP4;
+        readonly attribute ACS::ROfloatSeq powerSupply1_DFP5;
+        readonly attribute ACS::ROfloatSeq powerSupply1_DFP6;
+        readonly attribute ACS::ROfloatSeq powerSupply1_DFP7;
+        readonly attribute ACS::ROfloatSeq powerSupply1_CIP0;
+        readonly attribute ACS::ROfloatSeq powerSupply1_CIP1;
+        readonly attribute ACS::ROfloatSeq powerSupply1_CIP2;
+        readonly attribute ACS::ROfloatSeq powerSupply1_CIP3;
+        readonly attribute ACS::ROfloatSeq powerSupply2_MCI;
+        readonly attribute ACS::ROfloatSeq powerSupply2_DFP0;
+        readonly attribute ACS::ROfloatSeq powerSupply2_DFP1;
+        readonly attribute ACS::ROfloatSeq powerSupply2_DFP2;
+        readonly attribute ACS::ROfloatSeq powerSupply2_DFP3;
+        readonly attribute ACS::ROfloatSeq powerSupply2_DFP4;
+        readonly attribute ACS::ROfloatSeq powerSupply2_DFP5;
+        readonly attribute ACS::ROfloatSeq powerSupply2_DFP6;
+        readonly attribute ACS::ROfloatSeq powerSupply2_DFP7;
+        readonly attribute ACS::ROfloatSeq powerSupply2_CIP0;
+        readonly attribute ACS::ROfloatSeq powerSupply2_CIP1;
+        readonly attribute ACS::ROfloatSeq powerSupply2_CIP2;
+        readonly attribute ACS::ROfloatSeq powerSupply2_CIP3;
+        readonly attribute ACS::ROfloatSeq powerSupply3_MCI;
+        readonly attribute ACS::ROfloatSeq powerSupply3_DFP0;
+        readonly attribute ACS::ROfloatSeq powerSupply3_DFP1;
+        readonly attribute ACS::ROfloatSeq powerSupply3_DFP2;
+        readonly attribute ACS::ROfloatSeq powerSupply3_DFP3;
+        readonly attribute ACS::ROfloatSeq powerSupply3_DFP4;
+        readonly attribute ACS::ROfloatSeq powerSupply3_DFP5;
+        readonly attribute ACS::ROfloatSeq powerSupply3_DFP6;
+        readonly attribute ACS::ROfloatSeq powerSupply3_DFP7;
+        readonly attribute ACS::ROfloatSeq powerSupply3_CIP0;
+        readonly attribute ACS::ROfloatSeq powerSupply3_CIP1;
+        readonly attribute ACS::ROfloatSeq powerSupply3_CIP2;
+        readonly attribute ACS::ROfloatSeq powerSupply3_CIP3;
+        readonly attribute ACS::ROlong HWStatus_Corr0;
+        readonly attribute ACS::ROlong HWStatus_Corr1;
+        readonly attribute ACS::ROlong HWStatus_Corr2;
+        readonly attribute ACS::ROlong HWStatus_Corr3;
+        readonly attribute ACS::ROlongSeq HWFailureStatus_Corr0;
+        readonly attribute ACS::ROlongSeq HWFailureStatus_Corr1;
+        readonly attribute ACS::ROlongSeq HWFailureStatus_Corr2;
+        readonly attribute ACS::ROlongSeq HWFailureStatus_Corr3;
+
+        /// Missed any timing events
+//      readonly attribute ACS::ROlong missedTECount;
+        
+//      void TE_ResetErrorCount();
+        
+        /** @brief It is an external interface for the unit test.
+         ** @return long.(0 = success , 0 != falied)
+         ** @param none.
+         ** @pre none.
+         ** @post none.
+         ** @exception none.
+         ** @see
+         */
+         long unitTestMain( );
+
+
+        /** @brief This method returns all hardware failure informations of 
+         ** a set of the ACA correlator which is specified with correlatorSetNumber.
+         ** @return Hardware failure informations up to 128. If no hardware failures 
+         ** in the correlator set, it will return a 0 length sequence.
+         ** @param correlatorSetNumber (in)correlator set number(range:0-3)
+         ** @pre none.
+         ** @post Hardware failure informations shall be removed in the ACA-CCC.
+         ** @exception CorrErr::InvalidQuadrantEx An invalid correlatorSetNumber was given.
+         ** @note The oldest hardware failure information shall be overwritten with 
+         ** a new one in the ACA-CCC when the hardware failure information is overflowed.
+         */
+         HardwareFailureSeq getHardwareFailures(in long correlatorSetNumber)
+		     raises(CorrErr::ErrorEx);
+
+        };
+};
+#endif

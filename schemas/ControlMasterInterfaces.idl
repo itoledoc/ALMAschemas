@@ -1,0 +1,529 @@
+/*
+ * Alma - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * File ControlInterfaces.midl
+ * 
+ * Version: after merge of SharedSimulator-2006-02-B to CVS head.
+ *
+ */
+
+#ifndef _CONTROLMASTERINTERFACES_IDL_
+#define _CONTROLMASTERINTERFACES_IDL_
+
+#include <ControlArrayInterfaces.idl>
+#include "ControlExceptions.idl"
+
+#pragma prefix "alma"
+
+/**
+ * This IDL module contains the public IDL interfaces implemented
+ * by the Control system.  These external interfaces are used by
+ * ALMA subsystems outside of Control and are defined in the CVS
+ * IDL/CONTROL module.
+ */
+module Control {
+
+  /**
+   * It is not clear to me why Control has these CORR modes.  Perhaps they
+   * are only used in simulation.  I preserve them for now but we should
+   * reinvestigate
+   */
+
+  /**
+   * An enumeration of the possible modes on a correlator.
+   */
+  enum CorrelatorMode {
+    ACTIVE,
+    TEST
+  };
+
+ /**
+   * Whenever one or more quadrants of the ALMA correlator have been 
+   * placed in test mode, an AlmaCorrelatorTestMode event is published.
+   */
+  struct AlmaCorrelatorTestModeEvent {
+    /**
+     * True, if and only if quadrant 0 is in test mode.
+     */
+    boolean quad0;
+    /**
+     * True, if and only if quadrant 1 is in test mode.
+     */
+    boolean quad1;
+    /**
+     * True, if and only if quadrant 2 is in test mode.
+     */
+    boolean quad2;
+    /**
+     * True, if and only if quadrant 3 is in test mode.
+     */
+    boolean quad3;
+    /**
+     * The time at which one or more quadrants of the ALMA correlator were
+     * placed in test mode.
+     */
+    ACS::Time testTime;
+  };
+  
+  /**
+   * Whenever one or more quadrants of the ALMA correlator have been 
+   * placed in operational mode, an AlmaCorrelatorOperationalMode event
+   * is published.
+   */
+  struct AlmaCorrelatorOperationalModeEvent {
+    /**
+     * True, if and only if quadrant 0 is in operational mode.
+     */
+    boolean quad0;
+    /**
+     * True, if and only if quadrant 1 is in operational mode.
+     */
+    boolean quad1;
+    /**
+     * True, if and only if quadrant 2 is in operational mode.
+     */
+    boolean quad2;
+    /**
+     * True, if and only if quadrant 3 is in operational mode.
+     */
+    boolean quad3;
+    /**
+     * The time at which one or more quadrants of the ALMA correlator were
+     * placed in operational mode.
+     */
+    ACS::Time operationalTime;
+  };
+
+  /**
+   * Array identifier, which contains both the array name and the
+   * array component name. This structure should be used in interfaces
+   * between subsystems that need to indentify arrays and access array
+   * components.
+   */
+  struct ArrayIdentifier {
+    /** Array name */
+    string arrayName;
+    /** Array component name */
+    string arrayComponentName;
+  };
+
+
+  //////////////
+  // Typedefs //
+  //////////////  
+  /* None of these are used anywhere in the IDL.  Are they really needed? */
+  typedef sequence < SystemState > StateSeq;
+  typedef sequence < SystemSubstate > SubstateSeq;
+  typedef sequence < string > IntentNameSeq;
+  typedef sequence < asdmIDLTypes::IDLEntityRef > IDLEntityRefSeq;
+
+  ////////////
+  // Events //
+  ////////////
+  /**
+   * A change of state event is published whenever there is a change in Control's
+   * state or substate.  The time this event occurred is included, as well as
+   * the new state and substate and an indication of whether this was the 
+   * result of an error.
+   * <p>
+   * Important note:  This structure was changed by replacing the
+   * enumerations with longs.  This is due to a bug in the CORBA
+   * to Java mapping used in ACS 4.1.1.
+   */
+  struct ControlSystemChangeOfStateEvent {
+    /**
+     * The current state of the Control system.
+     */
+    long currentState;
+    //SystemState currentState;
+    /**
+     * The current substate of the Control system.
+     */
+    long currentSubstate;
+    //SystemSubstate currentSubstate;
+    /**
+     * The previous state of the Control system.
+     */
+    long previousState;
+    //SystemState previousState;
+    /**
+     * The previous substate of the Control system.
+     */
+    long previousSubstate;
+    //SystemSubstate previousSubstate;
+    /**
+     * True, if this change of state was the result of an error.
+     */
+    boolean error;
+    /**
+     * The time at which this change of state occurred.
+     */
+    ACS::Time time;
+  };
+  
+  /**
+   * Whenever an automatic array is created, a CreateAutomaticArray 
+   * event is published.
+   */
+  struct CreatedAutomaticArrayEvent {
+    /**
+     * The name of the automatic array that was created.
+     */
+    ArrayId arrayName;
+    /**
+     * The name of the newly created data capture component that is 
+     * attached to this array.
+     */
+    string dataCaptureName;
+    /**
+     * The list of the names of the antennas that belong to this array.
+     */
+    AntennaSeq antennaList;
+    /**
+     * The time at which this array was created.
+     */
+    ACS::Time creationTime;
+    /**
+     * Bulk data distributor name and flows for the stream to be used by the
+     * array to send data when running total power scans.
+     */
+    BDStreamInfo totalPowerArrayStream;
+    /**
+     * Bulk data distributor name and flows for the stream to be used by the
+     * array to send data during correlator (BL/ACA) scans.
+     */
+    BDStreamInfo correlatorArrayStream;
+    /**
+     * Description to show in the OMC.
+     *
+     */
+    string shortDescription;
+  };
+  
+  /**
+   * Whenever an automatic array is destroyed, a DestroyAutomaticArray
+   * event is published.
+   */
+  struct DestroyedAutomaticArrayEvent {
+    /**
+     * The name of the automatic array that was destroyed.
+     */
+    ArrayId arrayName;
+    /**
+     * The time at which this array was destroyed.
+     */
+    ACS::Time destructionTime;
+  };
+  
+  /**
+   * Whenever a manual array is created, a CreateManualArray event
+   * is published.
+   */
+  struct CreatedManualArrayEvent {
+    /**
+     * The name of the manual array that was created.
+     */
+    ArrayId arrayName;
+    /**
+     * The list of the names of the antennas that belong to this array.
+     */
+    AntennaSeq antennaList;
+    /**
+     * Return the id of the staff member who is responsible for operating
+     * this manual array.
+     */
+    string staffName;
+    /**
+     * The time this array was created.
+     */
+    ACS::Time creationTime;
+    /**
+     * Bulk data distributor name and flows for the stream to be used by the
+     * array to send data when running total power scans.
+     */
+    BDStreamInfo totalPowerArrayStream;
+    /**
+     * Bulk data distributor name and flows for the stream to be used by the
+     * array to send data during correlator (BL/ACA) scans.
+     */
+    BDStreamInfo correlatorArrayStream;
+    /**
+     * Description to show in the OMC.
+     *
+     */
+    string shortDescription;
+  };
+  
+  /**
+   * Whenever a manual array is destroyed, a DestroyManualArray 
+   * event is published.
+   */
+  struct DestroyedManualArrayEvent {
+    /**
+     * The name of the manual array that was destroyed.
+     */
+    ArrayId arrayName;
+    /**
+     * The time at which this array was destroyed.
+     */
+    ACS::Time destructionTime;
+  };
+  
+  /**
+   * Whenever an antennas has been taken offline, an AntennaOffline
+   * event is published.
+   */
+  struct AntennaOfflineEvent {
+    /**
+     * The name of the antenna that was taken offline.
+     */
+    AntennaId antennaName;
+    /**
+     * The time at which thisantenna was taken offline.
+     */
+    ACS::Time offlineTime;
+  };
+  
+  /**
+   * Whenever an antenna has been placed online, an AntennaOnline 
+   * event is published.
+   */
+  struct AntennaOnlineEvent {
+    /**
+     * The name of the antenna that was placed online.
+     */
+    AntennaId antennaName;
+    /**
+     * The time at which this antenna was placed online.
+     */
+    ACS::Time onlineTime;
+  };
+  
+  ////////////////
+  // Interfaces //
+  ////////////////
+  
+  /**
+   * The ControlMasterMonitor interface may be used to get global
+   * information about the current state of the Control system.
+   * None of these methods modify the Control System.
+   */
+  interface ControlMasterMonitor : ACS::ACSComponent {
+    
+    /**
+     * Return the current state of the Control system.
+     */
+    SystemState getMasterState();
+    
+    /**
+     * Return the current substate of the Control system.
+     */
+    SystemSubstate getMasterSubstate();
+    
+    /**
+     * Return the list of resources in the Control system that
+     * are in an error state.  An empty list is returned if there
+     * are no resources in error.
+     */
+    BadResourceSeq getBadResources();
+    
+    /**
+     * Return the list of names of antennas that are currently available,
+     * i.e., are not currently allocated to an array.  If there are no
+     * available antennas, an empty list is returned.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    AntennaSeq getAvailableAntennas() raises (InaccessibleException);
+    ResourceSeq getAvailableAntennaComponents() raises (InaccessibleException);    
+  
+    /**
+     * Returns a list containing the names of the photonic references that
+     * are available, i.e., not currently allocated to an array. If there are
+     * no available photonic references, an empty list is returned.
+     */ 
+    ResourceNameSeq getAvailablePhotonicReferences() raises (InaccessibleException);
+    ResourceSeq getAvailablePhotonicReferenceComponents() raises (InaccessibleException);
+ 
+    /**
+     * Return the list of names of currently allocated automatic arrays.
+     * If there are no automatic arrays, an empty list is returned.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    ArraySeq getAutomaticArrays() raises (InaccessibleException);
+    ResourceSeq getAutomaticArrayComponents() raises (InaccessibleException);    
+    
+    /**
+     * Return the list of names of currently allocated manual arrays.
+     * If there are no manual arrays, an empty list is returned.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    ArraySeq getManualArrays() raises (InaccessibleException);
+    ResourceSeq getManualArrayComponents() raises (InaccessibleException);
+    
+    /**
+     * Return the list of names of antennas that are currently offline.
+     * If there are no antennas offline, an empty list is returned.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    AntennaSeq getOfflineAntennas() raises (InaccessibleException);
+    
+    /**
+     * Get the states of the available antennas, i.e., the antennas that
+     * haven't been allocated to an array.
+     * @return Sequence of antenna states.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    AntennaStateEventSeq getAvailableAntennaStates() raises (InaccessibleException);
+    
+  };
+
+  /**
+   * Correlator type. 
+   */
+  enum CorrelatorType {
+    BL,
+    ACA,
+    NONE
+  }; 
+
+  
+  /**
+   * The ControlMaster interface provides the ability to change the 
+   * configuration of the telescope in specific ways.  It is used by 
+   * the Telescope Operator (via the Executive) and the Scheduling system.
+   * This interface also includes all of the ControlMasterMonitor methods.
+   */
+  interface ControlMaster : ControlMasterMonitor {
+    
+    /**
+     * Create an automatic array from the antennas in the 
+     * specified list of antenna names.
+     * \param list The list of names of antennas to be included in the array.
+     * \param photRefs List of photonic reference names.
+     * \param corrType Correlator used by the array.
+     * @throw InvalidRequest Thrown if any name in the list of antennas is not
+     * valid, or if any of them are not idle.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    ArrayIdentifier createAutomaticArray(in AntennaSeq list,
+                                         in ResourceNameSeq photRefs,
+                                         in CorrelatorType corrType) 
+      raises (ControlExceptions::InvalidRequestEx, InaccessibleException);
+    
+    /**
+     * Create a manual array from the antennas in the 
+     * specified list of antenna names.
+     * \param list The list of names of antennas to be included in the array.
+     * \param photRefs List of photonic reference names.
+     * \param corrType Correlator used by the array.
+     * @throw InvalidRequest Thrown if any name in the list of antennas is not
+     * valid, or if any of them are not idle.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    ArrayIdentifier createManualArray(in AntennaSeq list,
+                                      in ResourceNameSeq photRefs,
+                                      in CorrelatorType corrType) 
+      raises (ControlExceptions::InvalidRequestEx, InaccessibleException);
+    
+    /**
+     * Destroy an array.
+     * \param id The name of the array.
+     * @throw InvalidRequest Thrown if the name of the array is not
+     * valid, or if it is not idle.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    void destroyArray(in ArrayId id)
+      raises (ControlExceptions::InvalidRequestEx, InaccessibleException);
+    
+    /**
+     * Get the array component name from the array identifier name.
+     * \param id The name of the array.
+     * @throw InvalidRequest Thrown if there is not an array with the
+     * passed identifier.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    string getArrayComponentName(in ArrayId id) 
+      raises (InvalidRequest, InaccessibleException);
+    
+    /**
+     * Set the specified antenna to either online or offline mode.
+     * \param id The name of the antenna to be taken offline.
+     * \param mode either offline or online.
+     * \param now if true, the command is executed immediately; otherwise, 
+     *		if the antenna is busy, the command will wait until it is idle.
+     * @throw InvalidRequest Thrown if the name of the antenna is not
+     * valid, or if the antenna is not idle.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    void setAntennaMode(in AntennaId id, in AntennaMode mode, in boolean now)
+      raises (InvalidRequest, InaccessibleException);
+    
+    
+    /**
+     * Reinitialize an antenna.
+     * \param id The name of the antenna to be reinitialized.
+     * @throw InvalidRequest Thrown if the name of the antenna is not
+     * valid, or if it cannot be accessed.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    void reinitializeAntenna(in AntennaId id) 
+      raises (InvalidRequest, InaccessibleException);
+    
+    /**
+     * Set the mode of the ALMA correlator to either test or operational mode.
+     * \param mode either test or operational.
+     * @throw InvalidRequest Thrown if the mode is not
+     * valid, or if the correlator is not idle.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    void setAlmaCorrelatorMode(in CorrelatorMode mode)
+      raises (InvalidRequest, InaccessibleException);
+    
+    /**
+     * Set the mode a quadrant of the ALMA correlator to either test or operational mode.
+     * \param quadrant The number identifying the quadrant whose mode is to be
+     * set; quadrants are numbered 0, 1, 2, 3.
+     * \param mode either test or operational.
+     * @throw InvalidRequest Thrown if the mode is not
+     * valid, or if the correlator is not idle.
+     * @throw InaccessibleException Thrown if the Control System is 
+     * in an inaccessible state.
+     */
+    void setAlmaCorrelatorQuadMode(in long quadrant, in CorrelatorMode mode)
+      raises (InvalidRequest, InaccessibleException);    
+  };
+}; // End of module Control
+
+#endif

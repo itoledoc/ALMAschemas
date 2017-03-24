@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,15 +30,24 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File StationTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sttn="http://Alma/XASDM/StationTable" xmlns:ent="Alma/CommonEntity" xmlns:statnt="http://Alma/XENUM/StationTypeMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/StationTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:sttn="http://Alma/XASDM/StationTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:statnt="http://Alma/XENUM/StationTypeMod"
+					   targetNamespace="http://Alma/XASDM/StationTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for ArrayTime -->
-		<!-- We need the schema of StationType -->
-		<xs:import namespace="http://Alma/XENUM/StationTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/StationType.xsd" />
-		<!-- No specific import for String -->
-		<!-- No specific import for Tag -->
 		<!-- No specific import for Length -->
+		<!-- No specific import for ArrayTime -->
+		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
+		<!-- We need the schema of StationType -->
+		<xs:import namespace="http://Alma/XENUM/StationTypeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/StationType.xsd"/>
 	
 	
 	
@@ -48,20 +57,35 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="stationId" type="xs:string" />
-         <xs:element name="name" type="xs:string" />
-         <xs:element name="position" type="xs:string" />
-         <xs:element name="type" type="statnt:StationType" />
-     	 <xs:element name="time" type="xs:string" minOccurs="0" />
+         <xs:element name="stationId" type=
+"xs:string"
+
+/>
+         <xs:element name="name" type=
+"xs:string"
+
+/>
+         <xs:element name="position" type=
+"xs:string"
+
+/>
+         <xs:element name="type" type=
+"statnt:StationType"
+
+/>
+     	 <xs:element name="time" type=
+"xs:string"
+
+  minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

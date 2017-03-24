@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File CorrelatorCalibration.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:crlcal="http://Alma/XENUM/CorrelatorCalibrationMod" targetNamespace="http://Alma/XENUM/CorrelatorCalibrationMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:crlcal="http://Alma/XENUM/CorrelatorCalibrationMod" 
+                         targetNamespace="http://Alma/XENUM/CorrelatorCalibrationMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="CorrelatorCalibration">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="NONE">
+			<xsd:enumeration value="NONE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>No internal correlator calibration </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="CORRELATOR_CALIBRATION">
+			<xsd:enumeration value="CORRELATOR_CALIBRATION" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Internal correlator calibration. </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="REAL_OBSERVATION">
+			<xsd:enumeration value="REAL_OBSERVATION" >
 		
 				<xsd:annotation>
 					<xsd:documentation>A 'real' observation. </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="CorrelatorCalibrations">
+	<xsd:simpleType name ="CorrelatorCalibrations">
 		<xsd:restriction base="crlcal:CorrelatorCalibrationList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

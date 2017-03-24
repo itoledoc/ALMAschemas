@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<LogDefinitionType 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="Alma/ACSLogTS"
+  name="CorrLogs" 
+  type="10"
+  shortDescription="Correlator Logs" 
+  description="Correlator logs intended for specific audiences"
+  URL="http://almasw.hq.eso.org/almasw/bin/view/CORR/WebHome"
+_prefix="alma">
+<LogDefinition logName="CCCSubScanConfigLog" 
+  shortDescription="CCC received and distributed sub-scan configuration to CDP"
+  description="valid sub-scan configuration received by CCC, forwarded
+  successfully to CDP, and scheduled to start" 
+  URL="http://www.google.com" 
+  priority="INFO" 
+  audience="OPERATOR">
+<Member name="subArrayId" type="string" description="sub-array identifier"/>
+<Member name="executeId" type="string" description="exec block identifier"/>
+<Member name="scanNumber" type="long" description="scan number"/>
+<Member name="subScanNumber" type="long" description="sub-scan number"/>
+<Member name="rxTime" type="string" description="time at which subscan
+  configuration was received"/>
+<Member name="startTime" type="string" description="sub-scan starting time"/>
+</LogDefinition>
+</LogDefinitionType>
+<!--___oOo___-->

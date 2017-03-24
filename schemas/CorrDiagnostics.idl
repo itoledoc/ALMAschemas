@@ -1,0 +1,324 @@
+#ifndef CORR_DIAGNOSTICS_IDL
+#define CORR_DIAGNOSTICS_IDL
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * "@(#) $Id: CorrDiagnostics.idl,v 1.9 2011/12/01 22:04:44 jsepulve Exp $"
+ *
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ */
+
+#include <acscommon.idl>
+#include <CorrStateModel.idl>
+#include <ControlBasicInterfaces.idl>
+#include <ControlDataInterfaces.idl>
+#include <CorrErr.idl>
+#include "AntennaNumberMap.idl"
+
+#pragma prefix "alma"
+
+module CorrDiagnosticTest {
+
+  enum ReportType_t {
+    SUMMARY,
+    DETAILED
+  };
+
+   enum Test {
+          T2,
+          T4,
+          UNKNOWN
+   };
+
+   typedef sequence<octet> dataBytes_t;
+
+   struct NodeResults{
+      short       nodeId;
+      dataBytes_t results;
+   };
+
+   typedef sequence<NodeResults> NodeResultsSeq;
+
+   struct TestResults
+   {
+       Test           testType;
+       NodeResultsSeq nodeResults;
+   };
+
+};
+
+module CorrSccTfbStatistics {
+
+    struct sccResult {
+        short sccAddr;
+        short tfbAddr;
+        short baseband;
+        short polarization;
+        float offset;
+        float amplitude;
+    };
+
+    typedef sequence<sccResult> sccResultSeq;
+
+    struct caiResults {
+        short caiNumber;
+        sccResultSeq nodes;
+    };
+
+};
+
+module Correlator
+{
+    interface CorrDiagnostics : CorrelatorPrivate::CorrStateModel
+    {
+        /** Constants defining the number of input channels, input states, number of TFB cards per baseband,
+	 ** and number of basebands per antenna.  These constants will be used by the digitizer statistics
+	 ** methods.
+	 */
+	const short NUMBER_OF_INPUT_CHANNELS = 32;
+	const short NUMBER_OF_INPUT_STATES = 8;
+	const short NUMBER_OF_TFBS_PER_BASEBAND = 2;
+	const short NUMBER_OF_BASEBANDS_PER_ANTENNA = 4;
+
+	/// Sequence of digitizer statistics input state values
+	typedef sequence<float, NUMBER_OF_INPUT_STATES> inputStatesSeq_t;
+	/// Sequence of digitizer statistics input state values for each channel
+	typedef sequence<inputStatesSeq_t, NUMBER_OF_INPUT_CHANNELS> inputChannelsSeq_t;
+	/// Sequence of digitizer statistics input state values for each channel for each baseband
+	typedef sequence<inputChannelsSeq_t, NUMBER_OF_TFBS_PER_BASEBAND> basebandDigitizerInputs_t;
+	/// Sequence of digitizer statistics input average state values for each baseband
+	typedef sequence<inputStatesSeq_t, NUMBER_OF_TFBS_PER_BASEBAND> basebandDigitizerAvg_t;
+
+	/// Multi-dimensional array of digitizer statistics input state values
+	typedef float digitizerInputs_t[NUMBER_OF_BASEBANDS_PER_ANTENNA]
+	                               [NUMBER_OF_TFBS_PER_BASEBAND]	                               
+	                               [NUMBER_OF_INPUT_CHANNELS]
+                                       [NUMBER_OF_INPUT_STATES];
+	/// Multi-dimensional array of digitizer statistics average input state values
+	typedef float digitizerAvg_t[NUMBER_OF_BASEBANDS_PER_ANTENNA]
+	                            [NUMBER_OF_TFBS_PER_BASEBAND]	                               
+                                    [NUMBER_OF_INPUT_STATES];
+	/// Structure containing a multi-dimensional array of digitizer statistics input state values
+        /// and its associated antenna name.
+	struct AntennaDigitizerInputStats
+	{
+	    Control::AntennaId antennaId;
+	    digitizerInputs_t digitizerInputs;
+	};
+
+	/// Sequence of antennas with their associated digitizer input statistics
+	typedef sequence<AntennaDigitizerInputStats> AntennaDigitizerInputStatsSeq_t;
+
+	/// Structure containing a multi-dimensional array of digitizer statistics average input state values
+        /// and its associated antenna name.
+	struct AntennaDigitizerAvgStats
+	{
+	    Control::AntennaId antennaId;
+	    digitizerAvg_t avgDigitizerStats;
+	};
+
+	/// Sequence of antennas with their associated digitizer average input statistics
+	typedef sequence<AntennaDigitizerAvgStats> AntennaDigitizerAvgStatsSeq_t;
+
+	/** Get digitizer statistics for all 32 channels into each TFB that is
+	 ** handling inputs from antennas in the passed-in antenna list.
+	 ** @param arrayID Name of array whose antennas will be used to generate digitizer statistics.
+	 ** @return A sequence of structures for each antenna containing the antennaId and an
+	 ** array of input channels for each baseband available (note that the 2-antenna 
+	 ** correlator supports only 2 basebands) 
+	 ** @exception InvalidArrayEx The array has not been previously created or has
+	 ** already been destroyed.
+	 ** @exception CorrHardwareEx There was a problem setting up the correlator hardware to
+	 ** generate digitizer statistics (e.g. no SCCs were found, there were communication timeouts, incorrect 
+	 ** number of bytes were received, etc.).  Specific text of the error expands on
+	 ** the nature of the problem.
+	 */
+	 AntennaDigitizerInputStatsSeq_t getAllDigitizerStatistics(
+             in string arrayID)	    
+             raises(CorrErr::ErrorEx); 
+
+
+	/** Get averaged digitizer statistics for all TFBs that are
+	 ** handling inputs from antennas in the passed-in antenna list.
+	 ** @param arrayID Name of array whose antennas will be used to generate digitizer statistics.
+	 ** @return A sequence of structures for each antenna containing the antennaId and an
+	 ** array of input channel averages for each baseband available (note that the 2-antenna 
+	 ** correlator supports only 2 basebands)
+	 ** @exception InvalidArrayEx The array has not been previously created or has
+	 ** already been destroyed.
+	 ** @exception CorrHardwareEx There was a problem setting up the correlator hardware to
+	 ** generate digitizer statistics (e.g. no SCCs were found, there were communication timeouts, incorrect 
+	 ** number of bytes were received, etc.).  Specific text of the error expands on
+	 ** the nature of the problem.
+	 */
+	 AntennaDigitizerAvgStatsSeq_t getAvgDigitizerStatistics(
+             in string arrayId)	    
+             raises(CorrErr::ErrorEx); 
+
+	/** The setArray method gives the array name and its list of antenna names.  
+	 ** The antenna names will be the ALMA antenna names: ALMA001, ALMA002,
+	 ** etc.  This method would be called during diagnostics to create a pseudo array
+	 ** within the correlator.
+	 ** @param arrayId Name of array
+	 ** @param antennaList List of antenna names comprising this array.  At 
+	 ** present the correlator assumes that the antenna lists for different arrays
+	 ** do not conflict (e.g. an antenna appearing in more than one concurrent array)
+	 ** @exception InvalidArray The array has already been created and is active
+	 ** @exception InvalidAntennaId It basically means that one or more antenna ids 
+	 ** are invalid. By invalid, this would mean that an antenna id is not correctly 
+	 ** mapped to a CAI. Each correlator will know via the TMCDB valid antennaId-CAI 
+	 ** mappings.
+	 ** @todo Validate antenna lists and raise an InvalidAntennaIdEx exception. 
+	 */
+	void setArray(in string arrayId, in Control::AntennaSeq antennaList)
+            raises(CorrErr::ErrorEx); 
+
+	/** The destroyArray  method terminates the use of the array indicated
+	 ** by the arrayId parameter.    
+	 ** @param arrayId Name of array.  If arrayId is a null string all existing arrays and
+	 ** associated configurations will be deleted.
+	 ** @exception InvalidArray The array has not been previously created or has
+	 ** already been destroyed.
+	 */
+	void destroyArray(in string arrayId)
+            raises(CorrErr::ErrorEx); 
+
+	/** This method will turn the correlator racks on/off.
+	 ** @param onOff true - racks on; false - racks off
+	 ** @return true - successful operation, false otherwise
+	 */
+	boolean racksOn(in boolean onOff);
+
+      /** start T2 or T4 Correlator test
+       ** After the command has been sent, the tests run autonomous until
+       ** stop command is received
+       */
+      void startTest(in CorrDiagnosticTest::Test testType);
+
+      /** Stop T2 or T4 correlator, it sents a CAN command to stop
+       ** test is running in the correlator
+       **
+       */
+      void stopTest();
+
+      /** Return SUMMARY statistics result of the running test.
+       ** The values are returned in the IDL struct sequence NodeResultsSeq.
+       **/
+      /*
+      CorrDiagnosticTest::TestResults getResults(
+                              in CorrDiagnosticTest::ReportType_t reportType, 
+                              in unsigned long addr);
+      */
+      CorrDiagnosticTest::TestResults getResults();
+
+      /** Return statistics result of the running test.
+       ** In case the test fails, it will return detailed
+       ** information of the node failed.
+       **/
+      CorrDiagnosticTest::TestResults getDetailedResults(
+                                         in unsigned long nodeAddr);
+
+      /** Get statistic errors in amplitude and offset of a specific TFB.
+        * @param antennaCaiNumber (0..64);
+        * @param bbPair, pase band pair (0..3)
+        * @param polz, polarization (X=0, Y=1)
+        */
+      CorrSccTfbStatistics::sccResult getTFBAmplitudeOffsetStatistics(in short caiNumber, in short
+              bbPair, in short polz);
+
+      /** Get amplitude and offset statistic errors of a specific TFB.
+        * @param antenna name ('DV01')
+        * @param bbPair, pase band pair (0..3)
+        * @param polz, polarization (X=0, Y=1)
+        */
+      CorrSccTfbStatistics::sccResult getTFBAmplitudeOffsetStatisticsAntname(
+              in string antennaName, in short bbp, in short polz);
+
+      /** Get statistic errors in amplitude and offset of TFB related to a
+        * specific cai number.
+        * @param antennaCaiNumber (0..64);
+        */
+      CorrSccTfbStatistics::caiResults getCaiAmplitudeOffsetStatistics(in short caiNumber);
+
+      /****************************  APP interface methods ***********************************/
+
+      /// Number of mask bytes used for VLBI sum.  
+      const short NUMBER_OF_MASK_BYTES = 8;
+
+      /** Sequence of mask bytes used for VLBI sum.  The mask defines which correlator CAIs (antennas) are to be summed by the LTA
+       */
+      typedef sequence<octet, NUMBER_OF_MASK_BYTES> MaskBytes_t;
+
+      /**
+	 Download the antenna list that will be used for the sum mask for VLBI to the LTAs
+       */
+      void downloadAntennaSumMask(in Control::AntennaSeq antennaList);
+
+      enum eAnalogSumMode
+      {
+	  ANTENNA_SUM,                  ///< Antenna sum (normal)
+	  STATIC_LOGIC_LEVEL_0,         ///< Static logic level 0
+	  PSEUDO_RANDOM_DATA_SYNC,      ///< Pseudo random data, sync'd to 1 msec tic
+	  PSEUDO_RANDOM_DATA_NOT_SYNC,  ///< Pseudo random data, not sync'd to tic
+	  BINARY_COUNTER                ///< Binary counter
+      };
+ 
+      /** Set the analog sum mode
+       */
+      void setAnalogSumMode(in eAnalogSumMode analogSumMode);
+
+      enum eCICInputSwitch
+      {
+	  NORMAL_DATA,           ///< Normal data for CAI 63
+	  PHASED_SUM_DATA       ///< Phased sum data for CAI 63
+      };
+
+      /** Set the CIC sum input switch
+       */
+      void setCICSumIntputSwitch(in eCICInputSwitch cicInputSwitch);
+
+      /** Download the sum scaling mask and pos2high_th
+       */
+      void downloadSumScalingData(in octet mask, in octet pos2high_th);
+
+      struct SumStatus_t
+      {
+	  MaskBytes_t antennaMask;
+	  eAnalogSumMode sumMode;
+	  eCICInputSwitch inputSwitch;
+	  octet sumScalingMask;
+	  octet pos2high_th;
+      };
+
+      /** Get the sumstatus from a single LTA into the SumStatus_t structure
+       */
+      SumStatus_t getSumStatus();
+
+      /** Apply the previously downloaded (by other means) TFB phases and verify that the application was successful
+       */
+      boolean applyTFBPhases(in octet config);
+
+    };    
+};
+
+
+#endif

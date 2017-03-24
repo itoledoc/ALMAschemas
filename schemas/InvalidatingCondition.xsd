@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File InvalidatingCondition.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:invcon="http://Alma/XENUM/InvalidatingConditionMod" targetNamespace="http://Alma/XENUM/InvalidatingConditionMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:invcon="http://Alma/XENUM/InvalidatingConditionMod" 
+                         targetNamespace="http://Alma/XENUM/InvalidatingConditionMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="InvalidatingCondition">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="ANTENNA_DISCONNECT">
+			<xsd:enumeration value="ANTENNA_DISCONNECT" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Antenna was disconnected </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="ANTENNA_MOVE">
+			<xsd:enumeration value="ANTENNA_MOVE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Antenna was moved </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="ANTENNA_POWER_DOWN">
+			<xsd:enumeration value="ANTENNA_POWER_DOWN" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Antenna was powered down </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="RECEIVER_EXCHANGE">
+			<xsd:enumeration value="RECEIVER_EXCHANGE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Receiver was exchanged </xsd:documentation>
@@ -72,7 +77,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="RECEIVER_POWER_DOWN">
+			<xsd:enumeration value="RECEIVER_POWER_DOWN" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Receiver was powered down </xsd:documentation>
@@ -98,9 +103,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="InvalidatingConditions">
+	<xsd:simpleType name ="InvalidatingConditions">
 		<xsd:restriction base="invcon:InvalidatingConditionList">
-			<xsd:maxLength value="5" />
+			<xsd:maxLength value = "5" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

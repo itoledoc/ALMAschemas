@@ -1,0 +1,221 @@
+#ifndef ACA_CPTR_MONITOR_IDL
+#define ACA_CPTR_MONITOR_IDL
+/****************************************************************************
+* ALMA - Atacama Large Millimeter Array
+*
+* Copyright (C) 2010 National Astronomical Observatory of Japan and Fujitsu LIMITED
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+* "@(#) $Id: ACACptrMonitor.idl,v 1.2 2010/11/18 03:16:23 ykitayama Exp $"
+*
+* who       when       what
+* --------  ---------- ----------------------------------------------
+* kitayama  2010-07-07 created.
+*/
+
+//
+// ICD/CORR stuff
+//
+#include <CorrStateModel.idl>
+
+//
+// ICD/ACACORR stuff
+//
+#include <ACACorrErr.idl>
+
+#pragma prefix "alma"
+
+module ACACorrelator
+{
+    /** ACA-Correlator Computer Monitor Interface.
+     ** This interface defines the monitor information available for the 
+     ** ACACorrelator computers (ACACCC, ACACDPM & ACACDPCs). 
+     */
+    interface ACACptrMonitor: CorrelatorPrivate::CorrStateModel
+    {
+        /** \defgroup Correlator computer monitor points.
+         ** For each ACACDPC, ACACDPM & ACACCC there is one
+         ** of these.
+         */
+
+        //@{
+        /// @name temperatures
+
+        /// Systemboard temperature
+        readonly attribute ACS::ROfloat tempSystemboard;
+
+        /// CPU 1 temperature
+        readonly attribute ACS::ROfloat tempCPU1;
+
+        /// CPU 2 temperature
+        readonly attribute ACS::ROfloat tempCPU2;
+
+        /// FBD-1A temperature
+        readonly attribute ACS::ROfloat tempFBD1A;
+
+        /// FBD-2A temperature
+        readonly attribute ACS::ROfloat tempFBD2A;
+
+        /// FBD-1B temperature
+        readonly attribute ACS::ROfloat tempFBD1B;
+
+        /// FBD-2B temperature
+        readonly attribute ACS::ROfloat tempFBD2B;
+
+        /// FBD-1C temperature
+        readonly attribute ACS::ROfloat tempFBD1C;
+
+        /// FBD-2C temperature
+        readonly attribute ACS::ROfloat tempFBD2C;
+
+        /// FBD-1D temperature
+        readonly attribute ACS::ROfloat tempFBD1D;
+
+        /// FBD-2D temperature
+        readonly attribute ACS::ROfloat tempFBD2D;
+
+        /// Ambient temperature
+        readonly attribute ACS::ROfloat tempAmbient;
+        //@}
+
+
+        //@{
+        /// @name Voltages
+
+        /// Main +12V voltage
+        readonly attribute ACS::ROfloat voltageMain_plus_12v;
+
+        /// Main -12V voltage
+        readonly attribute ACS::ROfloat voltageMain_minus_12v;
+
+        /// Main 5V voltage
+        readonly attribute ACS::ROfloat voltageMain_5v;
+
+        /// Main 3.3V voltage
+        readonly attribute ACS::ROfloat voltageMain_3_3v;
+
+        /// Battery 3V voltage
+        readonly attribute ACS::ROfloat voltageBattery_3v;
+
+        /// Stdby 3.3V voltage
+        readonly attribute ACS::ROfloat voltageStdby_3_3v;
+
+        /// SAS 1.2V voltage
+        readonly attribute ACS::ROfloat voltageSAS_1_2v;
+
+        /// Raid +1.5V voltage
+        readonly attribute ACS::ROfloat voltageRaid_1_5v;
+
+        /// Main +1.5V voltage
+        readonly attribute ACS::ROfloat voltageMain_1_5v;
+
+        /// AUX 1.2V voltage
+        readonly attribute ACS::ROfloat voltageAUX_1_2v;
+
+        /// VTT voltage
+        readonly attribute ACS::ROfloat voltageVTT;
+
+        /// Raid +1.8V voltage
+        readonly attribute ACS::ROfloat voltageRaid_1_8v;
+
+        /// Main +1.8V voltage
+        readonly attribute ACS::ROfloat voltageMain_1_8v;
+
+        /// Raid +1.35V voltage
+        readonly attribute ACS::ROfloat voltageRaid_1_35v;
+
+        //@}
+
+        //@{
+        /// @name Currents
+
+        /// VRD1 current
+        readonly attribute ACS::ROfloat currentVRD1;
+
+        /// VRD2 current
+        readonly attribute ACS::ROfloat currentVRD2;
+
+        /// P12V Load Path 1 current
+        readonly attribute ACS::ROfloat currentP12vLoadPath1;
+
+        /// P12V Load Path 2 current
+        readonly attribute ACS::ROfloat currentP12vLoadPath2;
+
+        /// P12V Load Path 3 current
+        readonly attribute ACS::ROfloat currentP12vLoadPath3;
+
+        /// P12V Load Path 4 current
+        readonly attribute ACS::ROfloat currentP12vLoadPath4;
+
+        /// P12V Load Path 5 current
+        readonly attribute ACS::ROfloat currentP12vLoadPath5;
+
+        /// P12V DC/DC Load current
+        readonly attribute ACS::ROfloat currentP12vDCLoad;
+
+        /// P12V Sum Load current
+        readonly attribute ACS::ROfloat currentP12vSumLoad;
+
+        //@}
+
+        //@{
+        /// @name Fans
+
+        /// FAN1 CPU speed
+        readonly attribute ACS::ROfloat fan1SpeedCPU;
+
+        /// FAN2 CPU speed
+        readonly attribute ACS::ROfloat fan2SpeedCPU;
+
+        /// FAN3 CPU speed
+        readonly attribute ACS::ROfloat fan3SpeedCPU;
+
+        /// FAN4 CPU speed
+        readonly attribute ACS::ROfloat fan4SpeedCPU;
+
+        /// FAN5 CPU speed
+        readonly attribute ACS::ROfloat fan5SpeedCPU;
+
+        /// FAN6 CPU speed
+        readonly attribute ACS::ROfloat fan6SpeedCPU;
+
+        /// FAN1 SYS speed
+        readonly attribute ACS::ROfloat fan1SpeedSYS;
+
+        /// FAN2 SYS speed
+        readonly attribute ACS::ROfloat fan2SpeedSYS;
+
+        /// FAN PSU1 speed
+        readonly attribute ACS::ROfloat fanSpeedPSU1;
+
+        /// FAN PSU2 speed
+        readonly attribute ACS::ROfloat fanSpeedPSU2;
+
+        //@}
+
+        /** @brief It is an external interface for the unit test.
+         ** @return long.(0 = success , 0 != falied)
+         ** @param none.
+         ** @pre none.
+         ** @post none.
+         ** @exception none.
+         ** @see
+         */
+         long unitTestMain( );
+
+
+	};
+};
+#endif

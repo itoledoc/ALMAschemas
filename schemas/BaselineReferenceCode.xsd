@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File BaselineReferenceCode.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:blrefc="http://Alma/XENUM/BaselineReferenceCodeMod" targetNamespace="http://Alma/XENUM/BaselineReferenceCodeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:blrefc="http://Alma/XENUM/BaselineReferenceCodeMod" 
+                         targetNamespace="http://Alma/XENUM/BaselineReferenceCodeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="BaselineReferenceCode">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="J2000">
+			<xsd:enumeration value="J2000" >
 		
 				<xsd:annotation>
 					<xsd:documentation>mean equator, equinox J2000.0 </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="B1950">
+			<xsd:enumeration value="B1950" >
 		
 				<xsd:annotation>
 					<xsd:documentation>mean equator, equinox B1950.0 </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="GALACTIC">
+			<xsd:enumeration value="GALACTIC" >
 		
 				<xsd:annotation>
 					<xsd:documentation>galactic coordinates. </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SUPERGAL">
+			<xsd:enumeration value="SUPERGAL" >
 		
 				<xsd:annotation>
 					<xsd:documentation>supergalactic coordinates. </xsd:documentation>
@@ -72,7 +77,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="ECLIPTIC">
+			<xsd:enumeration value="ECLIPTIC" >
 		
 				<xsd:annotation>
 					<xsd:documentation>ecliptic for J2000.0 </xsd:documentation>
@@ -80,7 +85,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="JMEAN">
+			<xsd:enumeration value="JMEAN" >
 		
 				<xsd:annotation>
 					<xsd:documentation>mean equator. </xsd:documentation>
@@ -88,7 +93,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="JTRUE">
+			<xsd:enumeration value="JTRUE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>true equator. </xsd:documentation>
@@ -96,7 +101,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="APP">
+			<xsd:enumeration value="APP" >
 		
 				<xsd:annotation>
 					<xsd:documentation>apparent geocentric. </xsd:documentation>
@@ -104,7 +109,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BMEAN">
+			<xsd:enumeration value="BMEAN" >
 		
 				<xsd:annotation>
 					<xsd:documentation>mean equator. </xsd:documentation>
@@ -112,7 +117,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BTRUE">
+			<xsd:enumeration value="BTRUE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>true equator. </xsd:documentation>
@@ -120,7 +125,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="JNAT">
+			<xsd:enumeration value="JNAT" >
 		
 				<xsd:annotation>
 					<xsd:documentation>geocentric natural frame. </xsd:documentation>
@@ -128,7 +133,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="MECLIPTIC">
+			<xsd:enumeration value="MECLIPTIC" >
 		
 				<xsd:annotation>
 					<xsd:documentation>ecliptic for mean equator. </xsd:documentation>
@@ -136,7 +141,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="TECLIPTIC">
+			<xsd:enumeration value="TECLIPTIC" >
 		
 				<xsd:annotation>
 					<xsd:documentation>ecliptic for true equator. </xsd:documentation>
@@ -144,7 +149,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="TOPO">
+			<xsd:enumeration value="TOPO" >
 		
 				<xsd:annotation>
 					<xsd:documentation>apparent geocentric </xsd:documentation>
@@ -152,7 +157,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="MERCURY">
+			<xsd:enumeration value="MERCURY" >
 		
 				<xsd:annotation>
 					<xsd:documentation>from JPL DE table. </xsd:documentation>
@@ -160,55 +165,55 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="VENUS">
+			<xsd:enumeration value="VENUS" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="MARS">
+			<xsd:enumeration value="MARS" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="JUPITER">
+			<xsd:enumeration value="JUPITER" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SATURN">
+			<xsd:enumeration value="SATURN" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="NEPTUN">
+			<xsd:enumeration value="NEPTUN" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SUN">
+			<xsd:enumeration value="SUN" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="MOON">
+			<xsd:enumeration value="MOON" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="HADEC">
+			<xsd:enumeration value="HADEC" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="AZEL">
+			<xsd:enumeration value="AZEL" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="AZELGEO">
+			<xsd:enumeration value="AZELGEO" >
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="AZELSW">
+			<xsd:enumeration value="AZELSW" >
 		
 				<xsd:annotation>
-					<xsd:documentation>topocentric Az/El (N =&gt; E). </xsd:documentation>
+					<xsd:documentation>topocentric Az/El (N => E). </xsd:documentation>
 				</xsd:annotation>
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="AZELNE">
+			<xsd:enumeration value="AZELNE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>idem AZEL. </xsd:documentation>
@@ -216,7 +221,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="ITRF">
+			<xsd:enumeration value="ITRF" >
 		
 				<xsd:annotation>
 					<xsd:documentation>ITRF earth frame. </xsd:documentation>
@@ -242,9 +247,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="BaselineReferenceCodes">
+	<xsd:simpleType name ="BaselineReferenceCodes">
 		<xsd:restriction base="blrefc:BaselineReferenceCodeList">
-			<xsd:maxLength value="28" />
+			<xsd:maxLength value = "28" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

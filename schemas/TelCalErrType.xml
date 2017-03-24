@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+ - Definition of errors for TelCal subsystem 
+-->
+<Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns="Alma/ACSError"
+      xsi:schemaLocation="Alma/ACSError ACSError.xsd" 
+      name="TelCalErrType" 
+      type="40000" 
+      _prefix="alma">
+
+<!-- Completion -->
+
+
+<!-- Errors -->
+
+<!-- Receiving data manager
+   - Calibration not found in the calibration list
+   - Scan error : scanId unknown, eventReason or eventPurpose incorrect ...
+   - Subscan error : subscanId unknown
+   - Correlator data not available
+   - Metadata not available
+   - FileNotFound : file not found  (fits mode)
+   - UnknownFunctionality: unknown type of calibration required
+   - Invalid data
+   - Invalid identifier (ASDM data)
+   - ParameterTuning not available
+   - Publisher component not available
+-->
+
+
+<!-- OfflineOperation
+   - FileNotFound : file not found
+   - UnknownFunctionality: unknown type of calibration required
+   - Invalid data
+   - Invalid identifier (ASDM data)
+
+-->
+
+        <ErrorCode name="CorrDataNotAvailable" 
+	      shortDescription="Correlator data not available" 
+	      description="Correlator data not available"/>
+        <ErrorCode name="MetaDataNotAvailable" 
+	      shortDescription="Metadata not available" 
+	      description="Metadata not available"/>
+        <ErrorCode name="FileNotFound" 
+	      shortDescription="File not found" 
+	      description="File not found"/>
+        <ErrorCode name="CalibrationNotFound" 
+	      shortDescription="Calibration not found" 
+	      description="Calibration not found"/>
+        <ErrorCode name="ScanError" 
+	      shortDescription="Scan error" 
+	      description="Scan error"/>
+        <ErrorCode name="SubscanError" 
+	      shortDescription="Subscan error" 
+	      description="Subscan error"/>
+        <ErrorCode name="UnknownFunctionality" 
+	      shortDescription="Unknown functionality" 
+	      description="Unknown type of calibration required"/>
+        <ErrorCode name="InvalidData" 
+	      shortDescription="Invalid data" 
+	      description="Invalid data"/>
+        <ErrorCode name="InvalidIdentifier" 
+	      shortDescription="Invalid identifier" 
+	      description="Invalid identifier"/>
+        <ErrorCode name="ParameterTuningNotAvailable" 
+	      shortDescription="ParameterTuning not available" 
+	      description="ParameterTuning not available"/>
+        <ErrorCode name="PublisherNotAvailable" 
+	      shortDescription="TELCAL_PUBLISHER not available" 
+	      description="TELCAL_PUBLISHER not available"/>
+
+
+<!-- GetTelCalResults 
+   - NoSuchResult :  Raised when no result corresponds to (scanId,execId)
+   - ArchiveWriteError : Raised if not able to publish results in archive
+-->
+        <ErrorCode name="NoSuchResult" 
+	      shortDescription="No such result"
+	      description="No result corresponding to (scanId,execId)"/>
+        <ErrorCode name="ArchiveWriteError" 
+	      shortDescription="Archive Error"
+	      description="Archive Error"/>
+
+<!-- ParameterTuning : 
+  - UnknownCoefficient
+  - InvalidCoefficient
+-->
+        <ErrorCode name="UnknownCoefficient" 
+	      shortDescription="Unknown coefficient"
+	      description="Unknown coefficient"/>
+        <ErrorCode name="InvalidCoefficient" 
+	      shortDescription="Invalid value of coefficient"
+	      description="Invalid value of coefficient"/>
+
+
+<!-- TelCalArrays : 
+  - ConnectError
+  - DisconnectError
+-->
+        <ErrorCode name="ConnectError" 
+	      shortDescription="Cannot connect the receiver to the distributor"
+	      description="Cannot connect the receiver to the distributor"/>
+        <ErrorCode name="DisconnectError" 
+	      shortDescription="Error when disconnecting receiver from distributor"
+	      description="Error when disconnecting receiver from distributor"/>
+</Type>
+

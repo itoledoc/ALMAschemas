@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns="Alma/ACSError"
+      xsi:schemaLocation="Alma/ACSError ACSError.xsd"
+      name="DataCaptureExceptions" 
+      type="30001" 
+      _prefix="alma">
+	  
+    <!-- these are the codes for the ERRORS -->
+	<ErrorCode name="ParsingXMLStringError" 
+               shortDescription="Error parsing the XML string" 
+               description="Error parsing the XML string"/>
+	<ErrorCode name="ReadingASDMStructError" 
+               shortDescription="Error reading ASDM struct" 
+               description="Error reading ASDM struct"/>
+	<ErrorCode name="WriteToArchiveError" 
+               shortDescription="Error saving data set into Archive" 
+               description="Error saving data set into Archive"/>
+        <ErrorCode name="WriteToDiscError"
+                 shortDescription="Error saving data set to disc"
+                 description="Error saving data set to disc"/>
+	<ErrorCode name="RetrievingInitialMetaDataError" 
+               shortDescription="Error retrieving initial meta data" 
+               description="Error retrieving initial meta data"/>
+	<ErrorCode name="RetrievingFinalMetaDataError" 
+               shortDescription="Error retrieving final meta data" 
+               description="Error retrieving final meta data"/>
+	<ErrorCode name="SendingEventError" 
+               shortDescription="Error sending Event" 
+               description="Error sending Event"/>
+	<ErrorCode name="SettingDataCapturerIdError"
+	       shortDescription="Error setting the ID for the DC"
+	       description="Error setting the ID for the DC"/>
+	<ErrorCode name="DataError" 
+               shortDescription="Error reading input data" 
+               description="Error reading input data"/>
+	<ErrorCode name="TableUpdateError" 
+               shortDescription="Error updating an ASDM table" 
+               description="Error updating an ASDM table"/>
+	<ErrorCode name="GetUVWError" 
+               shortDescription="Error get uvw" 
+               description="Error getting uvw from CONTROL for main table"/>
+	<ErrorCode name="NewSourceError" 
+               shortDescription="Error setting new Source" 
+               description="Error setting new source within a subscan"/>
+
+</Type>
+

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File PolarizationType.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:poltyp="http://Alma/XENUM/PolarizationTypeMod" targetNamespace="http://Alma/XENUM/PolarizationTypeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:poltyp="http://Alma/XENUM/PolarizationTypeMod" 
+                         targetNamespace="http://Alma/XENUM/PolarizationTypeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="PolarizationType">
 	
 		<xsd:annotation>
@@ -41,7 +46,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="R">
+			<xsd:enumeration value="R" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Right-handed Circular </xsd:documentation>
@@ -49,7 +54,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="L">
+			<xsd:enumeration value="L" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Left-handed Circular </xsd:documentation>
@@ -57,7 +62,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="X">
+			<xsd:enumeration value="X" >
 		
 				<xsd:annotation>
 					<xsd:documentation>X linear </xsd:documentation>
@@ -65,7 +70,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="Y">
+			<xsd:enumeration value="Y" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Y linear </xsd:documentation>
@@ -73,7 +78,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BOTH">
+			<xsd:enumeration value="BOTH" >
 		
 				<xsd:annotation>
 					<xsd:documentation>The receptor responds to both polarizations. </xsd:documentation>
@@ -99,9 +104,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="PolarizationTypes">
+	<xsd:simpleType name ="PolarizationTypes">
 		<xsd:restriction base="poltyp:PolarizationTypeList">
-			<xsd:maxLength value="5" />
+			<xsd:maxLength value = "5" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

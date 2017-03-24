@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Type 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="Alma/ACSError" xsi:schemaLocation="Alma/ACSError ACSError.xsd" name="TmcdbErrType" type="100000" _prefix="alma">
+    <ErrorCode name="TmcdbError" 
+        shortDescription="Generic TMCDB error"
+        description="This should never be used; use explicit exceptions instead"
+    />
+    <ErrorCode name="TmcdbNoSuchRow"
+        shortDescription="Referenced row does not exist"
+        description="Referenced row does not exist"
+    />
+    <ErrorCode name="TmcdbRowAlreadyExists"
+        shortDescription="Row already exists"
+        description="Row can't be inserted; row with this primary key already exists"
+        />
+    <ErrorCode name="TmcdbConnectionFailure"
+        shortDescription="Couldn't connect to TMCDB"
+        description="Couldn't connect; check connection parameters"
+        />
+    <ErrorCode name="TmcdbInitializationFailure"
+        shortDescription="Couldn't initialize TMCDB object"
+        description="Couldn't initialize TMCDB object"
+    />
+    <ErrorCode name="TmcdbDuplicateKey"
+        shortDescription="Duplicate key"
+        description="Duplicate key"
+    />
+    <ErrorCode name="TmcdbSql"
+    shortDescription="Generic SQL exception"
+    description="Generic SQL exception -- see error trace for details"
+    />
+    <ErrorCode name="TmcdbKeyUpdate"
+        shortDescription="Keys cannot be changed in an update method."
+        description="Keys cannot be changed in an update method."
+    />
+    <ErrorCode name="TmcdbDuplicateRow"
+        shortDescription="Duplicate rows."
+        description="Duplicate rows have been found in the TMCDB."
+    />
+    <ErrorCode name="TmcdbInvalidDataType"
+        shortDescription="Invalid data type"
+        description="Attempting to use an invalid data type in the database"
+    />
+</Type>

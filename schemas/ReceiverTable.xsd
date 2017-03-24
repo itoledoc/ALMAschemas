@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,19 +30,32 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File ReceiverTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:rcvr="http://Alma/XASDM/ReceiverTable" xmlns:ent="Alma/CommonEntity" xmlns:rcvrsb="http://Alma/XENUM/ReceiverSidebandMod" xmlns:netsdb="http://Alma/XENUM/NetSidebandMod" xmlns:recvrb="http://Alma/XENUM/ReceiverBandMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/ReceiverTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:rcvr="http://Alma/XASDM/ReceiverTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:netsdb="http://Alma/XENUM/NetSidebandMod"
+	xmlns:recvrb="http://Alma/XENUM/ReceiverBandMod"
+	xmlns:rcvrsb="http://Alma/XENUM/ReceiverSidebandMod"
+					   targetNamespace="http://Alma/XASDM/ReceiverTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- We need the schema of ReceiverSideband -->
-		<xs:import namespace="http://Alma/XENUM/ReceiverSidebandMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverSideband.xsd" />
+		<!-- No specific import for ArrayTimeInterval -->
 		<!-- We need the schema of NetSideband -->
-		<xs:import namespace="http://Alma/XENUM/NetSidebandMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/NetSideband.xsd" />
+		<xs:import namespace="http://Alma/XENUM/NetSidebandMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/NetSideband.xsd"/>
+		<!-- We need the schema of ReceiverBand -->
+		<xs:import namespace="http://Alma/XENUM/ReceiverBandMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverBand.xsd"/>
+		<!-- We need the schema of ReceiverSideband -->
+		<xs:import namespace="http://Alma/XENUM/ReceiverSidebandMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverSideband.xsd"/>
+		<!-- No specific import for Frequency -->
 		<!-- No specific import for String -->
 		<!-- No specific import for int -->
-		<!-- We need the schema of ReceiverBand -->
-		<xs:import namespace="http://Alma/XENUM/ReceiverBandMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverBand.xsd" />
-		<!-- No specific import for Frequency -->
-		<!-- No specific import for ArrayTimeInterval -->
 	
 	
 	
@@ -54,24 +67,51 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="receiverId" type="xs:string" />
-         <xs:element name="timeInterval" type="xs:string" />
-         <xs:element name="name" type="xs:string" />
-         <xs:element name="numLO" type="xs:string" />
-         <xs:element name="frequencyBand" type="recvrb:ReceiverBand" />
-         <xs:element name="freqLO" type="xs:string" />
-         <xs:element name="receiverSideband" type="rcvrsb:ReceiverSideband" />
-         <xs:element name="sidebandLO" type="xs:string" />
-         <xs:element name="spectralWindowId" type="xs:string" />
+         <xs:element name="receiverId" type=
+"xs:string"
+
+/>
+         <xs:element name="timeInterval" type=
+"xs:string"
+
+/>
+         <xs:element name="name" type=
+"xs:string"
+
+/>
+         <xs:element name="numLO" type=
+"xs:string"
+
+/>
+         <xs:element name="frequencyBand" type=
+"recvrb:ReceiverBand"
+
+/>
+         <xs:element name="freqLO" type=
+"xs:string"
+
+/>
+         <xs:element name="receiverSideband" type=
+"rcvrsb:ReceiverSideband"
+
+/>
+         <xs:element name="sidebandLO" type=
+"xs:string"
+
+/>
+         <xs:element name="spectralWindowId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

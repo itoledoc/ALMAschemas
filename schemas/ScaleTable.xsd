@@ -36,24 +36,24 @@
                        attributeFormDefault="unqualified"
 					   xmlns:scale="http://Alma/XASDM/ScaleTable"
 					   xmlns:ent="Alma/CommonEntity"
+	xmlns:weityp="http://Alma/XENUM/WeightTypeMod"
 	xmlns:datscl="http://Alma/XENUM/DataScaleMod"
 	xmlns:timscl="http://Alma/XENUM/TimeScaleMod"
-	xmlns:weityp="http://Alma/XENUM/WeightTypeMod"
 					   targetNamespace="http://Alma/XASDM/ScaleTable"
                        version="3 -1">
  	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- We need the schema of DataScale -->
-		<xs:import namespace="http://Alma/XENUM/DataScaleMod" 
-	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/DataScale.xsd"/>
-		<!-- No specific import for String -->
-		<!-- No specific import for Tag -->
-		<!-- We need the schema of TimeScale -->
-		<xs:import namespace="http://Alma/XENUM/TimeScaleMod" 
-	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/TimeScale.xsd"/>
 		<!-- We need the schema of WeightType -->
 		<xs:import namespace="http://Alma/XENUM/WeightTypeMod" 
 	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/WeightType.xsd"/>
+		<!-- We need the schema of DataScale -->
+		<xs:import namespace="http://Alma/XENUM/DataScaleMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/DataScale.xsd"/>
+		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
+		<!-- We need the schema of TimeScale -->
+		<xs:import namespace="http://Alma/XENUM/TimeScaleMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/TimeScale.xsd"/>
 	
 	
 	

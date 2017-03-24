@@ -1,0 +1,64 @@
+#ifndef SUBARRAY_IDL
+#define SUBARRAY_IDL
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * "@(#) $Id: CorrelatorArray.idl,v 1.3 2011/11/01 14:15:16 ramestic Exp $"
+ *
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ */
+
+#pragma prefix "alma"
+
+module Correlator
+{
+
+    /** Sequence of antenna names 
+     **/
+    typedef sequence<string, 64> AntennaSeq_t;
+    /** Structure that contains the necessary information about a given subarray 
+     **/
+    struct CorrelatorArray
+    {
+	/** String that identifies this subarray
+	 **/
+	string arrayID;
+
+        /** Subarray index (0-5) is mapped by CCC & used by CDP to know
+	 ** to which array this applies.
+	 */
+        long arrayIndex;
+
+	/** An array contains a sequence of antenna labels (strings).
+	 **/
+	Correlator::AntennaSeq_t antennaList;
+    };
+
+    /** Type to be used when instantiating a subarray
+     **/
+    typedef CorrelatorArray CorrelatorArray_t;
+    /** Sequence of structures containing the array IDs and name of antennas forming each array
+     */
+    typedef sequence<CorrelatorArray_t> CorrelatorArraySeq;
+
+};
+#endif

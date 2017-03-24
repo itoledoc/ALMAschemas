@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Type xmlns="Alma/ACSError" xsi:schemaLocation="Alma/ACSError ACSError.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	  name="QlDisplayExceptions" 
+	  type="55001" 
+	  _prefix="alma">
+	  
+    <!-- these are the codes for the ERRORS -->
+	<ErrorCode name="InvalidStateError" 
+               shortDescription="The quicklook display system is in an invalid state." 
+               description="The quicklook display system is in an invalid state."/>
+
+ 
+</Type>
+

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,28 +30,35 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File ASDM+".xsd"
---><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cntnr="http://Alma/XASDM/ASDM" xmlns:ent="Alma/CommonEntity" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/ASDM" version="3 -1">
-    <xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+					  elementFormDefault="qualified"            
+                      attributeFormDefault="unqualified"
+                       targetNamespace="http://Alma/XASDM/ASDM"
+					   xmlns:cntnr="http://Alma/XASDM/ASDM"
+					   xmlns:ent="Alma/CommonEntity"
+                      version="3 -1" >
+    <xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
     <xs:element name="ASDM">
         <xs:complexType>
             <xs:sequence>
             	<!-- The container's Entity identifier. -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
             	<!-- The time of creation -->
-                <xs:element name="TimeOfCreation" type="xs:string" />
+                <xs:element name="TimeOfCreation" type="xs:string"/>
                 <!-- Are ArrayTimeInterval values encoded as startTime & duration in the XML documents representing tables where they occur -->
-                <xs:element name="startTimeDurationInXML" minOccurs="0" maxOccurs="1">
+                <xs:element name ="startTimeDurationInXML" minOccurs="0" maxOccurs="1">
                     <xs:complexType>
                         <xs:complexContent>
-                            <xs:restriction base="xs:anyType" />
+                            <xs:restriction base="xs:anyType"/>
                          </xs:complexContent>
                     </xs:complexType>
                 </xs:element>
                 <!-- Are ArrayTimeInterval values encoded as startTime & duration in the binary documents representing tables where they occur -->
-                <xs:element name="startTimeDurationInBin" minOccurs="0" maxOccurs="1">
+                <xs:element name ="startTimeDurationInBin" minOccurs="0" maxOccurs="1">
                 	<xs:complexType>
   						<xs:complexContent>
-   							<xs:restriction base="xs:anyType" />
+   							<xs:restriction base="xs:anyType"/>
   						</xs:complexContent>
  					</xs:complexType>
  				</xs:element>
@@ -59,9 +66,9 @@
                 <xs:element name="Table" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="Name" type="xs:string" />
-                            <xs:element name="NumberRows" type="xs:nonNegativeInteger" />
-                            <xs:element name="Entity" type="ent:EntityT" minOccurs="0" />
+                            <xs:element name="Name" type="xs:string"/>
+                            <xs:element name="NumberRows" type="xs:nonNegativeInteger"/>
+                            <xs:element name="Entity" type="ent:EntityT" minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

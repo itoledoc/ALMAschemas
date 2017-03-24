@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File CalCurveType.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:clcurt="http://Alma/XENUM/CalCurveTypeMod" targetNamespace="http://Alma/XENUM/CalCurveTypeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:clcurt="http://Alma/XENUM/CalCurveTypeMod" 
+                         targetNamespace="http://Alma/XENUM/CalCurveTypeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="CalCurveType">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="AMPLITUDE">
+			<xsd:enumeration value="AMPLITUDE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Calibration curve is Amplitude </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="PHASE">
+			<xsd:enumeration value="PHASE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Calibration curve is phase </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="UNDEFINED">
+			<xsd:enumeration value="UNDEFINED" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Not applicable. </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="CalCurveTypes">
+	<xsd:simpleType name ="CalCurveTypes">
 		<xsd:restriction base="clcurt:CalCurveTypeList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,12 +31,17 @@
    /////////////////////////////////////////////////////////////////
   
    File RadialVelocityReferenceCode.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ravrfc="http://Alma/XENUM/RadialVelocityReferenceCodeMod" targetNamespace="http://Alma/XENUM/RadialVelocityReferenceCodeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:ravrfc="http://Alma/XENUM/RadialVelocityReferenceCodeMod" 
+                         targetNamespace="http://Alma/XENUM/RadialVelocityReferenceCodeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="RadialVelocityReferenceCode">
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="LSRD">
+			<xsd:enumeration value="LSRD" >
 		
 				<xsd:annotation>
 					<xsd:documentation>dynamic local standard of rest. </xsd:documentation>
@@ -44,7 +49,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="LSRK">
+			<xsd:enumeration value="LSRK" >
 		
 				<xsd:annotation>
 					<xsd:documentation>kinematic local standard of rest. </xsd:documentation>
@@ -52,7 +57,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="GALACTO">
+			<xsd:enumeration value="GALACTO" >
 		
 				<xsd:annotation>
 					<xsd:documentation>galactocentric frequency. </xsd:documentation>
@@ -60,7 +65,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="BARY">
+			<xsd:enumeration value="BARY" >
 		
 				<xsd:annotation>
 					<xsd:documentation>barycentric frequency. </xsd:documentation>
@@ -68,7 +73,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="GEO">
+			<xsd:enumeration value="GEO" >
 		
 				<xsd:annotation>
 					<xsd:documentation>geocentric frequency. </xsd:documentation>
@@ -76,7 +81,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="TOPO">
+			<xsd:enumeration value="TOPO" >
 		
 				<xsd:annotation>
 					<xsd:documentation>topocentric frequency. </xsd:documentation>
@@ -102,9 +107,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="RadialVelocityReferenceCodes">
+	<xsd:simpleType name ="RadialVelocityReferenceCodes">
 		<xsd:restriction base="ravrfc:RadialVelocityReferenceCodeList">
-			<xsd:maxLength value="6" />
+			<xsd:maxLength value = "6" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

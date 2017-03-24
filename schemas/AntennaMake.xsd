@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File AntennaMake.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:antmak="http://Alma/XENUM/AntennaMakeMod" targetNamespace="http://Alma/XENUM/AntennaMakeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:antmak="http://Alma/XENUM/AntennaMakeMod" 
+                         targetNamespace="http://Alma/XENUM/AntennaMakeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="AntennaMake">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="AEM_12">
+			<xsd:enumeration value="AEM_12" >
 		
 				<xsd:annotation>
 					<xsd:documentation>12m AEM antenna </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="MITSUBISHI_7">
+			<xsd:enumeration value="MITSUBISHI_7" >
 		
 				<xsd:annotation>
 					<xsd:documentation>7-m Mitsubishi antenna (ACA) </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="MITSUBISHI_12_A">
+			<xsd:enumeration value="MITSUBISHI_12_A" >
 		
 				<xsd:annotation>
 					<xsd:documentation>12-m Mitsubishi antenna (ACA) (refurbished prototype) </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="MITSUBISHI_12_B">
+			<xsd:enumeration value="MITSUBISHI_12_B" >
 		
 				<xsd:annotation>
 					<xsd:documentation>12-m Mitsubishi antenna (ACA) (production) </xsd:documentation>
@@ -72,7 +77,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="VERTEX_12_ATF">
+			<xsd:enumeration value="VERTEX_12_ATF" >
 		
 				<xsd:annotation>
 					<xsd:documentation>12-m Vertex antenna prototype </xsd:documentation>
@@ -80,7 +85,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="AEM_12_ATF">
+			<xsd:enumeration value="AEM_12_ATF" >
 		
 				<xsd:annotation>
 					<xsd:documentation>12-m AEM  antenna prototype </xsd:documentation>
@@ -88,7 +93,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="VERTEX_12">
+			<xsd:enumeration value="VERTEX_12" >
 		
 				<xsd:annotation>
 					<xsd:documentation>12-m Vertex antenna </xsd:documentation>
@@ -96,7 +101,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="IRAM_15">
+			<xsd:enumeration value="IRAM_15" >
 		
 				<xsd:annotation>
 					<xsd:documentation>15-m IRAM antenna </xsd:documentation>
@@ -104,7 +109,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="UNDEFINED">
+			<xsd:enumeration value="UNDEFINED" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Not defined or not applicable. </xsd:documentation>
@@ -130,9 +135,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="AntennaMakes">
+	<xsd:simpleType name ="AntennaMakes">
 		<xsd:restriction base="antmak:AntennaMakeList">
-			<xsd:maxLength value="9" />
+			<xsd:maxLength value = "9" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,15 +30,24 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File CalReductionTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:clred="http://Alma/XASDM/CalReductionTable" xmlns:ent="Alma/CommonEntity" xmlns:invcon="http://Alma/XENUM/InvalidatingConditionMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/CalReductionTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:clred="http://Alma/XASDM/CalReductionTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:invcon="http://Alma/XENUM/InvalidatingConditionMod"
+					   targetNamespace="http://Alma/XASDM/CalReductionTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
 		<!-- No specific import for ArrayTime -->
-		<!-- We need the schema of InvalidatingCondition -->
-		<xs:import namespace="http://Alma/XENUM/InvalidatingConditionMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/InvalidatingCondition.xsd" />
+		<!-- No specific import for Tag -->
 		<!-- No specific import for String -->
 		<!-- No specific import for int -->
-		<!-- No specific import for Tag -->
+		<!-- We need the schema of InvalidatingCondition -->
+		<xs:import namespace="http://Alma/XENUM/InvalidatingConditionMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/InvalidatingCondition.xsd"/>
 	
 	
 	
@@ -48,26 +57,59 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="calReductionId" type="xs:string" />
-         <xs:element name="numApplied" type="xs:string" />
-         <xs:element name="appliedCalibrations" type="xs:string" />
-         <xs:element name="numParam" type="xs:string" />
-         <xs:element name="paramSet" type="xs:string" />
-         <xs:element name="numInvalidConditions" type="xs:string" />
-         <xs:element name="invalidConditions" type="xs:string" />
-         <xs:element name="timeReduced" type="xs:string" />
-         <xs:element name="messages" type="xs:string" />
-         <xs:element name="software" type="xs:string" />
-         <xs:element name="softwareVersion" type="xs:string" />
+         <xs:element name="calReductionId" type=
+"xs:string"
+
+/>
+         <xs:element name="numApplied" type=
+"xs:string"
+
+/>
+         <xs:element name="appliedCalibrations" type=
+"xs:string"
+
+/>
+         <xs:element name="numParam" type=
+"xs:string"
+
+/>
+         <xs:element name="paramSet" type=
+"xs:string"
+
+/>
+         <xs:element name="numInvalidConditions" type=
+"xs:string"
+
+/>
+         <xs:element name="invalidConditions" type=
+"xs:string"
+
+/>
+         <xs:element name="timeReduced" type=
+"xs:string"
+
+/>
+         <xs:element name="messages" type=
+"xs:string"
+
+/>
+         <xs:element name="software" type=
+"xs:string"
+
+/>
+         <xs:element name="softwareVersion" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

@@ -1,0 +1,16 @@
+<Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="Alma/ACSError"
+    xsi:schemaLocation="Alma/ACSError ACSError.xsd"
+    name="SharedSimulatorErrors"
+    type="2001"
+    _prefix="alma">
+
+<Code name="NoError" shortDescription="No error" Description="No error condition found"/>
+
+<ErrorCode name="MemoryAllocation" shortDescription="Buffer can't be allocated" Description=""/>
+
+<ErrorCode name="CDBAccessError" shortDescription="Error while accessing the Configuration Database" Description=""/>
+
+<ErrorCode name="ConnectionError" shortDescription="ACU is not reachable or disconnected" Description=""/>
+
+</Type>

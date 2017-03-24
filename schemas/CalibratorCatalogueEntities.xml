@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<EntitybuilderSettings>
+   <EntitySchema 
+        schemaName="CalQueryParameters.xsd"
+        xmlNamespace="alma/common/calibratorCatalogue"/>
+   <XmlNamespace2JPackage 
+        xmlNamespace="alma/common/calibratorCatalogue"
+        jPackage="alma.common.calibratorCatalogue.calQueryParameters"/>
+</EntitybuilderSettings>

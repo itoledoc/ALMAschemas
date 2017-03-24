@@ -1,0 +1,785 @@
+#ifndef OBSERVATION_CONTROL_IDL
+#define OBSERVATION_CONTROL_IDL
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * "@(#) $Id: ObservationControl.idl,v 1.36 2013/02/11 21:20:32 jperez Exp $"
+ *
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ * jperez    2003-08-21 Added this header.
+ *                     Changed configureObservation function to match newer ICD.
+ * kitayama  2006-05-26 New parameter added to ACA Correlator for R4.0.
+ * mwatanabe 2010-08-27 subscanEnded method extended with SubScanCorrelatorData and drop DC component.
+ */
+
+#include <acserr.idl>
+#include <acscommon.idl>
+#include <acscomponent.idl>
+#include <asdmIDL.idl>
+#include <asdmIDLTypes.idl>
+#include <ControlAntennaInterfaces.idl>
+#include <ControlBasicInterfaces.idl> 
+#include <ControlDataInterfaces.idl>
+#include <CorrStateModel.idl>
+#include <CorrErr.idl>
+
+#pragma prefix "alma"
+
+/** Correlator module
+ */
+module Correlator
+{
+    /** Maximum number of concurrent sub-arrays.
+     ** Note: BL should be able to handle 6 in total, but for the
+     ** time being there is a simulation limitation (rtos resources)
+     ** that requires a kernel patch.
+     */
+    const long ACA_MAX_NUMBER_SUB_ARRAYS = 2;
+    const long BL_MAX_NUMBER_SUB_ARRAYS = 4;
+
+    /** Maximum number of configurations and calibrations to be stored 
+     ** in the correlator (or by correlator software)  concurrently for each subarray.
+     */
+    const long MAX_CONFIGURATIONS_PER_SUB_ARRAY = 32;
+    const long MAX_CALIBRATIONS_PER_SUB_ARRAY = 128;
+
+    /** CAI to which the BL antenna sum will be redirected when sum switch is enabled.
+     ** This should always be 63 for a 4 quadrants configuration.
+     */
+    const short BL_SUM_CAI = 63;
+
+    /** Maximum time between call by CONTROL to get*ReconfigurationTimes and receipt of response
+     ** from the correlator in ACS time units (.384 secs)
+     */
+    const ACS::TimeInterval GET_RECONFIGURATION_RESPONSE_TIMEOUT = 3840000;
+    /** Assumed maximum amount of transit time for each call in ACS time units (.096 secs)
+     */
+    const ACS::TimeInterval MAX_COMM_OVERHEAD = 960000;
+    /** Amount of time before the start of a subscan sequence that a command to do so must be received
+     ** in ACS time units (.096 secs)
+     */
+    const ACS::TimeInterval LEAD_TIME = 960000;
+
+    /** The SubscanTimingSeq contains the setup time and duration of
+     ** each sub-scan in the sequence. All times must be multiples of
+     ** 48ms.
+     */ 
+    struct SubscanTiming
+    { 
+        /** Time before the sub-scan or calibration can start. This is set by
+         ** correlator in the get*ReconfigurationTimes functions. It may be
+         ** lengthened by CONTROL, before its used in the start*Sequence
+         ** functions.
+         */
+        ACS::TimeInterval setupTime; 
+        
+        /** How long the sub-scan or calibration will take. This is set by
+         ** correlator in the getCalibrationReconfigurationTimes function and
+         ** used by correlator in the startCalibrationSequence function.  This
+         ** is *not* set by correlator in the getReconfigurationTimes
+         ** function. Instead its set by control before its used by correlator
+         ** in the startSubscanSequence function.
+         */
+        ACS::TimeInterval duration;  
+        
+        /** An additional time, after a subscan or calibration is complete,
+         ** before the report or subscanEnded function, in the call-back
+         ** object, can be called. Unlike the setupTime the processingTime is
+         ** not included when computing the time between subscans in a
+         ** sequence. The processingTime is set by correlator in the
+         ** get*ReconfigurationTimes functions. It may be lengthed, by control,
+         ** before its used in the start*Sequence functions.
+         */
+        ACS::TimeInterval processingTime; 
+    };
+    typedef sequence<SubscanTiming> SubscanTimingSeq;
+    
+    /// One of these for each subscan in the sequence to be used at run-time
+    struct SubscanInformation
+    {
+        long scanNumber;            //! the scan number (1-based)
+        long subScanNumber;         //! the subscan number (1-based)
+        
+        /** The identifier of the correlator calibration which have already
+         ** been loaded into the correlator or cached in the correlator
+         ** software.
+         */    
+        long calibrationId;
+        
+        /** Specifies a timing of one single subscan.
+         */
+        SubscanTiming subscanTime;
+    };
+    
+    struct CalibrationInformation
+    {
+        /** The identifier of the correlator configuration which have already
+         ** been loaded into the correlator or cached in the correlator
+         ** software.
+         */    
+        long configurationId;
+            
+        /** Specifies a timing of one single calibration.
+         */
+        SubscanTiming subscanTime;
+    };
+    
+    /** The length of this sequence defines the number of subscans in
+     ** the scan. This can be 1 for manual mode observations
+     */
+    typedef sequence<SubscanInformation> SubscanInformationSeq;
+    typedef sequence<CalibrationInformation> CalibrationInformationSeq;
+    
+    /** A parameter set to be used at configuration time of the correlator BY
+     ** EXTERNAL CLIENTS, e.g., Control
+     */
+    typedef sequence<string> SpectralSpecXMLSeq;
+    
+    /** ConfigurationIdSeq an identifier of the correlator configuration
+     ** sequence.
+     */
+    typedef ACS::longSeq ConfigurationIdSeq;
+    
+    /** CalibrationIdSeq an identifier of the correlator calibration
+     ** sequence.
+     */
+    typedef ACS::longSeq CalibrationIdSeq;
+    
+    /** The AppSumAdj structure contains the parameters relevant for setting the
+     ** antenna sum switch and defining the sum mask. This is baseband
+     ** specific and has a certain validity interval for application.
+     ** These parameters are also relevant for the fast loop phase corrections.
+     */
+    struct AppSumAdj {
+        BasebandNameMod::BasebandName baseband;
+        Control::AntennaSeq sumArray;
+        string refAntenna;
+        ACS::TimeInterval validity;
+    };
+    typedef sequence<AppSumAdj> AppSumAdjSeq;
+
+    /** The AppPhaseAdj structure contains the parameters relevant for setting
+     ** TFB phase adjustments, according to the phase packing format defined in
+     ** AppMode. This is baseband specific and has a certain validity interval
+     ** for application.
+     */
+    struct AppPhaseAdj {
+        BasebandNameMod::BasebandName baseband;
+        ACS::floatSeq phaseSeq;
+        ACS::TimeInterval validity;
+    };
+    typedef sequence<AppPhaseAdj> AppPhaseAdjSeq;
+
+    /** A callback interface used to return the calibration identifiers. The
+     ** CalibrationCB interface is passed in the startCalibrationSequence
+     ** function. The report function in this interface is called when a
+     ** calibration sequence is complete. It returns all calibration
+     ** identifiers and this sequence is always the same length as the number
+     ** of requested calibrations. The completion status of each calibration is
+     ** returned in the status sequence. If any calibration failed the
+     ** associated completion will have a code with something other than
+     ** ACSErrOK and it will contain an error trace with a detailed description
+     ** of the reason for the failure.
+     */
+    interface CalibrationSeqCB: ACS::OffShoot {
+        /** The report function is called when a calibration sequence is
+         ** complete. It returns all calibration identifiers and this sequence
+         ** is always the same length as the number of requested
+         ** calibrations. The completion status of each calibration is returned
+         ** in the status sequence.
+         ** @param calibrations an identifier of the correlator calibration
+         **        sequence.
+         ** @param status
+         **        ACSErrOK
+         **        InvalidArrayEx
+         **        ConfigurationIdNotExist
+         **          The correlator configuration sequence id does not 
+         **          exist for the specified array
+         **        InsufficientLeadTime 
+         **          The configuration was not provided at least LEAD_TIME
+         **          before \e startTime.
+         **        InvalidSubscanTiming 
+         **          The timing sequence is inconsistent with that was
+         **          returned in getCalibrationReconfigurationTimes method.
+         **        TooManyCalibrations 
+         **          The number of correlator calibrations in the system
+         **          goes over the limit.
+         **        CorrHardware 
+         **          There was a problem during the start of subscan sequence
+         **          involving the correlator hardware such as hardware
+         **          timeouts or communications.  Specific text of the error
+         **          expands on the nature of the problem.
+         **        CorrResourceConflict 
+         **          There was a conflict trying to access a needed resource,
+         **          e.g. a previous subscan using the same configuration had
+         **          not ended at the specified startTime, a  component was
+         **          not available, etc. Specific text of the error expands
+         **          on the nature of the problem.
+         */
+        oneway void report(in CalibrationIdSeq calibrations,
+                           in ACSErr::CompletionSeq status);
+    };
+
+    /** A callback interface used to indicate the status of a sub-scan sequence.
+     ** The SubscanSeqCB interface is passed in the startSubscanSequence
+     ** function.  The subscanStarted function in this interface is called when
+     ** a sub-scan has started. It returns no status information. The
+     ** subscanEnded function is called when a sub-scan has completed. If any
+     ** sub-scan failed, the subscanEnded function will pass some status other
+     ** than ACSErrOK and it will contain an error trace with a detailed
+     ** description of the reason for the failure. If a subscan fails, for any
+     ** reason, then there will not be any further calls to the callback and
+     ** the caller should assume that all subsequent subscans have been
+     ** aborted.  Sub-scans which did not complete successfully should not be
+     ** sent to the archive.
+     **
+     ** It is not necessary to call, in strict order, the subscanStarted &
+     ** subscanEnded functions as the subscanStarted is ideally called when the
+     ** observing for a subscan starts and the subscanEnded functin is called
+     ** when the processing has ended. This may be after the next subscan has
+     ** started. So its possible to have two calls to the subscanStarted
+     ** function before the first call to the subscanEnded function.
+     */
+    interface SubscanSeqCB: ACS::OffShoot {
+        /** This function is called when a sub-scan has started. Its called
+         ** once for each subscan ideally after the completion of all
+         ** activities needed to make the correlator hardware run the
+         ** subscan. It must be called after the end of the previous subscan,
+         ** not the processing of this subscan, and before we are halfway
+         ** through through the observing of the current subscan.
+         ** @param scanNumber
+         ** @param subscanNumber
+         */
+        oneway void subscanStarted(in long scanNumber,
+                                   in long subscanNumber);
+
+        /** The funtion called when a sub-scan has completed.
+         ** @param scanNumber
+         ** @param subscanNumber
+         ** @param subscanData. Information about the subscan that needs to go
+         ** to data capture. Its not to be used unless the status is ACSErrOK
+         ** @param status
+         **        ACSErrOK
+         **        InvalidArrayEx
+         **        CalibrationIdNotExist 
+         **          The correlator calibration sequence id does not
+         **          exist in the system.
+         **        InsufficientLeadTime 
+         **          The configuration was not provided at least LEAD_TIME
+         **          before \e startTime.
+         **        InvalidSubscanTiming 
+         **          The timing sequence is inconsistent with that was
+         **          returned in getReconfigurationTimes method.
+         **        FailedToConnectBDD
+         **          There was a problem during the publish BDF to Bulk data distorubuter.
+         **        InvalidSubscanInfo 
+         **          Invalid sub-scan information was found in the sequence
+         **          of SubscanInfo struct.
+         **        CorrHardware 
+         **          There was a problem during the start of subscan sequence
+         **          involving the correlator hardware such as hardware
+         **          timeouts or communications.  Specific text of the error
+         **          expands on the nature of the problem.
+         **        CorrResourceConflict 
+         **          There was a conflict trying to access a needed resource,
+         **          e.g. a previous subscan using the same configuration had
+         **          not ended at the specified startTime, a  component was
+         **          not available, etc. Specific text of the error expands
+         **          on the nature of the problem.
+         **        TerminatedSubScan
+         **          The subscan has terminated for some reason,
+         **          e.g. stopSubScanSequence() was called, there is some problem
+         **          during the data processing by CDP, etc.
+         **        FailedToGetUIDs
+         **          There was a problem during the get uids object for the subscan
+         **          from Identifier componets.
+         **          
+         */
+        oneway void subscanEnded(in long scanNumber,
+                                 in long subscanNumber,
+                                 in Control::SubScanCorrelatorData subscanData,
+                                 in ACSErr::Completion status);
+    };
+
+    /** Observation Control Interface.  This interface is used by Control
+     ** Subsystem clients to configure and control the correlator hardware,
+     ** CCC, and CDP for an observation.
+     */
+    interface ObservationControl: CorrelatorPrivate::CorrStateModel
+    {
+        /** Subscan Sequences
+            
+         ** The idea is to load correlator configurations in advance and
+         ** associate each one a configuration identifier. Calibration subscans
+         ** may then be run for these configurations and each calibration is
+         ** associated with a calibration id. Then a sequence of subscans can
+         ** be run each one using a predefined calibration id.
+         **
+         ** The steps are (thanks to Robert Lucas and Jeff Kern for this):
+         ** 0. At the beginning of execution, a predefined number of correlator
+         ** registers are allocated to an array. This is not currently
+         ** supported by this interface.
+         ** 1- A number of correlator configurations is then loaded. The
+         ** correlator returns the configuration IDs (integers) which Control
+         ** uses as references to the specific configurations.
+         ** 2.- CONTROL invokes the getCalibrationReconfigurationTimes method to get the setup, duration, and processing times
+         ** from the correlator.  This call will include the start time of the calibration sequence as well as the 
+         ** calibration info sequence that will be used for the actual calibration sequence.  The calibration sequence elements 
+         ** must have all fields filled out except processingTime and duration times that will be determined by the correlator.
+         ** The correlator may increase any setup time sent by CONTROL and will overwrite any duration/processing time if sent
+         ** by CONTROL. 
+         ** NOTE: The BL correlator does not perform a calibration in TDM modes (i.e. it does not need CONTROL to do its setup since
+         ** BL correlator will not use the antenna signals).  In this case, BL correlator will indicate that CONTROL's setup is not 
+         ** needed by setting the duration to 0 and overwriting whatever setup times CONTROL sent with BL correlator's setup times.
+         ** This will improve the efficiency of TDM calibrations since BL correlator's calibration setup times are typically much 
+         ** shorter than CONTROL's.  The ACA correlator does need the antenna signals for all calibrations and will not take any
+         ** such action.
+         ** 3.- The getCalibrationReconfigurationTimes call must be executed by CONTROL before the start time of the associated 
+         ** calibration sequence.  This call amounts to a reservation of the 
+         ** setup and duration time periods beginning at startTime as specified in the returned SubscanTimingSeq. 
+         ** This implies that all calls to getCalibrationReconfigurationTimes must be paired with a subsequent call to 
+         ** startCalibrationSequence. If a call to startCalibrationSequence is not received by the specified startTime (- LEAD_TIME) in the 
+         ** associated getCalibrationReconfigurationTimes call the correlator will cancel the "reservation".
+         ** The correlator must respond to the getCalibrationReconfigurationTimes call within GET_RECONFIGURATION_RESPONSE_TIMEOUT of invocation. 
+         ** If not, CONTROL may elect not to start the associated calibration sequence and log something to that effect.
+         ** 4.- A number of calibrations are then run using these configurations and timings specified by the correlator. 
+         ** The startCalibrationSequence method must use the start time previously provided to the associated getCalibrationReconfigurationTimes 
+         ** method as well as the setup, duration and processing times calculated by the correlator.  The correlator returns the calibration IDs (integers) 
+         ** which CONTROL uses as references to the specific calibrations. Each calibration  is associated with only one configuration (but the converse is not true).
+         ** 5.- CONTROL invokes the getReconfigurationTimes method to get the setup and processing times
+         ** from the correlator.  This call will include the start time of the observation as well as the 
+         ** subscan info sequence that will be used for the actual subscan sequence.  The subscan sequence elements 
+         ** must have all fields filled out except processingTime, scanNumber, and subScanNumber 
+         ** which are optional and ignored by the correlator.  The correlator may increase the setup times sent by CONTROL, 
+         ** and will overwrite any processing times but will not touch duration times.
+         ** 6.- The getReconfigurationTimes call must be executed by CONTROL before the start time of the 
+         ** associated subscan sequence and after CONTROL has finished calculating its own timing requirements. This call amounts to a 
+         ** reservation of the setup/duration time periods beginning at startTime as specified in the returned SubscanTimingSeq. This implies  
+         ** that all calls to getReconfigurationTimes must be paired with a subsequent call to startSubScanSequence. If a call to startSubScanSequence 
+         ** is not received by the specified startTime (- LEAD_TIME) in the associated getReconfigurationTimes call the correlator will cancel the "reservation".
+         ** The correlator must respond to the getReconfigurationTimes call within GET_RECONFIGURATION_RESPONSE_TIMEOUT of invocation. 
+         ** If not, CONTROL may elect not to start the associated subscan sequence and log something to that effect.
+         ** 7.- A sequence of subscans is then run using the preloaded calibration ID's (and their associated configurations).
+         ** The startSubScanSequence method must use the start time previously provided to the associated getReconfigurationTimes method as well as 
+         ** the reconfiguration setup and processing times calculated by the correlator.
+         ** An assumption in all these timings is that the upper limit for the communications overhead between the control subsystem 
+         ** and the OBSERVATION_CONTROL component is MAX_COMM_OVERHEAD.
+         ** A sequence diagram of all these interactions can be found in
+         ** http://ictjira.alma.cl/secure/attachment/11500/SubarrayConfigurationTimes-20140115.pdf 
+         **/
+
+        /** Load a set of configurations into the correlator.
+         ** This function defines a set of correlator configurations for
+         ** use by the specified array.  When this function is called the
+         ** configurations are checked and some configurations may be
+         ** loaded into registers in the correlator hardware. It will return
+         ** a set of identifiers that can then be used to reference these
+         ** configurations. Identifiers can be any non-negative number.
+         ** The maximum number of the configurations to be loaded at one
+         ** point should be predefined. Provisionally, the maximum number 
+         ** would be defined as 32 per array.
+         ** An InvalidConfigEx exception is thrown if there is a problem
+         ** with any configuration. This exception contains detailed
+         ** information on the problems with all configurations i.e., all
+         ** configurations in the sequence are checked.
+         ** @param subarrayId Name of array
+         ** @param configurations The sequence of the spectral specifications
+         **        with which the correlator should be configured.
+         ** @return correlator configuration identifiers 
+         **         These are the correlator configuration identifiers returned
+         **         when the configurations are successfully stored into the
+         **         correlator or cached in the correlator software.
+         ** @exception InvalidArray The array identifier is invalid, usually
+         **            because the array has not been created beforehand.
+         ** @exception InvalidConfig The configuration is invalid, usually \
+         **            because an parameter value is out-of-bounds.
+         ** @exception TooManyConfigs The number of correlator configurations,
+         **            for this array, is over the limit.
+         */
+        ConfigurationIdSeq loadConfigurations(
+            in string subarrayId, 
+            in SpectralSpecXMLSeq configurations)
+            raises(CorrErr::ErrorEx); 
+
+        /** Determine how long it will take to do a sequence of
+         ** calibrations. Each calibration will use the specified correlator
+         ** configuration. Calibrations, with the same configuration
+         ** identifier, may be done multiple times as other parameters, such as
+         ** the antenna elevation or local-oscillator setup may change. The
+         ** returned setup times are the minimum required by the correlator and may not be changed
+         ** by CONTROL. If no calibration is needed the duration is set to zero by the correlator.
+         ** @param subarrayId Name of array
+         ** @param calInfos Sequence containing setup/duration/processing/configurationIDs
+         ** @return a sequence of the SubscanTiming struct. 
+         ** @exception InvalidArray The array identifier is invalid, 
+         **            because the array has not been created beforehand
+         ** @exception ConfigurationIdNotExist The correlator configuration
+         **            sequence id does not exist for the specified array.
+         ** @exception InvalidSubScanTiming 
+         **            - The specified startTime < 
+         **                               currentTime + GET_RECONFIGURATION_RESPONSE_TIMEOUT + LEAD_TIME + MAX_COMM_OVERHEAD
+         */
+        SubscanTimingSeq getCalibrationReconfigurationTimes(
+            in string subarrayId,
+            in ACS::Time startTime,
+            in CalibrationInformationSeq calInfos)
+            raises(CorrErr::ErrorEx);        
+
+        /** Start a sequence of calibrations. This function kicks off a
+         ** sequence of calibrations and returns before they are
+         ** completed. When the calibrations are completed it will call the
+         ** report function in the callback parameter. The startTime will
+         ** always be at least LEAD_TIME in the future and aligned with a timing
+         ** event. The subscanTimes will be the parameter returned by the
+         ** getCalibrationReconfigurationTimes function but some of the setup
+         ** times may have been lengthed. The results of the calibrations
+         ** should be stored in the correlator (or in the correlator software)
+         ** so that the calibration results should be used in the subsequent
+         ** subscans refered with the calibration id.  The maximum number of
+         ** the calibrations to be stored in the correlator (software) is 128
+         ** per array.
+         ** @param subarrayId Name of array
+         ** @param startTime The start of the sequence of calibrations
+         **        using the configurations referred in configurationSeq.
+         ** @param calibrationInfos 
+         **        The sequence of the CalibrationInfo struct. Each struct
+         **        specifies a timing & configurationId of one single
+         **        calibration.
+         ** @param callback The interface to be used to return the
+         **        calibration identifiers.
+         */
+        oneway void startCalibrationSequence(in string subarrayId, 
+                                             in ACS::Time startTime, 
+                                             in CalibrationInformationSeq calibrationInfos,
+                                             in CalibrationSeqCB callback);
+
+        /** Determine how long it will take to do a sequence of sub-scans.
+         ** Each sub-scan will use the specified calibration and the
+         ** corresponding correlator configuration. The returned setup 
+         ** times are the minimum required by the correlator based on what other concurrent subarray 
+         ** configurations will be loaded/running in the correlator hardware at the time of the subscan 
+         ** sequence start time specified by . These durations will be set to positive values before the 
+         ** sub-scan timing sequence is used. CONTROL will not change the setup/duration/processing times returned 
+         ** by this method when invoking the startSubscanSequence method at a later time.
+         ** @param subarrayId Name of array
+         ** @param startTime Time at which subscan sequence is to begin
+         ** @param subscanInfos Sequence containing setup/duration/processing/calibrationIDs and optionally
+         **                     scan/subscan IDs.
+         ** @return a sequence of the SubscanTiming struct. 
+         ** @exception InvalidArray The array identifier is invalid, 
+         **            because the array has not been created beforehand or has been destroyed
+         ** @exception CalibrationIdNotExist A correlator calibration
+         **            id in subscanInfos does not exist for the specified array
+         ** @exception InvalidSubScanTiming 
+         **            - The subscan duration is not an integral multiple of 48ms.
+         **            - The subscan duration is not an integral multiple of the 
+         **              integration duration.
+         **            - The specified startTime < 
+         **                               currentTime + GET_RECONFIGURATION_RESPONSE_TIMEOUT + LEAD_TIME + MAX_COMM_OVERHEAD
+         **            _ The data rate for multiple subarrays is incompatible.
+         */
+        SubscanTimingSeq getReconfigurationTimes(
+            in string subarrayId,
+            in ACS::Time startTime,
+            in SubscanInformationSeq subscanInfos)
+            raises(CorrErr::ErrorEx); 
+
+        /** Start a sequence of sub-scans. This function kicks off a sequence
+         ** of sub-scans and returns before they are completed. When the
+         ** sub-scans are completed it will call the subscanEnded function in
+         ** the callback parameter. The startTime will always be at least LEAD_TIME
+         ** in the future and aligned with a timing event. The subscanTimes
+         ** will be the parameter returned by the getReconfigurationTimes
+         ** function but the subscans durations will have been set to positive
+         ** values and some of the setup or processing times may have been
+         ** lengthed.
+         ** @param subarrayId Name of array
+         ** @param startTime The start of the sub-scan sequence using the
+         **        calibrations and corresponding configurations referred
+         **        in subscanInfos
+         ** @param executeBlockID The UID for the ASDM being created.
+         ** @param executeBlockNumber The exec block number (1-based)
+         ** @param subscanInfos The sequence of SubscanInfo struct. 
+         **        Each struct includes the scan duration, calibration ID and
+         **        scan/subscan numbers.
+         ** @param callback The interface will be used to return the sub-scan
+         **        completion status.
+         */
+        oneway void startSubscanSequence(in string subarrayId,
+                                         in ACS::Time startTime, 
+                                         in asdmIDLTypes::IDLEntityRef executeBlockID,
+                                         in long executeBlockNumber,
+                                         in SubscanInformationSeq subscanInfos,
+                                         in SubscanSeqCB callback);
+
+        /** This method aborts these subscans, that is, stopping them
+         ** explicitly before their time runs out. The subscan stops at the end
+         ** of the current integration or within 30 seconds (whichever is
+         ** shorter). Information is sent to the DC which signals that not all
+         ** integrations of the subscan were completed.
+         ** @param subarrayId is the array on which all subscans will be stopped.
+         ** @exception InvalidArray if the subarrayId is not in use.
+         ** @exception CorrResourceConflict if CDP Master have problems
+         **            stopping the subscan
+         ** @exception CorrHardware if there is a problem stopping the subscan
+         **            on the hardware
+         */
+        void stopSubscanSequence(in string subarrayId)
+            raises(CorrErr::ErrorEx); 
+
+        /** Remove a set of correlator configuration identifiers from the
+         ** system.  When a configuration is no longer needed, it is
+         ** deleted. This usually happens at the end of an execution block or
+         ** scan. Calibrations stored in the correlator corresponding to the
+         ** correlator configurations also would be deleted automatically. The
+         ** ConfigurationSeqId which includes one of the the correlator
+         ** configuration identifiers specified in this function would be
+         ** invalid after the completion of this function. The correlation ID
+         ** must be associated with the specified array. The specified
+         ** correlatoir configurations must be associated with the specified
+         ** array.
+         ** @param subarrayId Name of array
+         ** @param corrConfigIdentifiers specifies correlator configurations to
+         **            be removed from the system.
+         ** @exception InvalidConfigurationId A correlator configuration
+         **            identifier in the sequence was in use.
+         ** @exception ConfigurationIdNotExist A correlator configuration
+         **            identifier in the sequence does not exist for this array
+         ** @exception InvalidArray The array identifier is invalid, usually
+         **            because the array has not been created beforehand.
+         */
+        void clearConfigurationIds(in string subarrayId,
+                                   in ConfigurationIdSeq corrConfigIdentifiers)
+            raises(CorrErr::ErrorEx); 
+
+        /** Remove a set of correlator calibration identifiers from the system.
+         ** When a calibration is no longer needed it can be deleted using this
+         ** function. This does not delete the associated correlator
+         ** configuration. The calibration ID must be associated with the
+         ** specified array. The CalibrationSeqId which includes one of the the
+         ** correlator calibration identifiers specified in this function would
+         ** be invalid after the completion of this function. This may happen
+         ** at any time but once a calibration is deleted it may no longer be
+         ** used.
+         ** @param subarrayId Name of array
+         ** @param calibrationIdentifiers 
+         **            corresponds to the existing calibrations.
+         ** @exception InvalidArray The array identifier is invalid, usually
+         **            because the array has not been created beforehand.
+         ** @exception InvalidCalibrationId A correlator calibration identifier
+         **           in the sequence was in use.
+         ** @exception CalibrationIdNotExist A correlator configuration
+         **            identifier in the sequence does not exist in the system
+         **            for this array.
+         */
+        void clearCalibrationIds(in string subarrayId,
+                                 in CalibrationIdSeq calibrationIdentifiers)
+            raises(CorrErr::ErrorEx); 
+
+        /** Remove all calibration and configuration identifiers.  This removes
+         ** all calibrations and configurations associated with the specified
+         ** array. This may happen at any time and will always happen at the
+         ** end of an execution block.
+         ** @param subarrayId the array associated with these configurations and
+         **                calibrations
+         ** @exception InvalidArray The array identifier is invalid, usually
+         **            because the array has not been created beforehand.
+         ** @exception ArrayInUse Cannot clear one of the configuration IDs for the specified 
+         **            array because it is currently running a subscan using it
+         */
+        void clearAllIds(in string subarrayId)
+            raises(CorrErr::ErrorEx); 
+
+        /** The setSubArray method gives the array name and its list of antenna
+            names.  
+         ** The antenna names will be the ALMA antenna names: DV01, PM02,
+         ** etc.  This method would be called whenever a new array has been
+         ** created and is fully functional.
+         ** @param subarrayId Name of subarray
+         ** @param antennaList List of antenna names comprising this array.  At 
+         ** present the correlator assumes that the antenna lists for different
+         ** arrays do not conflict (e.g. an antenna appearing in more than one
+         ** concurrent array). The order of antennas in this list will be
+         ** preserved by the correlator.
+         ** @param bddStreamInfo asdm flow information to be used by the
+         ** specified array 
+         ** @exception InvalidArray The array has already been created
+         ** @exception InvalidAntennaId It basically means that one or more
+         ** antenna ids are invalid. By invalid, this would mean that an
+         ** antenna id is not correctly mapped to a CAI. Each correlator will
+         ** know via the TMCDB valid antennaId-CAI mappings.
+         ** @exception InvalidFlowNumberEx An invalid flow number was encountered.
+         ** (out of effective range, conflict in this (sub-)array, etc...)
+         ** @exception FailedToConnectBDDEx The specified BDD component is not available.
+         ** @todo Validate antenna lists and raise an InvalidAntennaIdEx
+         ** exception unless this is already done by the CONTROL subsystem.
+         ** Add exception for invalid bddStreamInfo contents?
+         */
+        void setSubArray(in string subarrayId, 
+                         in Control::AntennaSeq antennaList, 
+                         in Control::BDStreamInfo bdStrmInfo)
+            raises(CorrErr::ErrorEx); 
+
+        /** The destroySubArray method terminates the use of the array
+         ** indicated by the subarrayId parameter.  Any configurations using this
+         ** array will also be cleared.
+         ** @param subarrayId Name of array.  If subarrayId is a null string all
+         ** existing arrays and associated configurations will be deleted.
+         ** @exception InvalidArray The array has not been previously created
+         ** or has already been destroyed.
+         ** @exception ArrayInUse Cannot destroy an array while running a subscan using it
+         */
+        void destroySubArray(in string subarrayId)
+            raises(CorrErr::ErrorEx); 
+      
+        /** Allows external testing of residual delay correction by enabling or
+         ** disabling the residual delay correction in the CDP nodes. Note
+         ** that residual delay correction is enabled by default, while
+         ** baseband delays will be enabled in all cases.
+         ** @param subarrayId Name of array
+         ** @param enable True to enable residual delay correction.
+         ** @exception InvalidArray The array identifier is invalid, usually
+         **            because the array has not been created beforehand.
+         */
+        void residualDelayCorrection(in string subarrayId, in boolean enable)
+            raises(CorrErr::ErrorEx); 
+
+        /** Gets the current residual delay correction by enabling or
+         ** disabling the residual delay correction in the CDP nodes. 
+         ** @param subarrayId Name of array
+         ** @exception InvalidArray The array identifier is invalid, usually
+         **            because the array has not been created beforehand.
+         */
+        boolean getResidualDelayCorrection(in string subarrayId) 
+            raises(CorrErr::ErrorEx); 
+
+        /** This method is used by the CONTROL subsystem to set the WVR coefficients
+         ** in the correlator (BL or ACA).  The coefficients will not be used until the
+         ** start of the subscan following receipt of the coefficients.
+         ** @param subarrayId Identifies array the coefficients will be applied to.
+         ** @param wvrCoefficients  IDL representation of the ASDM CalWVR table.
+         ** @exception InvalidArray The array has not been previously created or has
+         ** already been destroyed.
+         ** @exception InvalidConfig The wvrCoefficients contain some TBD invalid parameters.
+         */
+        void setWVRCoefficients(in string subarrayId, in asdmIDL::CalWVRTableIDL wvrCoefficients) 
+            raises(CorrErr::ErrorEx); 
+
+        /** This method indicates what the expected WVR integration time
+         ** is. The actual WVR integration time, for each antenna, is in the
+         ** WVRData structure thats published on the CONTROL_REALTIME
+         ** notification channel. Its an error if these two integration times
+         ** disagree but his check should only be done when a subscan is
+         ** running (so that the execution of this function does not need to be
+         ** precisely timed with the setting of the WVR integration time on
+         ** each antenna). This function should not be called when a subscan is
+         ** running.
+         ** @param subarrayId Identifies the array the integration time will apply to.
+         ** @param interval The expected WVR integratiuon time. This will
+         ** always be a multiple of 0.192 sec and never be longer than
+         ** 1023*0.192 seconds.
+         ** @exception InvalidArray The array has not been previously created or has
+         ** already been destroyed.
+         ** @exception InvalidConfig The integration time is not in the range specified above.
+         ** @exception SubarrayInUse Subarray is already being used by another subscan.
+         */
+        void setWVRIntegrationTime(in string subarrayId, in ACS::TimeInterval interval)
+            raises(CorrErr::ErrorEx); 
+
+        /** Gets the current expected WVR integration time. Returns 0.96 secs
+         ** if this value has not been explicitly set using the
+         ** setWVRIntegrationTime function. Unlike the setWVRIntegrationTime
+         ** this function can be called when a subscan is running.
+         ** @param subarrayId Identifies the array the integration time will apply to.
+         ** @exception InvalidArray The array has not been previously created or has
+         ** already been destroyed.
+         */
+        ACS::TimeInterval getWVRIntegrationTime(in string subarrayId)
+            raises(CorrErr::ErrorEx); 
+
+        /** Lets the correlator know if the specified array has at least
+         ** some antennas equipped with WVR devices.
+         ** @param subarrayId name of specified array
+         ** @param expected true if array has WVR devices
+         ** @exception InvalidArray The array has not been previously created or has
+         ** already been destroyed.
+         */
+        void expectWVRData(in string subarrayId, in boolean expected)
+            raises(CorrErr::ErrorEx); 
+
+        /** Configure a VLBI/Phasing scan.
+         ** @param subarrayId Target subarray identifier
+         ** @param mode Phasing mode, to be used for the CDP fast loop
+         ** @param packMode Packing mode to be used for the phase sequence
+         **        handling
+         ** @exception InvalidArrayEx The array identifier is invalid,
+         **            because the array has not been created beforehand
+         ** @exception InvalidParameterEx If any given parameter is invalid
+         */
+        void setAppScanParameters(
+            in string subarrayId,
+            in Control::AppCorrModeSeq mode,
+            in string packMode)
+            raises(CorrErr::ErrorEx); 
+
+        /** Set VLBI/Phasing antenna sum parameters. This will activate the
+         ** correlator sum switch and set the antenna mask. Relevant parameters
+         ** will be forwarded to the CDP.
+         ** @param subarrayId Target subarray identifier
+         ** @param sumAdjList Sequence of AppSumAdj definitions for each
+         **        relevant basebands.
+         ** @param Timestamps of application in the hardware for each baseband,
+         **        in the same order as provided in sumAdjList
+         ** @exception InvalidArrayEx The array identifier is invalid,
+         **            because the array has not been created beforehand
+         ** @exception InvalidAntennaId One or more antenna ids are invalid,
+         **            i.e. not correctly mapped to a CAI.
+         ** @exception InvalidParameterEx If any given parameter is invalid
+         ** @exception CorrHardwareEx If there is a hardware problem updating
+         **            the antenna mask.
+         */
+        ACS::TimeSeq setAppSumParameters(
+            in string subarrayId, in AppSumAdjSeq sumAdjList)
+            raises(CorrErr::ErrorEx); 
+
+        /** Set the VLBI/Phasing phase adjustments. Relevant parameters will be
+         ** forwarded to the CDP.
+         ** @param subarrayId Target subarray identifier
+         ** @param phaseAdjList Sequence of AppPhaseAdj definitions for each
+         **        relevant basebands.
+         ** @param Timestamps of application in the hardware for each baseband,
+         **        in the same order as provided in phaseAdjList
+         ** @exception InvalidArrayEx The array identifier is invalid,
+         **            because the array has not been created beforehand
+         ** @exception InvalidParameterEx If any given parameter is invalid
+         ** @exception CorrHardwareEx If there is a hardware problem updating
+         **            the phases.
+         */
+        ACS::TimeSeq setAppPhaseParameters(
+            in string subarrayId, in AppPhaseAdjSeq phaseAdjList)
+            raises(CorrErr::ErrorEx); 
+
+    };
+
+};
+#endif
+

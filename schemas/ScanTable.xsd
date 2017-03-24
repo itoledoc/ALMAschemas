@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,23 +30,40 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File ScanTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:scn="http://Alma/XASDM/ScanTable" xmlns:ent="Alma/CommonEntity" xmlns:calset="http://Alma/XENUM/CalibrationSetMod" xmlns:antmop="http://Alma/XENUM/AntennaMotionPatternMod" xmlns:calibf="http://Alma/XENUM/CalibrationFunctionMod" xmlns:scnint="http://Alma/XENUM/ScanIntentMod" xmlns:cldato="http://Alma/XENUM/CalDataOriginMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/ScanTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:scn="http://Alma/XASDM/ScanTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:calset="http://Alma/XENUM/CalibrationSetMod"
+	xmlns:scnint="http://Alma/XENUM/ScanIntentMod"
+	xmlns:calibf="http://Alma/XENUM/CalibrationFunctionMod"
+	xmlns:antmop="http://Alma/XENUM/AntennaMotionPatternMod"
+	xmlns:cldato="http://Alma/XENUM/CalDataOriginMod"
+					   targetNamespace="http://Alma/XASDM/ScanTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for ArrayTime -->
 		<!-- We need the schema of CalibrationSet -->
-		<xs:import namespace="http://Alma/XENUM/CalibrationSetMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalibrationSet.xsd" />
-		<!-- We need the schema of AntennaMotionPattern -->
-		<xs:import namespace="http://Alma/XENUM/AntennaMotionPatternMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/AntennaMotionPattern.xsd" />
-		<!-- No specific import for String -->
-		<!-- We need the schema of CalibrationFunction -->
-		<xs:import namespace="http://Alma/XENUM/CalibrationFunctionMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalibrationFunction.xsd" />
-		<!-- We need the schema of ScanIntent -->
-		<xs:import namespace="http://Alma/XENUM/ScanIntentMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/ScanIntent.xsd" />
-		<!-- No specific import for int -->
-		<!-- We need the schema of CalDataOrigin -->
-		<xs:import namespace="http://Alma/XENUM/CalDataOriginMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalDataOrigin.xsd" />
+		<xs:import namespace="http://Alma/XENUM/CalibrationSetMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalibrationSet.xsd"/>
 		<!-- No specific import for boolean -->
+		<!-- No specific import for ArrayTime -->
+		<!-- We need the schema of ScanIntent -->
+		<xs:import namespace="http://Alma/XENUM/ScanIntentMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/ScanIntent.xsd"/>
+		<!-- We need the schema of CalibrationFunction -->
+		<xs:import namespace="http://Alma/XENUM/CalibrationFunctionMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalibrationFunction.xsd"/>
+		<!-- No specific import for String -->
+		<!-- No specific import for int -->
+		<!-- We need the schema of AntennaMotionPattern -->
+		<xs:import namespace="http://Alma/XENUM/AntennaMotionPatternMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/AntennaMotionPattern.xsd"/>
+		<!-- We need the schema of CalDataOrigin -->
+		<xs:import namespace="http://Alma/XENUM/CalDataOriginMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalDataOrigin.xsd"/>
 	
 	
 	
@@ -60,30 +77,75 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="scanNumber" type="xs:string" />
-         <xs:element name="startTime" type="xs:string" />
-         <xs:element name="endTime" type="xs:string" />
-         <xs:element name="numIntent" type="xs:string" />
-         <xs:element name="numSubscan" type="xs:string" />
-         <xs:element name="scanIntent" type="xs:string" />
-         <xs:element name="calDataType" type="xs:string" />
-         <xs:element name="calibrationOnLine" type="xs:string" />
-     	 <xs:element name="calibrationFunction" type="xs:string" minOccurs="0" />
-     	 <xs:element name="calibrationSet" type="xs:string" minOccurs="0" />
-     	 <xs:element name="calPattern" type="xs:string" minOccurs="0" />
-     	 <xs:element name="numField" type="xs:string" minOccurs="0" />
-     	 <xs:element name="fieldName" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sourceName" type="xs:string" minOccurs="0" />
-         <xs:element name="execBlockId" type="xs:string" />
+         <xs:element name="scanNumber" type=
+"xs:string"
+
+/>
+         <xs:element name="startTime" type=
+"xs:string"
+
+/>
+         <xs:element name="endTime" type=
+"xs:string"
+
+/>
+         <xs:element name="numIntent" type=
+"xs:string"
+
+/>
+         <xs:element name="numSubscan" type=
+"xs:string"
+
+/>
+         <xs:element name="scanIntent" type=
+"xs:string"
+
+/>
+         <xs:element name="calDataType" type=
+"xs:string"
+
+/>
+         <xs:element name="calibrationOnLine" type=
+"xs:string"
+
+/>
+     	 <xs:element name="calibrationFunction" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="calibrationSet" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="calPattern" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="numField" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="fieldName" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sourceName" type=
+"xs:string"
+
+  minOccurs="0"/>
+         <xs:element name="execBlockId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

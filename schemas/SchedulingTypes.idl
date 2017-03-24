@@ -1,0 +1,200 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * $Id: SchedulingTypes.idl,v 1.5 2012/05/09 23:32:35 javarias Exp $
+ */
+
+#ifndef _SCHEDULINGTYPES_IDL_
+#define _SCHEDULINGTYPES_IDL_
+
+#include <ControlAntennaInterfaces.idl>
+#include <ControlArrayInterfaces.idl>
+#include <ControlMasterInterfaces.idl>
+
+#pragma prefix "alma"
+
+module scheduling {
+  /**
+  * The name of the Scheduling's notification channel.
+  */
+  const string CHANNELNAME_SCHEDULING = "SCHEDULING_CHANNEL";
+
+  /**
+	* Types imported from old SchedulingInterfaces.idl file
+	* TODO: Put documentation about these entities here
+    */
+
+  enum SchedulingState { ONLINE_PASS1, ONLINE_PASS2, ERROR, OFFLINE};
+  struct SchedulingStateEvent{
+     SchedulingState state;
+  };
+
+
+ /* Imports from outside
+     ==================== */
+  typedef Control::AntennaId AntennaId;
+  typedef sequence<Control::AntennaId> AntennaIdSeq;    
+  typedef Control::ResourceNameSeq PhotonicsSeq;
+  typedef asdmIDLTypes::IDLEntityRef EntityRef;
+  typedef Control::ArrayId ArrayName;
+
+  /* Basic typedefs
+     ============== */
+  typedef string ArrayIdentifier;
+  typedef sequence<ArrayIdentifier> ArrayIdentifierSeq;
+
+  typedef string SchedBlockUID;
+  typedef sequence<SchedBlockUID> SchedBlockUIDSeq;
+
+  typedef string SchedBlockExecutionState;
+  typedef sequence<SchedBlockExecutionState> SchedBlockExecutionStateSeq;
+  
+  typedef sequence<string> ExecIdSeq;
+
+  /* Array Creation and Configuration
+     ================================ */
+
+  // I doubt that we need both of the following enums, they
+  // should be amalgamated at some point.
+  enum ArrayModeEnum { DYNAMIC, INTERACTIVE, QUEUED, MANUAL };
+  enum ArraySchedulerMode {
+    INTERACTIVE_I,
+    DYNAMIC_I,
+    TIME_BASED_I,
+    MANUAL_I
+  };
+  typedef sequence<ArraySchedulerMode> ArraySchedulerModeSeq;
+
+  // I'm not sure we ever take note of the following - either we
+  // should or we should get rid of this type.
+  enum ArraySchedulerLifecycleType {
+    NORMAL,
+    COMMISSIONING
+  };
+
+  /**
+   * This data structure is published at the start of a session.
+   * @param startTime The time at which the session started. Defined in
+   *                  ACS Time because this is what is given to us by
+   *                  the control subsystem
+   * @param sessionRef An IDLEntityRef to the session entity associated with 
+   *                  this event.
+   * @param sbRef An IDLEntityRef to the SB whose execution started this session.
+   */
+  struct StartSessionEvent {
+      ACS::Time startTime;
+      ArrayIdentifier arrayId;
+      asdmIDLTypes::IDLEntityRef sessionRef;
+      asdmIDLTypes::IDLEntityRef sbRef;
+  };
+      
+  /**
+   * This data structure is published at the end of a session.
+   * @param endTime The time at which the session ended. Defined in 
+   *                ACS Time because this is what is given to us by
+   *                the control subsystem
+   * @param sessionRef An IDLEntityRef to the session entity associated with 
+   *                  this event.
+   * @param sbRef An IDLEntityRef to the SB whose execution started this session.
+   * @param ExecIdSeq This is a seaquence of all the executions block ids for this
+   *                  sessiosn. 
+   */
+  struct EndSessionEvent {
+      ACS::Time endTime;
+      asdmIDLTypes::IDLEntityRef sessionRef;
+      asdmIDLTypes::IDLEntityRef sbRef;
+      ExecIdSeq ebIds;
+  };
+  
+  struct ArrayCreationInfo {
+    ArrayIdentifier arrayId;
+    string arrayComponentName;
+  };
+
+  /**
+   * A struct to describe an Array. Used both as a specification of an
+   * array to be created and a description of an extant array
+   */
+  struct ArrayDescriptor {
+    AntennaIdSeq antennaIdList;
+    PhotonicsSeq photonicsList;
+    Control::CorrelatorType corrType;
+    ArrayModeEnum schedulingMode;
+    ArraySchedulerLifecycleType lifecycleType;
+  };
+
+  /* Events and Operations - Notifications, basically 
+     ================================================ */
+  enum ArrayEvent {
+    CREATION,
+    DESTRUCTION
+  };
+
+  /**
+   * @enum QueueOperation 
+   * Types of operation that can be performed in the Scheduler Array
+   * queue. This enumeration is used in the queue monitoring callback.
+   */
+  enum QueueOperation {
+    PUSH,
+    PULL,
+    UP,
+    DOWN,
+    REMOVE,
+    STATE_CHANGE,
+    PUSH_MANY,
+    REMOVE_MANY,
+    WAITING // Someone is waiting for an element to be put onto the currently empty queue
+  };
+    
+  /**
+   * Things that can change in the array which might be of interest to GUIs.
+   */
+  enum ArrayGUIOperation {
+    RUNNING,           // The array has started to execute SBs
+    STOPPED,           // The array has stopped executing new SBs (but there might still be some finishing up)
+    FULLAUTO,          // The array is now in FullAuto mode
+    SEMIAUTO,          // The array is now in SemiAuto mode	
+    ACTIVEDYNAMIC,     // The array is now in Active mode (Dynamic arrays only)
+    PASSIVEDYNAMIC,    // The array is now in ActivePassive mode (Dynamic arrays only)
+    BUSY,              // The array is busy and should not be destroyed
+    IDLE,              // The array is not doing anything and can be destroyed
+    DESTROYED          // The array has been destroyed
+  };
+  
+  /* SchedBlock Execution
+     ==================== */
+  struct SchedBlockQueueItem {
+    long long timestamp;
+    SchedBlockUID uid;
+  };
+  typedef sequence<SchedBlockQueueItem> SchedBlockQueueItemSeq;
+  
+  struct SchedBlockExecutionItem {
+    long long timestamp;
+    SchedBlockUID uid;
+    SchedBlockExecutionState executionState;
+  };
+  typedef sequence<SchedBlockExecutionItem> SchedBlockExecutionItemSeq;
+};
+#endif // _SCHEDULINGTYPES_IDL_

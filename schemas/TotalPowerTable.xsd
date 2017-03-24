@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,16 +30,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File TotalPowerTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ttlpwr="http://Alma/XASDM/TotalPowerTable" xmlns:ent="Alma/CommonEntity" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/TotalPowerTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:ttlpwr="http://Alma/XASDM/TotalPowerTable"
+					   xmlns:ent="Alma/CommonEntity"
+					   targetNamespace="http://Alma/XASDM/TotalPowerTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
 		<!-- No specific import for ArrayTime -->
-		<!-- No specific import for Interval -->
-		<!-- No specific import for Tag -->
-		<!-- No specific import for String -->
-		<!-- No specific import for int -->
 		<!-- No specific import for Length -->
+		<!-- No specific import for String -->
+		<!-- No specific import for Tag -->
 		<!-- No specific import for float -->
+		<!-- No specific import for int -->
+		<!-- No specific import for Interval -->
 	
 	
 	
@@ -51,31 +58,79 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="time" type="xs:string" />
-         <xs:element name="scanNumber" type="xs:string" />
-         <xs:element name="subscanNumber" type="xs:string" />
-         <xs:element name="integrationNumber" type="xs:string" />
-         <xs:element name="uvw" type="xs:string" />
-         <xs:element name="exposure" type="xs:string" />
-         <xs:element name="timeCentroid" type="xs:string" />
-         <xs:element name="floatData" type="xs:string" />
-         <xs:element name="flagAnt" type="xs:string" />
-         <xs:element name="flagPol" type="xs:string" />
-         <xs:element name="interval" type="xs:string" />
-     	 <xs:element name="subintegrationNumber" type="xs:string" minOccurs="0" />
-         <xs:element name="configDescriptionId" type="xs:string" />
-         <xs:element name="execBlockId" type="xs:string" />
-         <xs:element name="fieldId" type="xs:string" />
-         <xs:element name="stateId" type="xs:string" />
+         <xs:element name="time" type=
+"xs:string"
+
+/>
+         <xs:element name="scanNumber" type=
+"xs:string"
+
+/>
+         <xs:element name="subscanNumber" type=
+"xs:string"
+
+/>
+         <xs:element name="integrationNumber" type=
+"xs:string"
+
+/>
+         <xs:element name="uvw" type=
+"xs:string"
+
+/>
+         <xs:element name="exposure" type=
+"xs:string"
+
+/>
+         <xs:element name="timeCentroid" type=
+"xs:string"
+
+/>
+         <xs:element name="floatData" type=
+"xs:string"
+
+/>
+         <xs:element name="flagAnt" type=
+"xs:string"
+
+/>
+         <xs:element name="flagPol" type=
+"xs:string"
+
+/>
+         <xs:element name="interval" type=
+"xs:string"
+
+/>
+     	 <xs:element name="subintegrationNumber" type=
+"xs:string"
+
+  minOccurs="0"/>
+         <xs:element name="configDescriptionId" type=
+"xs:string"
+
+/>
+         <xs:element name="execBlockId" type=
+"xs:string"
+
+/>
+         <xs:element name="fieldId" type=
+"xs:string"
+
+/>
+         <xs:element name="stateId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

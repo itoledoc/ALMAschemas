@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,8 +30,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File HistoryTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:histry="http://Alma/XASDM/HistoryTable" xmlns:ent="Alma/CommonEntity" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/HistoryTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:histry="http://Alma/XASDM/HistoryTable"
+					   xmlns:ent="Alma/CommonEntity"
+					   targetNamespace="http://Alma/XASDM/HistoryTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
 		<!-- No specific import for ArrayTime -->
 		<!-- No specific import for String -->
@@ -41,24 +48,51 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="time" type="xs:string" />
-         <xs:element name="message" type="xs:string" />
-         <xs:element name="priority" type="xs:string" />
-         <xs:element name="origin" type="xs:string" />
-         <xs:element name="objectId" type="xs:string" />
-         <xs:element name="application" type="xs:string" />
-         <xs:element name="cliCommand" type="xs:string" />
-         <xs:element name="appParms" type="xs:string" />
-         <xs:element name="execBlockId" type="xs:string" />
+         <xs:element name="time" type=
+"xs:string"
+
+/>
+         <xs:element name="message" type=
+"xs:string"
+
+/>
+         <xs:element name="priority" type=
+"xs:string"
+
+/>
+         <xs:element name="origin" type=
+"xs:string"
+
+/>
+         <xs:element name="objectId" type=
+"xs:string"
+
+/>
+         <xs:element name="application" type=
+"xs:string"
+
+/>
+         <xs:element name="cliCommand" type=
+"xs:string"
+
+/>
+         <xs:element name="appParms" type=
+"xs:string"
+
+/>
+         <xs:element name="execBlockId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

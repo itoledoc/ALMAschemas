@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="Alma/ACSError"
+      xsi:schemaLocation="Alma/ACSError ACSError.xsd"
+      name="ACACorrErr"
+      type="110000"
+      _prefix="alma">
+	<ErrorCode name="InitializeACACorrError" 
+		shortDescription="Initilization of ACA correlator is failed" 
+		description="Initialization of ACA correlator is failed - Check that all components are correctly loaded"/>
+	<ErrorCode name="InvalidACACorrNumber" 
+		shortDescription="Invalid ACA correlator Number" 
+		description="Out of range or undefined ACA correlator Number"/>
+	<ErrorCode name="SetACACorrStaticParamError" 
+		shortDescription="Set HW data is failed" 
+		description="Set HW data is failed"/>
+	<ErrorCode name="CheckACACorrStaticParamError" 
+		shortDescription="Check HW data is failed" 
+		description="Check HW data is failed"/>
+	<ErrorCode name="InvalidParameter" 
+		shortDescription="Invalid parameter." 
+		description="Parametr(i.g moduleId, programType, cardId) is not previously defined."/>
+	<ErrorCode name="FailedToDownload" 
+		shortDescription="Failed to download." 
+		description="Failed to response data from ACA correlator HW.(i.g response time out, invalid completion code from HW)"/>
+	<ErrorCode name="SelfTestForACACorrelatorError" 
+		shortDescription="Failed to self-test of ACA correlator" 
+		description="The runtime error while executing self-test of ACA correlator.(i.g observation confilict, Failed to response from ACA correlator, etc) "/>
+	<ErrorCode name="GetProgramVersionError" 
+		shortDescription="Failed to get program version of ACA correlator" 
+		description="Failed to get program version of ACA correlator.(i.g observation confilict, Failed to response from ACA correlator, etc) "/>
+	<ErrorCode name="GetModuleSerialNumbersError" 
+		shortDescription="Failed to get ACA correlator serial numbers" 
+		description="Failed to get module serial numbers of ACA correlator.(i.g observation confilict, Failed to response from ACA correlator, etc) "/>
+	<ErrorCode name="CDPMasterError" 
+		shortDescription="CDP Master execute error" 
+		description="The CDP Master error when executing method"/>
+	<ErrorCode name="CDPNodeError" 
+		shortDescription="CDP Computing Node execute error" 
+		description="The CDP Computing Node error when executing method"/>
+	<ErrorCode name="FailedToSetCAIConnecitivity" 
+		shortDescription="Failed to set CAI connecitivity" 
+		description="Failed to set CAI connecitivity.(i.g invalid argument, The specified CAIs were out of range)"/>
+</Type>
+

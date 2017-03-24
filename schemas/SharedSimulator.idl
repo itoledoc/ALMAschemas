@@ -1,0 +1,992 @@
+// -*- c++ -*-
+#ifndef _SHARED_SIMULATOR_IDL_
+#define _SHARED_SIMULATOR_IDL_
+
+/*******************************************************************************
+ *    ALMA - Atacama Large Millimiter Array
+ *
+ *    (c) European Southern Observatory, 2002
+ *    Copyright by ESO (in the framework of the ALMA collaboration)
+ *    and Cosylab 2002, All rights reserved
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation; either
+ *    version 2.1 of the License, or (at your option) any later version.
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    Lesser General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Lesser General Public
+ *    License along with this library; if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *
+ *
+ * "@(#) $Id: SharedSimulator.idl,v 1.1 2006/11/17 08:07:42 dbroguie Exp $"
+ *
+ * who       when       what
+ * --------  --------   ----------------------------------------------
+ * R.Lucas   2005-06-23 Fill in the interface definitions as much as possible.
+ * R.Lucas   2005-08-10 Cleaned up.
+ * R.Lucas   2005-09-15 Many updates, and documentation. 
+ * 
+ */
+
+#include <baci.idl>
+
+#pragma prefix "alma"
+
+/** @file SharedSimulator.idl
+ *  IDL specification of SharedSimulator object
+ */
+
+module SHARED_SIMULATOR 
+{
+  /** 
+   * coordinates of an antenna, in meters
+   * ToDo: actual coordinate system.
+   */
+  struct Location {
+    double x;	
+    double y;
+    double z;
+  };
+  
+  /**
+   * Hardware antenna number (0-63)
+   */
+  typedef short AntNum;
+
+  typedef string ParameterName; 
+
+  /**
+   * Hardware correlator input number (0-63)
+   */
+  typedef short CorrInputNum;
+
+  /**
+   * Hardware polarization input (0-1)
+   */
+  typedef short PolarNum;
+
+  /**
+   * Total power value (16 bit)
+   */
+  typedef unsigned short  TotPower;
+
+  /**
+   * Antenna numbering structure
+   * <ul>
+   * <li> hwAnt is the antenna hardware number 
+   * <li> hwCorrInput is the hardware correlator input to which 
+   *             this antenna is connected.
+   * </ul>
+   */
+  struct Antenna {
+    AntNum hwAnt;
+    CorrInputNum hwCorrInput;
+  };
+
+  /**
+   * SubArray structure (simplistic view for the simulator)
+   */
+  typedef sequence<Antenna> AntennaSequence;
+  struct SubArray {
+    AntennaSequence antennas;
+  };
+
+  /**
+   * Mount orientation structure for one antenna
+   */
+  struct AntAzEl {
+    /// Time Stamp for this position
+    ACS::Time 	        timeStamp;
+    /// Antenna number (hardware)
+    AntNum		antennaNum;
+    /// azimuth in radians
+    double		antAz;	
+    /// elevation in radians
+    double		antEl;	
+  };
+  /**
+   * Mount orientation structure
+   */
+  struct AzEl {
+    ACS::Time 	timeStamp;
+    /// azimuth in radians
+    double		antAz;	
+    /// elevation in radians
+    double		antEl;	
+  };
+
+  /**
+   * Antenna Subreflector Position structure
+   */
+  struct SubreflectorPosition {
+    /// Time Stamp for this position
+    ACS::Time	timeStamp;
+    /// Antenna number (hardware)
+    AntNum		antennaNum;
+    /// x coordinate (meters, in antenna reflector  frame)
+    double		x;		
+    /// y coordinate (meters, in antenna reflector  frame)
+    double		y;
+    /// z coordinate (meters, in antenna reflector  frame)
+    double		z;
+  };
+
+  /**
+   * Antenna Direct Digital sythesizer command structure
+   */
+  struct DDS_Parameters {
+    /// Time Stamp for this position
+    ACS::Time	timeStamp;
+    /// Antenna number (hardware)
+    AntNum		antennaNum;
+    /// Initial phase (in radians)
+    double		initialPhase;	      
+    /// Phase rate (in radians / s)
+    double		phaseRate;	
+  };
+  /// identifies type of local oscillator ( first or second)
+  enum Which_LO { FIRST, SECOND }; 
+  /// idendifies base band pairs (could have been also A,B,C,D ?)
+  enum Which_BBP { ZERO, ONE, TWO, THREE }; 
+                                            
+  
+  /**
+   * the receiver noise temperatures in Kelvins :
+   * one for each front end signal path: couple (sideband, polarization)
+   */
+  struct ReceiverTemps {
+    double S0P0;
+    double S0P1;
+    double S1P0;
+    double S1P1;
+  };
+
+  /**
+   * The receiver gains (total power units per Kelvin on antenna temperature)
+   * one for each front end signal path: couple (sideband, polarization)
+   */
+  struct ReceiverGains {
+    double S0P0;
+    double S0P1;
+    double S1P0;
+    double S1P1;
+  };
+  
+  /**
+   * The down converter switches. 
+   * They contain the side band (0 or 1) which is fed into the 
+   * Down Converter input (AB and CD are constrained 
+   * to share the same sideband). 
+   * 
+   */
+  struct DownConvSwitches {
+    short ABP0;  
+    short ABP1;
+    short CDP0;
+    short CDP1;
+  };
+
+  /**
+   * Attenuator values for the down converters
+   * (one for each sideband/polarization input to down converters)
+   */
+  struct DownConvAttenuators {
+    double      S0P0;
+    double      S0P1;
+    double      S1P0;
+    double      S1P1;
+  };
+
+  /**
+   * Down Converter total powers in total power units.
+   * (one for each sideband/polarization input to down converters)
+   */
+  struct DownConvPowers {
+    ACS::Time 	 timeStamp;
+    TotPower     S0P0;
+    TotPower     S0P1;
+    TotPower     S1P0;
+    TotPower     S1P1;
+  };
+
+  /**
+   * Attenuator values for the baseband pairs
+   * (one for each base band Pair / polarization)
+   */
+  struct BaseBandAttenuators {
+    double      AP0;
+    double      AP1;
+    double      BP0;
+    double      BP1;
+    double      CP0;
+    double      CP1;
+    double      DP0;
+    double      DP1;
+  };
+
+  /**
+   * Base band pair total powers in total power units.
+   * (one for each base band Pair / polarization)
+   */
+  struct BaseBandPowers {
+    ACS::Time 	 timeStamp;
+    TotPower     AP0;
+    TotPower     AP1;
+    TotPower     BP0;
+    TotPower     BP1;
+    TotPower     CP0;
+    TotPower     CP1;
+    TotPower     DP0;
+    TotPower     DP1;
+  };
+
+
+  /**
+   * Lags configuration parameters used to generate lags.
+   */
+  struct LagsConf {
+    /// numLags is  how many lags (must be a power of two)
+    long numLags; 
+    /// - lagStep is the time separation between consecutive lags, 
+    ///    measured in 4GHz samples  (0.25 ns) 
+    ///    or equivalently inverse Bandwith (in units  of (2GHz)**-1 
+    ///   (e.g. 1 for 2GHz bandwidth, 8 for 250MHz bandwidth)
+    long lagStep;   
+    /// - crossProd is the number of polarization products (1,2,4)
+    long crossProd;
+  };
+
+  ///
+  /// Auto Correlation function for one correlator input
+  ///
+  typedef sequence<long> LagSequence;
+  struct AntAutoCorr {
+    /// correlator input number
+    CorrInputNum input;
+    /// polarization number (0,1)
+    PolarNum polar;
+    /// sequence of lags values, equally spaced from zero to maximum lag 
+    /// value.
+    LagSequence lags;
+  };
+
+  ///
+  /// Cross  Correlation function of two correlator inputs
+  ///
+  struct BaseCrossCorr {
+    /// first correlator input number
+    CorrInputNum firstInput;
+    /// second correlator input number
+    CorrInputNum secondInput;
+    /// polarization of first correlator  input 
+    PolarNum firstPolar;
+    /// polarization of second correlator  input 
+    PolarNum secondPolar;
+    /// sequence of lags values, equally spaced from -N/2 to +(N-1)/2  
+    /// lag steps
+    LagSequence lags;
+  };
+
+  /// 
+  /// Set of cross correlations functions
+  /// 
+  typedef sequence<BaseCrossCorr> BaseCrossCorrSequence;
+  struct CrossCorr {
+    /// Time Stamp for this cross crrelation
+    ACS::Time 	 timeStamp;
+    /// sequence of antenna pair cross correlations
+    BaseCrossCorrSequence data;
+  };
+
+  /// 
+  /// Set of auto correlations functions
+  /// 
+  typedef sequence<AntAutoCorr> AntAutoCorrSequence;
+  struct AutoCorr {
+    /// Time Stamp for this auto crrelation
+    ACS::Time 	 timeStamp;
+    /// sequence of antenna auto correlations
+    AntAutoCorrSequence data;
+  };
+
+
+  ///
+  /// Auto Correlation Spectrum for one correlator input
+  ///
+  typedef sequence<float> IntensitySequence;
+  struct AntAutoSpectrum {
+    /// correlator input number
+    CorrInputNum input;
+    /// polarization number (0,1)
+    PolarNum polar;
+    /// sequence of intensity values (increasing frequency)
+    IntensitySequence intensity;
+  };
+
+  ///
+  /// Cross  Correlation Spectrum for one correlator input pair
+  ///
+  typedef sequence<float> VisibilitySequence;
+  struct BaseCrossSpectrum {
+    /// first correlator input number
+    CorrInputNum firstInput;
+    /// second correlator input number
+    CorrInputNum secondInput;
+    /// polarization of first correlator  input 
+    PolarNum firstPolar;
+    /// polarization of second correlator  input 
+    PolarNum secondPolar;
+    /// sequence of visibility amplitudes (increasing frequency) 
+    VisibilitySequence visiAmpli;
+    /// sequence of visibility phases (increasing frequency) 
+    VisibilitySequence visiPhase;
+  };
+
+  /// 
+  /// Set of cross  correlation spectra
+  /// 
+  typedef sequence<BaseCrossSpectrum> BaseCrossSpectrumSequence;
+  struct CrossSpectrum {
+    /// Time Stamp for this set of spectra
+    ACS::Time 	 timeStamp;
+    /// sequence of antenna pair spectra
+    BaseCrossSpectrumSequence data;
+  };
+
+  /// 
+  /// Set of auto correlation spectra
+  /// 
+  typedef sequence<AntAutoSpectrum> AntAutoSpectrumSequence; 
+  struct AutoSpectrum {
+    /// Time Stamp for this set of spectra
+    ACS::Time 	 timeStamp;
+    /// sequence of antenna spectra
+    AntAutoSpectrumSequence data;
+  };
+
+  ///
+  /// Source information (coordinates are J2000.0)
+  ///
+  struct Source {
+    /// right ascension in radians
+    double ra;
+    /// declination in radians
+    double dec;
+    /// source flux in Janskys
+    double flux;
+  };
+  /// Sky model
+  typedef sequence<Source> SourceSequence;
+  struct Sky {
+    SourceSequence sources;
+  };
+  ///
+  /// Weather information
+  struct Weather {
+    /// ambient temperature (in Kelvins)
+    float temperature;
+    /// Ambient pressure (in pascals)
+    float pressure; 
+    /// Humidity (in range 0.0 to 1.0)
+    float humidity;
+  };
+
+  /// 
+  /// Delay value
+  struct Delay {
+    /// Time Stamp for this value
+    ACS::Time 	 timeStamp;
+    /// Delay value (in seconds)
+    double totalDelay;
+  };
+
+  ///
+  /// Set of parameters to compute lags for one antenna/polarization input
+  ///
+  struct PolarCorrelPars{
+    /// Polarization number (0/1)
+    short polar;
+    /// Total residual delay (in seconds)
+    double totalDelay;
+    /// Residual phase (in radians)
+    double phase;
+    /// Residual phase rate (in radians/second)
+    double phaseRate;
+    /// correlated amplitude (in amplitude units)
+    double ampli;
+    /// noise (uncorrelated)  amplitude (in  amplitude units)
+    double noise;
+  };
+
+  ///
+  /// Set of parameters to compute lags for one antenna input
+  ///
+  struct AntCorrelPars{
+    /// Correlator input number
+    short antennaNum;
+    /// First Polarization 
+    PolarCorrelPars P0;
+    /// Second Polarization 
+    PolarCorrelPars P1;
+  };
+
+  ///
+  /// Set of parameters to compute lags for all antenna inputs
+  ///
+  typedef sequence<AntCorrelPars> AntCorrelParsSequence;
+  struct CorrelPars{
+    /// time stamp for this set
+    ACS::Time 	 timeStamp;
+    /// sequence of antenna-based parameter sets
+    AntCorrelParsSequence ants ;
+  };
+
+  ///
+  /// Shared simulator internal modes:
+  /// <ul>
+  /// <li> 0 means that the values from COntrol are used
+  /// <li> 1 means that internal simulated values  are used 
+  struct InternalMode {
+    /// use simulated antenna pointing directions
+    short antenna;
+    /// use simulated subreflector positions
+    short subref;
+    /// use simulated total delay values
+    short delay;
+    /// use simulated LO phase values
+    short phase;
+    /// use simulated LO phase rate values
+    short phaseRate;
+  };
+  ///
+
+  //  /// Shared simulator generic parameter:
+  //   struct GenericParameter {
+  //     string parameterName;
+  //     /// parameter name
+  //     short antennaNum;
+  //     /// antenna Number (-1 to apply to all antennas)
+  //     short baseBandNum;
+  //     /// baseband pair  Number (-1 to apply to all base-band pairs
+  //     double value;
+  //     /// parameter value
+  // };
+    
+    
+
+  /** 
+   *  Interface SharedSimulator controls the Shared Simulator
+   *  Component that simulates total powers and lag generation
+   *  parameters. Lag generation parameters are used by the Correlator 
+   *  or the Lag Simulator to simulate lag data.
+   */
+  interface SharedSimulator : ACS::CharacteristicComponent
+  {
+    /** 
+     *
+     *  <b>Administrative:</b> Simply turns the simulator on.
+     *  @return void
+     *  @param sleep			loop sleep time (seconds)
+     */
+    void on(in float sleep);     
+      
+    /** 
+     *  <b>Administrative:</b> Simply turns the simulator off.
+     *  @return void
+     */
+    void off(); 
+      
+    /** 
+     * <b>Model Parameters:</b> Sets the source position
+     * @return void
+     * @param ra			position right ascension (radians)
+     * @param dec  			position declination (radians)
+     */      
+    void setSourcePosition(in double ra, 
+			   in double dec);
+      
+    /**
+     * <b>Model Parameters:</b> Sets the source flux
+     * @return void
+     * @param flux			source flux (Jy)
+     */
+    void setSourceFlux(in double flux);
+
+    /**
+     * <b>Model Parameters:</b> Sets the source index
+     * @return void
+     * @param index			index in source list
+     */
+    void setSourceIndex(in short index);
+
+    /**
+     * <b>Model Parameters:</b> Sets the sky as many sources
+     * @return void
+     * @param sky			Sky as a list of sources
+     */
+    void setSky(in Sky skymodel);
+      
+    /**
+     * <b>Model Parameters</b>: Sets subArray of antennas 
+     * @return void
+     * @param SubArray array  
+     */	 
+    void setArray(in SubArray array);
+
+    /**
+     * <b>Model Parameters:</b> Sets antenna location
+     * @return void
+     * @param Location	loc			{x, y, z} location in meters
+     */	 
+    void setAntennaLocation(in AntNum antennaNum, 
+			    in Location loc);
+
+    /**
+     * <b>Model Parameters:</b> Sets antenna axes offset
+     * @return void
+     * @param AntNum		antennaNum
+     * @param axesOffset        axes offset in meters.
+     */	 
+    void setAxesOffset(in AntNum antennaNum, 
+		       in double axesOffset);
+
+    /**
+     * <b>Model Parameters:</b> Sets pointing model (Future)
+     * @return void
+     * @param AntNum		antennaNum
+     * @param PointingModel     pointing Model Coefficients
+     */	 
+
+    /**
+     * void setPointingModel(in AntNum antennaNum,  PointingModel pointingModel);
+     */
+
+
+    /**
+     * <b>Model Parameters:</b> Set Weather parameters used for simulation
+     * @return void
+     * @param temperature                       ambient temperature in kelvins
+     * @param pressureure                       ambient pressure   in pascals
+     * @param humidity                          humidity (fraction) 
+     */
+    void setWeather(in float temperature, 
+		    in float pressure, 
+		    in float humidity);
+	 
+    /**
+     * <b>Model Parameters:</b> Set Time for simulation
+     * @return void
+     * @param time  array time
+     */
+    void setTime(in ACS::Time myTime);
+
+    /**
+     * <b>Model Parameters:</b> Set Receiver temperature
+     * @return void
+     * @param  ReceiverTemps receiver temperatures
+     */
+    void setReceiverTemps(in AntNum antennaNum, 
+		    in ReceiverTemps recTemps);
+    /**
+     * <b>Model Parameters:</b> Set Receiver gains
+     * @return void
+     * @param  ReceiverTemps receiver temperatures
+     */
+    void setReceiverGains(in AntNum antennaNum, 
+		    in ReceiverGains recGains);
+    /**
+     * <b>Model Parameters:</b> Set Internal Mode
+     * @return void
+     * @param  InternalMode mode
+     */
+    void setInternalMode(in InternalMode mode);
+
+    /**
+     * <b>Model Parameters:</b> Set Generic Model Parameter
+     * @return void
+     * @param GenericParameter parameter
+     */
+    void setGenericParameterValue(in ParameterName name, in AntNum antennaNum, in Which_BBP bbp, in double value);
+
+
+
+    /**
+     * <b>Hardware Control:</b> Sets the Azimuth and Elevation 
+     * for a single antenna
+     * @return		void
+     * @param		AntAzEl		antAzEl
+     */	  
+
+    void setAntAzEl(in AntAzEl azEl);	 
+    /**
+     * <b>Hardware Control:</b> Sets the focus coordinates
+     * @return		void
+     * @param		SubreflectorPosition	subrefPos
+     */
+    void setSubrefPos( in SubreflectorPosition subrefPos );
+
+    /**
+     * <b>Hardware Control:</b> Set Delays
+     * Set the total delay
+     * (Just for testing as the simulator will subscribe to delay events
+     * from Control)
+     * @return		void
+     * @param		Delay delay 
+     */
+     void setDelay(in AntNum antennaNum, 
+		   in Delay delayValue);
+
+    /**
+     * <b>Hardware Control:</b> Sets the Direct Digital Synthesizer parameters 
+     * @return		void
+     * @param		Which_LO		lo
+     * @param		Which_BBP		bbp
+     * @param		DDS_Parameters	params
+     */
+     void setDDS_Parameters( in Which_LO lo, 
+			    in Which_BBP bbp, 
+			    in DDS_Parameters params );
+    /**
+     * <b>Hardware Control:</b> Sets the LO frequency 
+     * (or frequency of specified baseband, for second LO) 
+     * @return		void
+     * @param		Which_LO		lo
+     * @param		Which_BBP		bbp	 Valid only for second LO
+     * @param		double			frequency  (Hz)
+     */
+	  
+    void setLO_Frequency( in Which_LO lo, 
+			  in Which_BBP bbp, 
+			  in double frequency );
+    /**
+     * <b>Hardware Control:</b> Sets Down Converter Switches
+     * @return		void
+     * @param		DownConvSwitches        dcSwitches
+     */
+    void setDownConvSwitches (in DownConvSwitches dcSwitches );
+
+    /**
+     * <b>Hardware Control:</b> Sets Down Converter Attenuators
+     * @return		void
+     * @param           ANtNum antennaNum
+     * @param		DownConvAttenuators        dcAtts
+     */
+
+    void setDownConvAttenuators (in AntNum antennaNum,
+				 in DownConvAttenuators dcAtts);
+
+    /**
+     * <b>Hardware Control:</b> Sets Base Band Attenuators
+     * @return		void
+     * @param           ANtNum antennaNum
+     * @param		BaseBandAttenuators        bbAtts
+     */
+
+    void setBaseBandAttenuators (in AntNum antennaNum,
+				 in BaseBandAttenuators bbAtts);
+
+    /**
+     *  <b>Hardware Control:</b> Get the Total Powers from Down Converter 
+     *  Square Law Detectors:
+     *
+     * @return		DownConvPowers 
+     * @param           ANtNum antennaNum
+     */
+    DownConvPowers getDownConvPowers( in AntNum antennaNum);
+
+    /**
+     * <b>Hardware Control:</b> Get the Total Powers from Base Band Processors 
+     *  Square Law Detectors:
+     *
+     * @return		BaseBandPowers 
+     * @param           ANtNum antennaNum
+     */
+    BaseBandPowers getBaseBandPowers( in AntNum antennaNum);
+
+    /**
+     * <b>Correlator:</b> Get the Correlation Parameters to compute the lags:
+     *
+     * @return		CorrelPars 
+     * @param		Which_BBP     bbp             the baseband concerned 
+     */
+    CorrelPars getCorrelPars( in Which_BBP bbp);
+
+    /**
+     * <b>Test Display:</b> Get the Correlation Parameters to compute the lags (for one antenna only):
+     *
+     * @return		AntCorrelPars 
+     * @param           AntNum        antennaNum 
+     * @param		Which_BBP     bbp             the baseband concerned 
+     */
+    AntCorrelPars getAntCorrelPars( in AntNum AntennaNum, in Which_BBP bbp);
+
+    /**
+     * <b>Test/Display:</b> Gets subArray of antennas 
+     * @return SubArray 
+     */	 
+    SubArray getArray ( );
+
+    /**
+     * <b>Test/Display:</b> Gets Weather parameters used for simulation
+     * @return Weather
+     */
+    Weather getWeather ( );
+
+    /**
+     * <b>Test/Display:</b> Gets the Source parameters used for simulation
+     * @return Source
+     */
+    Source getSource();
+
+    /**
+     * <b>Test/Display:</b> Gets the Sky parameters used for simulation
+     * @return Source
+     */
+    Sky getSky();
+
+    /**
+     * <b>Test/Display:</b> Gets thesource index used for simulation
+     * @return index
+     */
+    short getSourceIndex();
+
+    /**
+     * <b>Test/Display:</b> Gets antenna location
+     * @return Location	              {x, y, z} location in meters
+     * @param AntNum antennaNum 
+     */	 
+    Location getAntennaLocation(in AntNum antennaNum); 
+
+    /**
+     * <b>Test/Display:</b> Gets antenna axes offset
+     * @return float          axes offset in meters.
+     * @param AntNum		antennaNum
+     */	 
+    double getAxesOffset(in AntNum antennaNum); 
+
+    /**
+     *
+     * <b>Test/Display:</b> Gets the Azimuth and Elevation for a single antenna
+     * @return		AzEl 
+     * @param		AntNum	        antennaNum
+     */
+    AzEl getAzEl(in AntNum antennaNum);
+
+    /**
+     * <b>Test/Display:</b> Gets the Target Azimuth and Elevation for a single antenna
+     * This is where the antenna mount should point to, 
+     * i.e. the source direction affected of pointing corrections.
+     * @return		AzEl 
+     * @param		AntNum	        antennaNum
+     */
+    AzEl getTargetAzEl(in AntNum antennaNum);
+
+    /**
+     * <b>Test/Display:</b> Gets the focus coordinates  for a single antenna
+     * @return		SubreflectorPosition
+     * @param		AntNum	        antennaNum
+     */
+    SubreflectorPosition getSubrefPos(in AntNum antennaNum);
+
+    /**
+     * <b>Test/Display:</b> Gets the target  focus coordinates  
+     * for a single antenna
+     * @return		SubreflectorPosition
+     * @param		AntNum	        antennaNum
+     */
+    SubreflectorPosition getTargetSubrefPos(in AntNum antennaNum);
+
+    /// 
+    /// <b>Test/Display:</b> Get commanded DDS Parameters
+    /// @ return DDS parameters
+    /// @ param antenna number
+    /// @param lo identification
+    /// @param base band pair identification
+    ///
+    DDS_Parameters  getDDS_Parameters(in AntNum antennaNum, 
+				      in Which_LO lo, 
+				      in Which_BBP bbp);
+    /// 
+    /// <b>Test/Display:</b> Get Target DDS Parameters
+    /// @ return DDS parameters
+    /// @ param antenna number
+    /// @param lo identification
+    /// @param base band pair identification
+    ///
+    DDS_Parameters  getTargetDDS_Parameters(in AntNum antennaNum, 
+				      in Which_LO lo, 
+				      in Which_BBP bbp);
+    ///
+    ///  <b>Test/Display:</b> Get commanded Total Delay
+    /// @ return delay 
+    /// @ param antenna number
+    ///
+    Delay getDelay (in AntNum antennaNum);
+
+    ///
+    ///  <b>Test/Display:</b> Get target Total Delay
+    /// @ return delay 
+    /// @ param antenna number
+    ///
+    Delay getTargetDelay (in AntNum antennaNum);
+
+    /// 
+    ///  <b>Test/Display:</b> Get LO frequenciy
+    /// @return LOfrequency
+    /// @param lo identification
+    /// @param base band pair identification
+    ///
+    double  getLO_Frequency (in Which_LO lo, 
+			     in Which_BBP bbp); 
+    ///
+    /// <b>Test/Display:</b> Get Time for simulation
+    /// @return time of simulation
+    ///
+    ACS::Time getTime();
+
+    /**
+     * <b>Test/Display:</b> Gets Down Converter Switches
+     * @return		DownConvSwitches
+     */
+    DownConvSwitches  getDownConvSwitches ( );
+
+    /**
+     * <b>Test/Display:</b> Gets Down Converter Attenuators
+     * @return		DownConvAttenuators
+     * @param           ANtNum antennaNum
+     */
+    DownConvAttenuators  getDownConvAttenuators (in AntNum antennaNum);
+    /**
+     * <b>Test/Display:</b> Gets Base Band Attenuators
+     * @return		BaseBandAttenuators
+     * @param           ANtNum antennaNum
+     */
+
+    BaseBandAttenuators getBaseBandAttenuators (in AntNum antennaNum);
+
+    /**
+     * <b>Test/Display:</b> Get Receiver temperatures
+     * @return ReceiverTemps
+     * @param           AntNum antennaNum
+     */
+    ReceiverTemps getReceiverTemps(in AntNum antennaNum); 
+
+    /**
+     * <b>Test/Display:</b> Get Receiver gains
+     * @return ReceiverGains 
+     * @param  AntNum antennaNum
+     */
+    ReceiverGains getReceiverGains(in AntNum antennaNum); 
+
+    /**
+     * <b>Test/Display:</b> Get Internal Mode
+     * @return InternalMode mode
+     */
+    InternalMode getInternalMode();
+
+    /**
+     * <b>Test/Display:</b> Get Generic parameter
+     * @param string Name
+     * @param AntNum antennaNum
+     * @param Which_BBP bbp
+     * @return double value 
+     */
+    double getGenericParameterValue(in ParameterName Name, in AntNum antennaNum, in Which_BBP bbp);
+
+  };    
+
+  /** 
+   *  @interface 
+   *  Interface LagsSimulator controls the Lags Simulator
+   *  Component. This component is to be integrated with the
+   *  Correlator.  it generates lags from the lag generation
+   *  parameters provided by the Shared Simulator. The methods here
+   *  are provided to test clients that access the lags data.
+   */
+  interface LagsSimulator : ACS::CharacteristicComponent
+  {
+    /** 
+     *  <b>Administrative:</b> Simply turns the simulator on.
+     *  @return void
+     *  @param sleep			loop sleep time (seconds)
+     */
+    void on(in float sleep);     
+      
+    /** 
+     *  <b>Administrative:</b> Simply turns the simulator off.
+     *  @return void
+     */
+    void off();
+
+    /**
+     * <b>Test/Display:</b> Set the number of lags, lag step, cross products 
+     * for each baseband:
+     *
+     * @return		void
+     * @param		Which_BBP bbp        baseband number
+     * @param		LagsConf config 
+     */
+    void setLagsConf( in Which_BBP bbp, 
+		      in LagsConf config ); 
+    /**
+     * <b>Test/Display:</b> Get the number of lags, lag step, cross products for each baseband:
+     *
+     * @return		void
+     * @param		Which_BBP bbp        baseband number
+     */
+    LagsConf getLagsConf( in Which_BBP bbp); 
+		    
+
+    /**
+     * <b>Test/Display:</b> Sets subArray of antennas 
+     * @return void
+     * @param SubArray array  
+     */	 
+    void setArray(in SubArray array);
+    /**
+     * <b>Test/Display:</b> Gets subArray of antennas 
+     * @return SubArray 
+     */	 
+    SubArray getArray ( );
+
+    /**
+     * <b>Test/Display:</b> get cross correlation 
+     * @return		CrossCorr
+     * @param		Which_BBP     bbp             the baseband concerned 
+     */
+    CrossCorr getCrossCorr( in Which_BBP bbp); 
+
+    /**
+     * <b>Test/Display:</b> get auto correlation 
+     * @return		AutoCorr 
+     * @param		Which_BBP     bbp             the baseband concerned 
+     */
+    AutoCorr getAutoCorr ( in Which_BBP bbp);
+    /**
+     * <b>Test/Display:</b> get cross correlation spectra 
+     * @return		CrossSpectrum
+     * @param		Which_BBP     bbp             the baseband concerned 
+     */
+    CrossSpectrum getCrossSpectrum( in Which_BBP bbp); 
+
+    /**
+     * <b>Test/Display:</b> get auto correlation spectra  
+     * @return		AutoSpectrum 
+     * @param		Which_BBP     bbp             the baseband concerned 
+     */
+    AutoSpectrum getAutoSpectrum ( in Which_BBP bbp);
+
+
+  };
+
+
+};
+
+#endif
+

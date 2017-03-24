@@ -1,0 +1,620 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * File ControlSB.idl
+ */
+
+#ifndef _CONTROLSB_IDL_
+#define _CONTROLSB_IDL_
+
+#include <ControlMasterInterfaces.idl>
+#include <CorrConfig.idl>
+
+#pragma prefix "alma"
+
+/**
+ * \defgroup controlsb ControlSB
+ *
+ * These IDL definitions and structures represent Control's view
+ * of a scheduling block.  They are used internally in control and
+ * are also used by the CCL.
+ *
+ * The main structure that represents the scheduling block is called SB.
+ * It contains:
+ * <ul>
+ *    <li> Attributes of the scheduling block, including performance goals 
+ *	   and preconditions,
+ *    <li> A list of sources with source properties attached,
+ *    <li> A list of spectral specifications,
+ *    <li> A list of correlator configurations,
+ *    <li> A list of optical camera configurations, 
+ *    <li> A list of target specifications.  Each target includes indices into 
+ *	   the source list, spectral specifications, correlator configurations,
+ *	   and optical camera configurations as well as a list of optional
+ *	   intents.  A target specification corresponds to what is executed 
+ *	   in a subscan.
+ * </ul>
+ * The observing mode in the SB is one of the 19 observing modes defined in the SSR
+ * requirements document:
+ * <ol type="A">
+ * <li>Interferometric
+ *   <ol start="1">
+ *   <li>Single Field Mapping.
+ *   <li>Multi Field Mosaics
+ *   <li>On-The-Fly Mosaics
+ *   <li>Phased Array
+ *   </ol>
+ * <li>Total Power
+ *   <ol start="5">
+ *   <li>On the Fly Mapping
+ *   <li>Position Switched Mapping
+ *   <li>Frequency Switched Mapping
+ *   </ol>
+ * <li>Special observations
+ *   <ol start="8">
+ *   <li>Pulsar observations
+ *   <li>Solar flare tracking
+ *   </ol>
+ * <li>Project Calibrations
+ *   <ol start="10">
+ *   <li>Temperature Scale Calibration
+ *   <li>Gain Calibration (amplitude and phase)
+ *   <li>Bandpass calibration
+ *   <li>Pointing/Focus calibration
+ *   <li>Flux calibration
+ *   <li>Polarization calibration
+ *   </ol>
+ * <li>Array Calibration
+ *   <ol start="16">
+ *   <li>Pointing calibration session
+ *   <li>Antenna positions calibration session
+ *   <li>Delays calibration
+ *   <li>Beam shape calibration
+ *   </ol>
+ * </ol>
+ *
+ */
+module ControlSB {
+
+  // Enumerations
+  /**
+   * \addtogroup controlsb ControlSB
+   */
+  /** @{ */
+
+  /**
+   * Names of the ALMA receiver bands.
+   */
+  enum ReceiverBandType {
+    NotUsed,
+    Band1,
+    Band2,
+    Band3,
+    Band4,
+    Band5,
+    Band6,
+    Band7,
+    Band8,
+    Band9
+  };
+
+  /**
+   * Names of field patterns
+   */
+  enum FieldPattern {
+    AbsolutePointing,
+    OffsetPointing,
+    Circle,
+    Rectangle,
+    Spiral
+  };
+
+  /**
+   * Scan direction.
+   */
+  enum ScanDirection {
+    Longitude,
+    Latitude
+  };
+
+  /**
+   * Names of common solar system objects.
+   */
+  enum SolarSystem {
+    Mercury,
+    Venus,
+    Moon,
+    Mars,
+    Jupiter,
+    Saturn,
+    Uranus,
+    Neptune,
+    Pluto,
+    Emphemeris
+  };
+
+  /**
+   * Names of Pointing methods.
+   */
+  enum PointingMethodType {
+    Circular,
+    Fivepoints,
+    Fourpoints,
+    Threepoints,
+    NotApplicable
+  };
+	
+  /**
+   * Names of the optical camera filter.
+   */
+  enum OpticalCameraFilter {
+    Day,
+    Night
+  };
+
+  /**
+   * Names of observing modes.
+   */
+  enum ObservingMode {
+    NotSpecified,
+    SingleFieldMapping,
+    MultiFieldMosaics,
+    OnTheFlyMosaics,
+    PhasedArray,
+    OnTheFlyMapping,
+    PositionSwitchedMapping,
+    FrequencySwitchedMapping,
+    PulsarObservations,
+    SolarFlareTracking,
+    TemperatureScaleCalibration,
+    GainCalibration,
+    BandpassCalibration,
+    PointingCalibration,
+    FluxCalibration,
+    PolarizationCalibration,
+    PointingCalibrationSession,
+    AntennaPositionsCalibrationSession,
+    DelaysCalibration,
+    BeamShapeCalibration
+  };
+
+  /////////////
+  // Intents //
+  /////////////
+
+  /** Scan intentions. */
+  enum ScanIntent {
+    OpticalPointing,
+    Holography,
+    ObsTarget,
+    Calibration,
+    Amplitude,
+    Polarization,
+    Phase,
+    Pointing,
+    Focus,
+    Bandpass
+  };
+
+  const string OpticalPointingName = "OpticalPointing";
+  const string HolographyName = "Holography";
+  const string ObsTargetName = "ObsTarget";
+  const string CalibrationName = "Calibration";
+  const string AmplitudeName = "Amplitude";
+  const string PolarizationName = "Polarization";
+  const string PhaseName = "Phase";
+  const string PointingName = "Pointing";
+  const string FocusName = "Focus";
+  const string BandpassName = "Bandpass";
+
+  typedef string UID; 
+  typedef sequence<Correlator::CorrelatorConfiguration> CorrelatorConfigSeq;
+  typedef sequence<ScanIntent> ScanIntentSeq;
+  typedef sequence<string> ScanIntentName;
+  typedef sequence<string> DependencyListSeq;
+
+  ////////////
+  // Source //
+  ////////////
+
+  /**
+   * Known properties for a given source.
+   */
+  struct SourceProperties {
+    /** Frequency that determines this structure. */
+    double frequency;
+    /** Total intensity (Stokes parameter I).*/
+    double flux;
+    /** If resolved at this frequency, this is the source's spatial
+     * diameter (FWHM).
+     */
+    double diameter;
+    /** Flux (Stokes Q). */
+    double fluxQ;
+    /** Flux (Stokes U). */
+    double fluxU;
+    /** Flux (Stokes V). */
+    double fluxV;
+
+    double visibleMagnitude;
+  };
+  typedef sequence<SourceProperties> SourcePropertiesSeq;
+
+  /** Celestial coordinates in J2000. */
+  struct J2000Coord {
+    double ra;
+    double dec;
+  };
+  typedef sequence<J2000Coord> J2000CoordSeq;
+
+  /** Circular scanning pattern structure. */
+  struct CirclePattern {
+    J2000Coord phaseCenter;
+  };
+
+  /** Spiral scanning pattern structure. */
+  struct SpiralPattern {
+    J2000Coord phaseCenter;
+  };
+
+  /** Absolute pointing pattern structure. */
+  struct AbsolutePointingPattern {
+    J2000CoordSeq phaseCenter;
+  };
+
+  /** Offset pointing scanning pattern structure. */
+  struct OffsetPointingPattern {
+    J2000CoordSeq phaseCenter;
+  };
+
+  /** Rectangular scanning pattern structure. */
+  struct RectanglePattern {
+    J2000Coord phaseCenter;
+    double longitudeLength;
+    double longitudeStep;
+    double latitudeLength;
+    double latitudeStep;
+    ScanDirection direction;
+    double scanVelocity;
+    double orientiation;
+  };
+
+  /** Represents an astronomical source to be observed. */
+  struct Source {		
+    string sourceName;
+    J2000Coord coord;
+    double sourceVelocity;
+    string sourceEphemeris;
+    double pMRa;
+    double pMDec;
+    boolean nonSiderealMotion;
+    SolarSystem solarSystemObject;
+    J2000Coord referenceCoord;
+    double intTimeReference;
+    double timeSource;
+    SourcePropertiesSeq sourcePropertiesList;
+    FieldPattern pattern;
+    CirclePattern circle;
+    SpiralPattern spiral;
+    AbsolutePointingPattern absPointing;
+    OffsetPointingPattern offPointing;
+    RectanglePattern rectangle;
+    double parallax;
+  };
+  typedef sequence<Source> SourceSeq;
+
+  ///////////////////
+  // Source Filter //
+  ///////////////////
+
+  /** Source filter. */
+  struct SourceFilter {
+    double elevationLimit;
+    double minMagnitude;
+    double maxMagnitude;
+  };
+
+  ////////////////////////////
+  // Spectral specification //
+  ////////////////////////////
+
+  /** The spectral setup for a target. */
+  struct SpectralSpec {
+    double integrationTime;
+    double dynamicRange;
+    double restFrequency;
+    string transitionName;
+    ReceiverBandType receiverBand;
+    double LO1;
+  };
+  typedef sequence<SpectralSpec> SpectralSpecSeq;
+	
+  //////////////////////////////////
+  // Optical Camera Configuration //
+  //////////////////////////////////
+
+  /** Optical camera configuration. */
+  struct OpticalCameraConfiguration {
+    OpticalCameraFilter filter;
+    double minIntegrationTime;
+  };
+  typedef sequence<OpticalCameraConfiguration> OpticalCameraConfigurationSeq;
+
+  //////////////////////////////////
+  // Holography Configuration //
+  //////////////////////////////////
+
+  /** not documented yet */
+  struct HolographyConfiguration {
+    double minIntegrationTime;
+  };
+  typedef sequence<HolographyConfiguration> HolographyConfigurationSeq;
+
+  //////////////////////////
+  // Target Specification //
+  //////////////////////////
+
+  /** not documented yet */	
+  struct ObsTargetIntent {
+    double sensitivityGoal;
+    double representativeBandwidth;
+    double representativeFrequency;
+    double totalPowerSamplingInterval;
+    double antennaPositionTolerance;
+    double antennaPositionTimeout;
+  };
+	
+  /** not documented yet */
+  struct OpticalPointingIntent {
+    double antennaPositionTolerance;
+    double antennaPositionTimeout;
+  };
+	
+  /** not documented yet */
+  struct HolographyIntent {
+    double antennaPositionTolerance;
+    double antennaPositionTimeout;
+  };
+	
+  /** not documented yet */
+  struct AmplitudeCalIntent {
+    double cycleTime;
+    double defaultIntegrationTime;
+    double totalPowerSamplingInterval;
+    double antennaPositionTolerance;
+    double antennaPositionTimeout;
+  };
+	
+  /** not documented yet */
+  struct PolarizationCalIntent {
+    double cycleTime;
+    double defaultIntegrationTime;
+    double totalPowerSamplingInterval;
+    double desiredAccuracy;
+    double antennaPositionTolerance;
+    double antennaPositionTimeout;
+  };
+	
+  /** not documented yet */
+  struct FocusCalIntent {
+    double cycleTime;
+    double defaultIntegrationTime;
+    double totalPowerSamplingInterval;
+    double antennaPositionTolerance;
+    double antennaPositionTimeout;
+  };
+	
+  /** not documented yet */
+  struct BandpassCalIntent {
+    double cycleTime;
+    double defaultIntegrationTime;
+    double totalPowerSamplingInterval;
+    double antennaPositionTolerance;
+    double antennaPositionTimeout;
+  };
+	
+  /** not documented yet */
+  struct PhaseCalIntent {
+    double cycleTime;
+    double defaultIntegrationTime;
+    double totalPowerSamplingInterval;
+    double antennaPositionTolerance;
+    double antennaPositionTimeout;
+  };
+	
+  /** not documented yet */
+  struct PointingCalIntent {
+    double cycleTime;
+    double defaultIntegrationTime;
+    double totalPowerSamplingInterval;
+    double desiredAccuracy;
+    PointingMethodType pointingMethod;
+    double maximumElapsedTime;
+    double antennaPositionTolerance;
+    double antennaPositionTimeout;
+  };
+
+  /** Target specification. */
+  struct TargetSpec {
+    // Intents: These may be null, but at least one must be non-null.
+    Control::IntentNameSeq intentName;
+    ScanIntentSeq intent;
+    ObsTargetIntent	obsTarget;
+    OpticalPointingIntent opticalPointing;
+    AmplitudeCalIntent amplitudeCal;
+    PolarizationCalIntent polarizationCal;
+    FocusCalIntent focusCal;
+    BandpassCalIntent bandpassCal;
+    PhaseCalIntent phaseCal;
+    PointingCalIntent pointingCal;
+    // Indices into the source, spectral, correlator, and optical camera tables.
+    // If there is no specified index, the value is -1.
+    long sourceIndex;
+    long spectralIndex;
+    long correlatorIndex;
+    long opticalCameraIndex;
+  };
+  typedef sequence<TargetSpec> TargetSpecSeq;
+
+  //////////////////////
+  // Scheduling Block //
+  //////////////////////
+
+  /**
+   * Scheduling Block structure.
+   */
+  struct SB {
+
+    /** Project identifier */
+    asdmIDLTypes::IDLEntityRef projectId;
+
+    /** Observation unit set unique identifier */
+    asdmIDLTypes::IDLEntityRef obsUnitSetId;
+
+    /** Scheduling block unique identifier */
+    asdmIDLTypes::IDLEntityRef sbId;
+
+    /** Session identifier */
+    asdmIDLTypes::IDLEntityRef sessionId;
+
+    /** Whether this Scheduling Block is a standard observing mode */
+    boolean standardMode;
+
+    /** Observing mode */
+    ObservingMode obsMode;
+
+    /** Observation script */
+    string observingScript;
+
+    // SchedBlockControl
+
+    /** Maximum time for a single execution of this Scheduling Block. */
+    double maxTime;
+
+    /** The number of times to execute this Scheduling Block. */
+    long numberOfRepeats;
+
+    // RepresentativeTarget
+    /** Index into the target specification list designating a representative target. */
+    long representativeTargetIndex; 
+
+    // PerformanceGoals
+
+    /** not documented yet */
+    double representativeFrequency;
+
+    /** Minimum acceptable angular resolution. */
+    double minAcceptableAngResolution;
+
+    /** Maximum acceptable angular resolution. */
+    double maxAcceptableAngResolution;
+
+    /** Desired maximum flux expected to rms level ratio. */
+    double dynamicRange;
+
+    // Preconditions
+    /** Require baseline calibration. */
+    boolean baselineCalRequired;
+
+    /** require polarization calibration. */
+    boolean polarizationCalRequired;
+
+    /** ? */
+    double minAllowedHA;
+
+    /** ? */
+    double maxAllowedHA;
+
+    // WeatherConstraints
+
+    /** Maximum value of precipitable water vapour column density in mm. */
+    double maxPWVC;
+
+    /** Seeing in arcseconds. */
+    double seeing;
+
+    /** Phase stability. */
+    double phaseStability;
+
+    // ObSUnit
+
+    string name;
+
+    string status;
+
+    // ObsUnitControl
+    // ControlBlock
+
+    double maximumTime;
+
+    long scientificPriority;
+
+    double estimatedExecutionTime;
+
+    // CalibrationRequirements
+
+    double pointingAccuracy;
+
+    double bandpassAccuracy;
+
+    double polarizationAccuracy;
+
+    // UnitDependencies
+
+    long executionCount;
+
+    double delay;
+
+    string expression;
+
+    DependencyListSeq dependencyList;
+
+    // OpticalCameraControl;
+    SourceFilter sourceFilterList;
+
+    /** List of sources */
+    SourceSeq sourceList;
+
+    /** List of spectral specifications */
+    SpectralSpecSeq spectralSpecList;
+
+    /** List of correlator configurations */
+    CorrelatorConfigSeq correlatorConfigList;
+
+    /** List of optical camera configurations */
+    OpticalCameraConfigurationSeq opticalCameraConfigurationList;
+		
+    /** List of holography configurations */
+    HolographyConfigurationSeq holographyConfigurationList;
+
+    /** List of subscan setups */
+    TargetSpecSeq targetList;
+
+  };
+
+  /** @} */
+
+}; // End of module ControlSB
+
+
+#endif

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,24 +30,39 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File CalPointingModelTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:clpntm="http://Alma/XASDM/CalPointingModelTable" xmlns:ent="Alma/CommonEntity" xmlns:poltyp="http://Alma/XENUM/PolarizationTypeMod" xmlns:recvrb="http://Alma/XENUM/ReceiverBandMod" xmlns:antmak="http://Alma/XENUM/AntennaMakeMod" xmlns:pomodm="http://Alma/XENUM/PointingModelModeMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/CalPointingModelTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:clpntm="http://Alma/XASDM/CalPointingModelTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:recvrb="http://Alma/XENUM/ReceiverBandMod"
+	xmlns:antmak="http://Alma/XENUM/AntennaMakeMod"
+	xmlns:pomodm="http://Alma/XENUM/PointingModelModeMod"
+	xmlns:poltyp="http://Alma/XENUM/PolarizationTypeMod"
+					   targetNamespace="http://Alma/XASDM/CalPointingModelTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for ArrayTime -->
+		<!-- No specific import for boolean -->
 		<!-- No specific import for Angle -->
-		<!-- No specific import for int -->
+		<!-- No specific import for ArrayTime -->
+		<!-- We need the schema of ReceiverBand -->
+		<xs:import namespace="http://Alma/XENUM/ReceiverBandMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverBand.xsd"/>
+		<!-- No specific import for double -->
+		<!-- We need the schema of AntennaMake -->
+		<xs:import namespace="http://Alma/XENUM/AntennaMakeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/AntennaMake.xsd"/>
+		<!-- We need the schema of PointingModelMode -->
+		<xs:import namespace="http://Alma/XENUM/PointingModelModeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/PointingModelMode.xsd"/>
 		<!-- No specific import for String -->
 		<!-- We need the schema of PolarizationType -->
-		<xs:import namespace="http://Alma/XENUM/PolarizationTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/PolarizationType.xsd" />
-		<!-- We need the schema of ReceiverBand -->
-		<xs:import namespace="http://Alma/XENUM/ReceiverBandMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverBand.xsd" />
-		<!-- We need the schema of AntennaMake -->
-		<xs:import namespace="http://Alma/XENUM/AntennaMakeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/AntennaMake.xsd" />
-		<!-- No specific import for boolean -->
-		<!-- No specific import for double -->
-		<!-- We need the schema of PointingModelMode -->
-		<xs:import namespace="http://Alma/XENUM/PointingModelModeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/PointingModelMode.xsd" />
+		<xs:import namespace="http://Alma/XENUM/PolarizationTypeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/PolarizationType.xsd"/>
 		<!-- No specific import for float -->
+		<!-- No specific import for int -->
 	
 	
 	
@@ -63,35 +78,95 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="antennaName" type="xs:string" />
-         <xs:element name="receiverBand" type="recvrb:ReceiverBand" />
-         <xs:element name="startValidTime" type="xs:string" />
-         <xs:element name="endValidTime" type="xs:string" />
-         <xs:element name="antennaMake" type="antmak:AntennaMake" />
-         <xs:element name="pointingModelMode" type="pomodm:PointingModelMode" />
-         <xs:element name="polarizationType" type="poltyp:PolarizationType" />
-         <xs:element name="numCoeff" type="xs:string" />
-         <xs:element name="coeffName" type="xs:string" />
-         <xs:element name="coeffVal" type="xs:string" />
-         <xs:element name="coeffError" type="xs:string" />
-         <xs:element name="coeffFixed" type="xs:string" />
-         <xs:element name="azimuthRMS" type="xs:string" />
-         <xs:element name="elevationRms" type="xs:string" />
-         <xs:element name="skyRMS" type="xs:string" />
-         <xs:element name="reducedChiSquared" type="xs:string" />
-     	 <xs:element name="numObs" type="xs:string" minOccurs="0" />
-     	 <xs:element name="coeffFormula" type="xs:string" minOccurs="0" />
-         <xs:element name="calDataId" type="xs:string" />
-         <xs:element name="calReductionId" type="xs:string" />
+         <xs:element name="antennaName" type=
+"xs:string"
+
+/>
+         <xs:element name="receiverBand" type=
+"recvrb:ReceiverBand"
+
+/>
+         <xs:element name="startValidTime" type=
+"xs:string"
+
+/>
+         <xs:element name="endValidTime" type=
+"xs:string"
+
+/>
+         <xs:element name="antennaMake" type=
+"antmak:AntennaMake"
+
+/>
+         <xs:element name="pointingModelMode" type=
+"pomodm:PointingModelMode"
+
+/>
+         <xs:element name="polarizationType" type=
+"poltyp:PolarizationType"
+
+/>
+         <xs:element name="numCoeff" type=
+"xs:string"
+
+/>
+         <xs:element name="coeffName" type=
+"xs:string"
+
+/>
+         <xs:element name="coeffVal" type=
+"xs:string"
+
+/>
+         <xs:element name="coeffError" type=
+"xs:string"
+
+/>
+         <xs:element name="coeffFixed" type=
+"xs:string"
+
+/>
+         <xs:element name="azimuthRMS" type=
+"xs:string"
+
+/>
+         <xs:element name="elevationRms" type=
+"xs:string"
+
+/>
+         <xs:element name="skyRMS" type=
+"xs:string"
+
+/>
+         <xs:element name="reducedChiSquared" type=
+"xs:string"
+
+/>
+     	 <xs:element name="numObs" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="coeffFormula" type=
+"xs:string"
+
+  minOccurs="0"/>
+         <xs:element name="calDataId" type=
+"xs:string"
+
+/>
+         <xs:element name="calReductionId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

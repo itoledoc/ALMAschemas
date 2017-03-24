@@ -1,0 +1,55 @@
+#ifndef ANTENNA_NUMBER_MAP_IDL
+#define ANTENNA_NUMBER_MAP_IDL
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * "@(#) $Id: AntennaNumberMap.idl,v 1.3 2011/11/01 14:15:16 ramestic Exp $"
+ *
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ */
+
+#pragma prefix "alma"
+
+module Correlator
+{
+    /** Antenna Number Map Interface.
+     ** 
+     */
+    interface AntennaNumberMap
+    {
+        exception InvalidAntennaMap {};
+
+        /** Defines the mapping of antenna IDs (a string) correlator 
+	 ** antenna inputs (0-63). Antenna numbers never change. This 
+	 ** mapping is needed when an antenna is placed at a pad and the 
+	 ** baseband pair fiber cables from the antenna are patched to 
+	 ** inputs to the correlator hardware.
+	 */
+        struct antennaNumberMap_t
+	{
+	    string antennaID;		//! ALMA-wide antenna ID as a string
+	    short correlatorAntennaInput;	//! the corresponding CAI
+	};
+        typedef sequence<antennaNumberMap_t> antennaNumberMapSeq;
+    };
+};
+#endif

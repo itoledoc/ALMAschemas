@@ -1,0 +1,174 @@
+/*
+ *    ALMA - Atacama Large Millimiter Array
+ *    (c) European Southern Observatory, 2002
+ *    Copyright by ESO (in the framework of the ALMA collaboration),
+ *    All rights reserved
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation; either
+ *    version 2.1 of the License, or (at your option) any later version.
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    Lesser General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Lesser General Public
+ *    License along with this library; if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
+ *    MA 02111-1307  USA
+ */
+#ifndef _PROJECTREPOSITORY_IF_IDL
+#define _PROJECTREPOSITORY_IF_IDL
+
+#include <xmlentity.idl> 
+#include <acscomponent.idl>
+#include <ProjectRepositoryErrors.idl>
+
+#pragma prefix "alma"
+
+/**
+ * This IDL module contains the ProjectRepository interface produced by the Observing Preparation Subsystem.
+ */
+
+
+module ProjectRepositoryIF
+{
+	typedef string EntityID;
+	typedef sequence <EntityID> EntityIDSeq;
+	
+	// TODO: EntitySearchSpec will require improved definition. (Look at XPathQuery in MicroArchive? )
+	typedef string EntitySearchSpec;
+
+	typedef string ValidationReport;
+
+ 	typedef xmlentity::XmlEntityStruct ObsProject;
+ 	typedef xmlentity::XmlEntityStruct ObsProposal;
+	typedef xmlentity::XmlEntityStruct SchedBlock;
+	typedef sequence <SchedBlock> SchedBlockSeq;
+	typedef sequence <ObsProject> ObsProjectSeq;
+
+	struct ObsProjectTree
+	{
+		ObsProject proj;
+		ObsProposal prop;
+		SchedBlockSeq schedBlocks;
+	};
+
+  /**
+   * The LightweightProjectRepository interface is the implementation for the ProjectRepository interface, it allows for storage, creation and retireval of ObsProject entities.
+   * The name is different because compiler objected: May change later.
+   */
+	interface LightweightProjectRepository : ACS::ACSComponent
+	{
+
+	  /**
+	   * Stores a new project in the repository.
+	   *
+	   *  pre: [AlreadyThere] !storedProjects->includes( proj ) 
+	   *  pre: [InvalidState] proj.state == valid
+	   *  post: ( storedProjects.size = @pre. storedProjects.size+1 ) && ( storedProjects.includes( proj ) )
+	   *
+	   * @param projTree The ObsProject to be stored.
+	   */
+      void store( in ObsProjectTree projTree ) raises (ProjectRepositoryErrors::CouldNotStoreEx);
+
+
+	  /**
+	   * Retrieves the project with the given id from the repository. 
+	   * Does not lock the project, but the update method traps against accidental
+	   * overwrites. Note that the above is the intended signature.
+	   *
+	   *  pre: [NotFound] storedProjects->includes( obsProjID )
+	   *
+	   * @param obsProjID The entity ID of the ObsProject to be stored.
+	   */
+	  ObsProjectTree retrieve(in EntityID obsProjID) raises (ProjectRepositoryErrors::CouldNotRetrieveEx);
+
+
+	  /**
+	   * Deletes the project with the given id from the repository. Undeleting is possible but
+	   * an external tool other than the OT will probably be necessary to do so.
+	   */
+	  void delete (in EntityID obsProjID) raises (ProjectRepositoryErrors::CouldNotDeleteEx);
+
+		
+	  /**
+	   * Removes (really, physically!) the project with the given id from the repository. 
+	   * If deep is set the remove includes all ObsUnitSets associated with the project.
+	   * Note that use of remove may be restricted. (And thus it may also raise AuthorizationFailure).
+	   *
+	   *  pre: [NotFound] storedProjects->includes( obsProjID )
+	   *  post: !storedProjects->includes( obsProjID )
+	   *
+	   * @param obsProjID The entity ID of the ObsProject to be removed
+	   * @param deep Whether or not all associated ObsUnitSet entities are removed also.
+	   */
+	   void remove(in EntityID obsProjID, in boolean deep) raises (ProjectRepositoryErrors::CouldNotRemoveEx);
+		
+			
+	  /**
+	   * Creates a new project.
+	   * This is to enable on-line subsystems to create a project as a holder for SBs
+	   * that they may create, e.g. top-level schedule SBs for the Executive. Creates
+	   * an empty ObsProject, with a given PI name and project name, and stores it in
+	   * the Archive. Returns the enityID to the client
+	   *
+	   * @param PI Name of the PI.
+	   * @param name Name of the project
+	   */
+	  EntityID createObsProject (in string PI, in string name) raises (ProjectRepositoryErrors::CreationFailureEx);
+
+
+	  /**
+	   * Searches the repository for entities matching the given search
+	   * specification and returns their ids.
+	   * 
+	   *  pre: [NotFound] storedEntities->searchMatch( spec )
+	   *  post: EntityID != NULL
+	   * 
+	   * @param spec A search specification to use
+	   */
+	  EntityIDSeq lookup(in EntitySearchSpec spec) raises (ProjectRepositoryErrors::CouldNotQueryEx);
+
+
+	  /**
+	   * Validates a project.
+	   * Note a project will be marked invalid if it is
+	   * changed in such a way as to make it potentially invalid. 
+	   *
+	   *  pre: proj.valid == false
+	   *  post: proj.hasBeenValidated = true
+	   *  post: proj.valid == true || proj.valid == false			
+	   *
+	   * @param proj ObsProject to be validated.
+	   */ 
+	  ValidationReport validate(in ObsProject proj);
+
+
+	  /**
+	   * Checks the versions of a given list of ObsProject IDs (typically from the
+	   * local repository) against those in the repository. 
+	   * Returns a list of those that require updating from the main repository.
+	   *
+	   * @param obsProjIDs A sequence of ObsProject IDs to be checked
+	   */
+	  EntityIDSeq checkForUpdates (in EntityIDSeq obsProjIDs) raises (ProjectRepositoryErrors::CouldNotQueryEx);
+
+
+	  /**
+	   * Returns low-cost information (a so-called short description) about the specified projects.
+	   * As short description we use an ObsProject entity that does not contain resolved subentities.
+	   * This will typically be used to present a summary list of a user's projects. The ids needed
+	   * for this can be retrieved via lookup().
+	   *
+	   * @param obsProjIds Sequence of ObsProject IDs for which to retrieve brief information.
+	   * @param ignoreErrors whether to skip erroneous projects (may result in an empty list returned)
+	   */
+	  ObsProjectSeq retrieveShortDescription (in EntityIDSeq obsProjIds, in boolean ignoreErrors) raises (ProjectRepositoryErrors::CouldNotQueryEx);
+
+	};
+
+};
+#endif

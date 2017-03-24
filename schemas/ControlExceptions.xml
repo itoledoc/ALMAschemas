@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    $Id: ControlExceptions.xml 211881 2014-12-02 19:58:44Z rmarson $
+    ALMA - Atacama Large Millimeter Array
+    (c) Associated Universities Inc., 2005 - 2009, 2011, 2014
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+    -->
+<Type
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="Alma/ACSError http://www.eso.org/schemas/ACS/idl/ACSError.xsd"
+    xmlns="Alma/ACSError"
+    name="ControlExceptions"
+    type="10000"
+    _prefix="alma">
+    <!--
+    Here is a list of other type numbers used within control:
+    10002    EthernetDevice Exceptions
+    10006    ModeController Exceptions
+    10007    AmbSocketServer Exceptions
+    10008    Mount Exceptions
+    10010    ControlDevice Exceptions
+    10011    HOLORX Exceptions
+    10011    HOLORX7M Exceptions
+    10012    DelaySever Exceptions
+    10016    FrontEnd Exceptions
+    10017    DTX Exceptions
+    10018    LO2 Exceptions
+    10019    DRX Exceptions
+    10019    DTSR Exceptions
+    10021    LSCommon Exceptions
+    ...
+    10030    Cryostat Exceptions
+    10031    WCA Exceptions
+    10032    ColdCart Exceptions
+    10033    FEMC Exceptions
+    10034    LPR Exceptions
+    ...
+    10099    ControlCommon Exceptions
+    10100    ScriptExecutor Exceptions
+    10200    CCL Exceptions
+    10300    Resource Exceptions
+    10400    Array Exceptions  
+    10411    TotalPowerProcessor Exceptions
+    10500    ExecState Exceptions
+-->
+    <!--
+     This reports errors occuring in the CMB/AMB device control layers
+     A "Detail" keyword parameter is added to provide more information.
+     In cases where an error returned from the low level hardware, the
+     errorCode is embedded in the exception as "ErrorCode".
+-->
+    <ErrorCode
+        name="CAMBError"
+        shortDescription="CAMB Error"
+        description="There was an error accessing the CMB/AMB"/>
+    <ErrorCode
+        name="LKMError"
+        shortDescription="LKM Error"
+        description="There was an error Loading/Unloading kernel modules"/>
+    <!--
+     This is a generic error which should be thrown when a parameter
+     is out of the acceptable range.
+     I suggest that the following keywords be used
+     ParameterName: Name of the offending parameter
+     Value:         The value requested
+     ValidRange:    The range of allowable values
+ -->
+    <ErrorCode
+        name="IllegalParameterError"
+        shortDescription="Illegal Parameter Error"
+        description="A Parameter is outside the valid range."/>
+    <!--
+     Generic error to be thrown when a request made to a component
+     is invalid for any reason.
+     Suggested keywords:
+     Reason: Reason why the request is invalid.
+  -->
+    <ErrorCode
+        name="InvalidRequest"
+        shortDescription="Invalid Request"
+        description="The request is invalid."/>
+    <!--
+     Generic error to be used in simulation scenarios.
+  -->
+    <ErrorCode
+        name="SimError"
+        shortDescription="Simulation Error"
+        description="Simulation Error"/>
+    <!--
+     This exception should be used whenever we fail to get information
+     out of the CDB for some reason.
+    -->
+    <ErrorCode
+        name="CDBError"
+        shortDescription="Error Accessing CDB"
+        description="Unable to complete requested operation using CDB"/>
+    <!--
+     This exception should be used whenever we fail parsing or procesing and
+     xml file/string.
+    -->
+    <ErrorCode name="XmlParserError"
+        shortDescription="Exception while procesing an XML file"
+        description="This exception is trigered when the XML or schemas are malformed, or when they do not match."/>
+    <ErrorCode
+        name="DeviceBusy"
+        shortDescription="Requested Device Busy"
+        description="Requested action not completed; requested device Busy"/>
+    <ErrorCode
+        name="ANTError"
+        shortDescription="Antenna ID Error"
+        description="Specified antenna identifier is invalid"/>
+    <ErrorCode
+        name="INACTError"
+        shortDescription="Inactive"
+        description="Control system currently not active"/>
+    <ErrorCode
+        name="GPSTimeError"
+        shortDescription="GPS time error"
+        description="Unable to retrieve GPS time or status correctly"/>
+    <ErrorCode
+        name="MasterClockError"
+        shortDescription="MasterClock error"
+        description="Unable to synchronize Master Clock or to retrieve time from TimeSource"/>
+    <ErrorCode
+        name="ArrayTimeError"
+        shortDescription="ArrayTime error"
+        description="Unable to synchronise Array Time ot to instaciante the ArrayTime component or any other component which is required for the synchronisation"/>
+    <ErrorCode
+        name="HardwareError"
+        shortDescription="Problem manipulating hardware."
+        description="The hardware has not responded as expected. Perhaps the hardware has failed, the communications link is broken or the software component that manage this hardware is not fully operational."/>
+    <ErrorCode
+        name="Timeout"
+        shortDescription="Operation Timeout"
+        description="The requested operation timed out"/>
+    <ErrorCode
+        name="IllegalParameter"
+        shortDescription="One or more of the supplied parameters in incorrect"
+        description="One or more of the supplied parameters in incorrect. Check the values and try again."/>
+    <ErrorCode
+        name="Fatal"
+        shortDescription="An unrecoverable error has occured."
+        description="The software cannot handle a problem with a requested operation."/>
+    <ErrorCode
+        name="Transient"
+        shortDescription="An recoverable error has occured."
+        description="An error has occurred that may not occur if the operation is retried."/>
+    <ErrorCode name="Aborted"
+        shortDescription="Stopped at user request."
+        description="At the request of the observer the observation has been aborted"/>
+</Type>

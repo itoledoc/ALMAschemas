@@ -1,0 +1,102 @@
+#ifndef CorrConfigMode_IDL
+#define CorrConfigMode_IDL
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * "@(#) $Id: CorrConfigMode.idl,v 1.5 2011/11/01 14:15:16 ramestic Exp $"
+ *
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ * ramestic  2007-05-16  created 
+ */
+
+//
+// ICD stuff
+//
+#include <almaEnumerations_IF.idl>
+#include <CorrConfig.idl>
+
+#pragma prefix "alma"
+
+/** This IDL defines enums and structure for implementing a correlator modes table.
+ */
+module Correlator
+{
+    /** type of correlators
+     */
+    const string CORRELATOR_ACA =                 "CORRELATOR_ACA";
+    const string CORRELATOR_12m_2ANTS =           "CORRELATOR_12m_2ANTS";
+    const string CORRELATOR_12m_1QUADRANT =       "CORRELATOR_12m_1QUADRANT";
+    const string CORRELATOR_12m_2QUADRANT =       "CORRELATOR_12m_2QUADRANT";
+    const string CORRELATOR_12m_4QUADRANT =       "CORRELATOR_12m_4QUADRANT";
+    
+    /** polarization products
+     */
+    enum ePolarization
+    {
+        POLZ_SINGLE_X,
+        POLZ_SINGLE_Y,
+        POLZ_DOUBLE,
+        POLZ_FULL
+    };
+
+    /** Tunable filter board mode
+     */
+    enum eFilterMode
+    {
+        FILTER_TDM,
+        FILTER_FDM
+    };
+
+    /** fraction of correlator hardware resources.
+     ** For multiple resolution modes this enumeration represents the
+     ** possible assignment of hardware resources for a given full-mode.
+     */
+    enum eFraction
+    {
+        FRACTION_FULL,
+        FRACTION_ONE_HALF,
+        FRACTION_ONE_FOURTH,
+        FRACTION_ONE_EIGHTH
+    };
+
+    /** configuration mode attributes
+     ** this structure contains the configuration parameters that are 
+     ** of interest for a top level user preparing a correlator configuration.
+     ** Any given set of these parameters, that is, and instance of this structure,
+     ** is unambiguosly addressed by means of the TFBMode member of the 
+     ** spectral window structure defined below. That, specific and available
+     ** spectral window modes, of interest for the top level user, are those
+     ** for which a TFBMode has been defined. ConfigMode is provided at this
+     ** level for allowing a proper implementation of the translation between
+     ** TFBMode and parameters in different programminh languages.
+     */
+    struct ConfigMode
+    {
+        float           bandWidth;
+        long            channels; /* spectral channels */
+        CorrelationBitMod::CorrelationBit bits;
+        boolean         overSampled;
+        ePolarization   polarizationProducts;
+        eFilterMode     filterMode;
+    };
+};
+#endif /* CorrConfigMode_IDL */

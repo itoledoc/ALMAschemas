@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File PositionReferenceCode.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:posrfc="http://Alma/XENUM/PositionReferenceCodeMod" targetNamespace="http://Alma/XENUM/PositionReferenceCodeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:posrfc="http://Alma/XENUM/PositionReferenceCodeMod" 
+                         targetNamespace="http://Alma/XENUM/PositionReferenceCodeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="PositionReferenceCode">
 	
 		<xsd:annotation>
@@ -41,7 +46,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="ITRF">
+			<xsd:enumeration value="ITRF" >
 		
 				<xsd:annotation>
 					<xsd:documentation>International Terrestrial Reference Frame. </xsd:documentation>
@@ -49,7 +54,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="WGS84">
+			<xsd:enumeration value="WGS84" >
 		
 				<xsd:annotation>
 					<xsd:documentation>World Geodetic System. </xsd:documentation>
@@ -57,7 +62,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SITE">
+			<xsd:enumeration value="SITE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Site reference coordinate system (ALMA-80.05.00.00-009-B-SPE). </xsd:documentation>
@@ -65,7 +70,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="STATION">
+			<xsd:enumeration value="STATION" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Antenna station reference coordinate system (ALMA-80.05.00.00-009-SPE). </xsd:documentation>
@@ -73,7 +78,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="YOKE">
+			<xsd:enumeration value="YOKE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Antenna yoke reference coordinate system (ALMA-980.05.00.00-009-B-SPE) </xsd:documentation>
@@ -81,7 +86,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="REFLECTOR">
+			<xsd:enumeration value="REFLECTOR" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Antenna reflector reference coordinate system (ALMA-80.05.00.00-009-B-SPE). </xsd:documentation>
@@ -107,9 +112,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="PositionReferenceCodes">
+	<xsd:simpleType name ="PositionReferenceCodes">
 		<xsd:restriction base="posrfc:PositionReferenceCodeList">
-			<xsd:maxLength value="6" />
+			<xsd:maxLength value = "6" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

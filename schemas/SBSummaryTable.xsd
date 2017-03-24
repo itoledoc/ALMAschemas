@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,26 +30,36 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File SBSummaryTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sbsmmr="http://Alma/XASDM/SBSummaryTable" xmlns:ent="Alma/CommonEntity" xmlns:direfc="http://Alma/XENUM/DirectionReferenceCodeMod" xmlns:sbtype="http://Alma/XENUM/SBTypeMod" xmlns:recvrb="http://Alma/XENUM/ReceiverBandMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/SBSummaryTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:sbsmmr="http://Alma/XASDM/SBSummaryTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:sbtype="http://Alma/XENUM/SBTypeMod"
+	xmlns:recvrb="http://Alma/XENUM/ReceiverBandMod"
+	xmlns:direfc="http://Alma/XENUM/DirectionReferenceCodeMod"
+					   targetNamespace="http://Alma/XASDM/SBSummaryTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for ArrayTime -->
-		<!-- We need the schema of DirectionReferenceCode -->
-		<xs:import namespace="http://Alma/XENUM/DirectionReferenceCodeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/DirectionReferenceCode.xsd" />
 		<!-- No specific import for Angle -->
-		<!-- No specific import for Interval -->
-		<!-- No specific import for String -->
-		<!-- No specific import for int -->
-		<!-- No specific import for Tag -->
 		<!-- We need the schema of SBType -->
-		<xs:import namespace="http://Alma/XENUM/SBTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/SBType.xsd" />
-		<!-- We need the schema of ReceiverBand -->
-		<xs:import namespace="http://Alma/XENUM/ReceiverBandMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverBand.xsd" />
+		<xs:import namespace="http://Alma/XENUM/SBTypeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/SBType.xsd"/>
+		<!-- No specific import for ArrayTime -->
 		<!-- No specific import for double -->
+		<!-- We need the schema of ReceiverBand -->
+		<xs:import namespace="http://Alma/XENUM/ReceiverBandMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverBand.xsd"/>
+		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
 		<!-- No specific import for EntityRef -->
-	
-	
-	
+		<!-- No specific import for int -->
+		<!-- No specific import for Interval -->
+		<!-- We need the schema of DirectionReferenceCode -->
+		<xs:import namespace="http://Alma/XENUM/DirectionReferenceCodeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/DirectionReferenceCode.xsd"/>
 	
 	
 	
@@ -59,41 +69,98 @@
 	
 	<xs:complexType name="stupidEntityRefT">
 		<xs:sequence>
-			<xs:element name="EntityRef" type="ent:EntityRefT" />
+			<xs:element name="EntityRef" type="ent:EntityRefT"/>
 		</xs:sequence>
 	</xs:complexType>
+	
+	
+	
 	
     <xs:element name="SBSummaryTable">
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="sBSummaryId" type="xs:string" />
-         <xs:element name="sbSummaryUID" type="sbsmmr:stupidEntityRefT" />
-         <xs:element name="projectUID" type="sbsmmr:stupidEntityRefT" />
-         <xs:element name="obsUnitSetUID" type="sbsmmr:stupidEntityRefT" />
-         <xs:element name="frequency" type="xs:string" />
-         <xs:element name="frequencyBand" type="recvrb:ReceiverBand" />
-         <xs:element name="sbType" type="sbtype:SBType" />
-         <xs:element name="sbDuration" type="xs:string" />
-         <xs:element name="numObservingMode" type="xs:string" />
-         <xs:element name="observingMode" type="xs:string" />
-         <xs:element name="numberRepeats" type="xs:string" />
-         <xs:element name="numScienceGoal" type="xs:string" />
-         <xs:element name="scienceGoal" type="xs:string" />
-         <xs:element name="numWeatherConstraint" type="xs:string" />
-         <xs:element name="weatherConstraint" type="xs:string" />
-     	 <xs:element name="centerDirection" type="xs:string" minOccurs="0" />
-     	 <xs:element name="centerDirectionCode" type="direfc:DirectionReferenceCode" minOccurs="0" />
-     	 <xs:element name="centerDirectionEquinox" type="xs:string" minOccurs="0" />
+         <xs:element name="sBSummaryId" type=
+"xs:string"
+
+/>
+         <xs:element name="sbSummaryUID" type=
+"sbsmmr:stupidEntityRefT"
+
+/>
+         <xs:element name="projectUID" type=
+"sbsmmr:stupidEntityRefT"
+
+/>
+         <xs:element name="obsUnitSetUID" type=
+"sbsmmr:stupidEntityRefT"
+
+/>
+         <xs:element name="frequency" type=
+"xs:string"
+
+/>
+         <xs:element name="frequencyBand" type=
+"recvrb:ReceiverBand"
+
+/>
+         <xs:element name="sbType" type=
+"sbtype:SBType"
+
+/>
+         <xs:element name="sbDuration" type=
+"xs:string"
+
+/>
+         <xs:element name="numObservingMode" type=
+"xs:string"
+
+/>
+         <xs:element name="observingMode" type=
+"xs:string"
+
+/>
+         <xs:element name="numberRepeats" type=
+"xs:string"
+
+/>
+         <xs:element name="numScienceGoal" type=
+"xs:string"
+
+/>
+         <xs:element name="scienceGoal" type=
+"xs:string"
+
+/>
+         <xs:element name="numWeatherConstraint" type=
+"xs:string"
+
+/>
+         <xs:element name="weatherConstraint" type=
+"xs:string"
+
+/>
+     	 <xs:element name="centerDirection" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="centerDirectionCode" type=
+"direfc:DirectionReferenceCode"
+
+  minOccurs="0"/>
+     	 <xs:element name="centerDirectionEquinox" type=
+"xs:string"
+
+  minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

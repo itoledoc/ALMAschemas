@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File FocusMethod.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:focusm="http://Alma/XENUM/FocusMethodMod" targetNamespace="http://Alma/XENUM/FocusMethodMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:focusm="http://Alma/XENUM/FocusMethodMod" 
+                         targetNamespace="http://Alma/XENUM/FocusMethodMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="FocusMethod">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="THREE_POINT">
+			<xsd:enumeration value="THREE_POINT" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Three-point measurement </xsd:documentation>
@@ -48,11 +53,15 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="FIVE_POINT">
+			<xsd:enumeration value="FIVE_POINT" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Five-point measurement </xsd:documentation>
 				</xsd:annotation>
+		
+			</xsd:enumeration>
+     
+			<xsd:enumeration value="HOLOGRAPHY" >
 		
 			</xsd:enumeration>
      
@@ -74,9 +83,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="FocusMethods">
+	<xsd:simpleType name ="FocusMethods">
 		<xsd:restriction base="focusm:FocusMethodList">
-			<xsd:maxLength value="2" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

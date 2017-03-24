@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File AccumMode.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:accmod="http://Alma/XENUM/AccumModeMod" targetNamespace="http://Alma/XENUM/AccumModeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:accmod="http://Alma/XENUM/AccumModeMod" 
+                         targetNamespace="http://Alma/XENUM/AccumModeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="AccumMode">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="FAST">
+			<xsd:enumeration value="FAST" >
 		
 				<xsd:annotation>
 					<xsd:documentation>fast dump time. ALMA use case : 1 ms dump time, available only for autocorrelation. </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="NORMAL">
+			<xsd:enumeration value="NORMAL" >
 		
 				<xsd:annotation>
 					<xsd:documentation>normal dump time. ALMA use case : 16ms dump time, available for both autocorrelation and cross-orrelation. </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="UNDEFINED">
+			<xsd:enumeration value="UNDEFINED" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Not defined or not applicable. </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="AccumModes">
+	<xsd:simpleType name ="AccumModes">
 		<xsd:restriction base="accmod:AccumModeList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

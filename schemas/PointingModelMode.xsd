@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File PointingModelMode.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pomodm="http://Alma/XENUM/PointingModelModeMod" targetNamespace="http://Alma/XENUM/PointingModelModeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:pomodm="http://Alma/XENUM/PointingModelModeMod" 
+                         targetNamespace="http://Alma/XENUM/PointingModelModeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="PointingModelMode">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="RADIO">
+			<xsd:enumeration value="RADIO" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Radio pointing model </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="OPTICAL">
+			<xsd:enumeration value="OPTICAL" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Optical Pointing Model </xsd:documentation>
@@ -74,9 +79,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="PointingModelModes">
+	<xsd:simpleType name ="PointingModelModes">
 		<xsd:restriction base="pomodm:PointingModelModeList">
-			<xsd:maxLength value="2" />
+			<xsd:maxLength value = "2" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,11 +30,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File DopplerTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dpplr="http://Alma/XASDM/DopplerTable" xmlns:ent="Alma/CommonEntity" xmlns:dplrfc="http://Alma/XENUM/DopplerReferenceCodeMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/DopplerTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:dpplr="http://Alma/XASDM/DopplerTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:dplrfc="http://Alma/XENUM/DopplerReferenceCodeMod"
+					   targetNamespace="http://Alma/XASDM/DopplerTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
 		<!-- We need the schema of DopplerReferenceCode -->
-		<xs:import namespace="http://Alma/XENUM/DopplerReferenceCodeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/DopplerReferenceCode.xsd" />
+		<xs:import namespace="http://Alma/XENUM/DopplerReferenceCodeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/DopplerReferenceCode.xsd"/>
 		<!-- No specific import for String -->
 		<!-- No specific import for int -->
 	
@@ -44,19 +53,31 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="dopplerId" type="xs:string" />
-         <xs:element name="transitionIndex" type="xs:string" />
-         <xs:element name="velDef" type="dplrfc:DopplerReferenceCode" />
-         <xs:element name="sourceId" type="xs:string" />
+         <xs:element name="dopplerId" type=
+"xs:string"
+
+/>
+         <xs:element name="transitionIndex" type=
+"xs:string"
+
+/>
+         <xs:element name="velDef" type=
+"dplrfc:DopplerReferenceCode"
+
+/>
+         <xs:element name="sourceId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

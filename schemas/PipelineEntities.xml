@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<EntitybuilderSettings>
+    <EntitySchema schemaName="QuickLookSummary.xsd" xmlNamespace="Alma/pipelineql/QuickLookSummary"/>
+    <EntitySchema schemaName="QlAlarms.xsd" xmlNamespace="Alma/pipelineql/QlAlarms"/>
+    <EntitySchema schemaName="QlPointingSummary.xsd" xmlNamespace="Alma/pipelineql/QlPointingSummary"/>
+    <EntitySchema schemaName="QlFocusSummary.xsd" xmlNamespace="Alma/pipelineql/QlFocusSummary"/>
+    <EntitySchema schemaName="QlAtmosphereSummary.xsd" xmlNamespace="Alma/pipelineql/QlAtmosphereSummary"/>
+    <EntitySchema schemaName="QlPhaseSummary.xsd" xmlNamespace="Alma/pipelineql/QlPhaseSummary"/>
+    <EntitySchema schemaName="SciPipeRequest.xsd" xmlNamespace="Common/pipelinescience/SciPipeRequest"/>
+    <EntitySchema schemaName="AlmaSciPipeRequest.xsd" xmlNamespace="Alma/pipelinescience/AlmaSciPipeRequest"/>
+    <EntitySchema schemaName="SciPipeResults.xsd" xmlNamespace="Common/pipelinescience/SciPipeResults"/>
+    <EntitySchema schemaName="AlmaSciPipeResults.xsd" xmlNamespace="Alma/pipelinescience/AlmaSciPipeResults"/>
+
+    <XmlNamespace2JPackage xmlNamespace="Alma/pipelineql/QuickLookSummary" jPackage="alma.entity.xmlbinding.quicklooksummary"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/pipelineql/QlAlarms" jPackage="alma.entity.xmlbinding.qlalarms"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/pipelineql/QlPointingSummary" jPackage="alma.entity.xmlbinding.qlpointingsummary"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/pipelineql/QlFocusSummary" jPackage="alma.entity.xmlbinding.qlfocussummary"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/pipelineql/QlAtmosphereSummary" jPackage="alma.entity.xmlbinding.qlatmospheresummary"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/pipelineql/QlPhaseSummary" jPackage="alma.entity.xmlbinding.qlphasesummary"/>
+    <XmlNamespace2JPackage xmlNamespace="Common/pipelinescience/SciPipeRequest" jPackage="alma.entity.xmlbinding.scipiperequest"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/pipelinescience/AlmaSciPipeRequest" jPackage="alma.entity.xmlbinding.almascipiperequest"/>
+    <XmlNamespace2JPackage xmlNamespace="Common/pipelinescience/SciPipeResults" jPackage="alma.entity.xmlbinding.scipiperesults"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/pipelinescience/AlmaSciPipeResults" jPackage="alma.entity.xmlbinding.almascipiperesults"/>
+
+</EntitybuilderSettings>
+

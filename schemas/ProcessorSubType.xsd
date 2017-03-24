@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File ProcessorSubType.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:prsubt="http://Alma/XENUM/ProcessorSubTypeMod" targetNamespace="http://Alma/XENUM/ProcessorSubTypeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:prsubt="http://Alma/XENUM/ProcessorSubTypeMod" 
+                         targetNamespace="http://Alma/XENUM/ProcessorSubTypeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="ProcessorSubType">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="ALMA_CORRELATOR_MODE">
+			<xsd:enumeration value="ALMA_CORRELATOR_MODE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>ALMA correlator. </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SQUARE_LAW_DETECTOR">
+			<xsd:enumeration value="SQUARE_LAW_DETECTOR" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Square law detector. </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="HOLOGRAPHY">
+			<xsd:enumeration value="HOLOGRAPHY" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Holography. </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="ALMA_RADIOMETER">
+			<xsd:enumeration value="ALMA_RADIOMETER" >
 		
 				<xsd:annotation>
 					<xsd:documentation>ALMA radiometer. </xsd:documentation>
@@ -90,9 +95,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="ProcessorSubTypes">
+	<xsd:simpleType name ="ProcessorSubTypes">
 		<xsd:restriction base="prsubt:ProcessorSubTypeList">
-			<xsd:maxLength value="4" />
+			<xsd:maxLength value = "4" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

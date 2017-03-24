@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,24 +30,37 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File CalDataTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cldata="http://Alma/XASDM/CalDataTable" xmlns:ent="Alma/CommonEntity" xmlns:scnint="http://Alma/XENUM/ScanIntentMod" xmlns:cldato="http://Alma/XENUM/CalDataOriginMod" xmlns:caltyp="http://Alma/XENUM/CalTypeMod" xmlns:ascaln="http://Alma/XENUM/AssociatedCalNatureMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/CalDataTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:cldata="http://Alma/XASDM/CalDataTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:ascaln="http://Alma/XENUM/AssociatedCalNatureMod"
+	xmlns:scnint="http://Alma/XENUM/ScanIntentMod"
+	xmlns:caltyp="http://Alma/XENUM/CalTypeMod"
+	xmlns:cldato="http://Alma/XENUM/CalDataOriginMod"
+					   targetNamespace="http://Alma/XASDM/CalDataTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
+		<!-- We need the schema of AssociatedCalNature -->
+		<xs:import namespace="http://Alma/XENUM/AssociatedCalNatureMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/AssociatedCalNature.xsd"/>
 		<!-- No specific import for ArrayTime -->
 		<!-- We need the schema of ScanIntent -->
-		<xs:import namespace="http://Alma/XENUM/ScanIntentMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/ScanIntent.xsd" />
-		<!-- No specific import for String -->
-		<!-- No specific import for int -->
-		<!-- No specific import for Tag -->
-		<!-- We need the schema of CalDataOrigin -->
-		<xs:import namespace="http://Alma/XENUM/CalDataOriginMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalDataOrigin.xsd" />
+		<xs:import namespace="http://Alma/XENUM/ScanIntentMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/ScanIntent.xsd"/>
 		<!-- We need the schema of CalType -->
-		<xs:import namespace="http://Alma/XENUM/CalTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalType.xsd" />
-		<!-- We need the schema of AssociatedCalNature -->
-		<xs:import namespace="http://Alma/XENUM/AssociatedCalNatureMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/AssociatedCalNature.xsd" />
+		<xs:import namespace="http://Alma/XENUM/CalTypeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalType.xsd"/>
+		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
 		<!-- No specific import for EntityRef -->
-	
-	
+		<!-- No specific import for int -->
+		<!-- We need the schema of CalDataOrigin -->
+		<xs:import namespace="http://Alma/XENUM/CalDataOriginMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalDataOrigin.xsd"/>
 	
 	
 	
@@ -56,37 +69,81 @@
 	
 	<xs:complexType name="stupidEntityRefT">
 		<xs:sequence>
-			<xs:element name="EntityRef" type="ent:EntityRefT" />
+			<xs:element name="EntityRef" type="ent:EntityRefT"/>
 		</xs:sequence>
 	</xs:complexType>
+	
+	
 	
     <xs:element name="CalDataTable">
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="calDataId" type="xs:string" />
-         <xs:element name="startTimeObserved" type="xs:string" />
-         <xs:element name="endTimeObserved" type="xs:string" />
-         <xs:element name="execBlockUID" type="cldata:stupidEntityRefT" />
-         <xs:element name="calDataType" type="cldato:CalDataOrigin" />
-         <xs:element name="calType" type="caltyp:CalType" />
-         <xs:element name="numScan" type="xs:string" />
-         <xs:element name="scanSet" type="xs:string" />
-     	 <xs:element name="assocCalDataId" type="xs:string" minOccurs="0" />
-     	 <xs:element name="assocCalNature" type="ascaln:AssociatedCalNature" minOccurs="0" />
-     	 <xs:element name="fieldName" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sourceName" type="xs:string" minOccurs="0" />
-     	 <xs:element name="sourceCode" type="xs:string" minOccurs="0" />
-     	 <xs:element name="scanIntent" type="xs:string" minOccurs="0" />
+         <xs:element name="calDataId" type=
+"xs:string"
+
+/>
+         <xs:element name="startTimeObserved" type=
+"xs:string"
+
+/>
+         <xs:element name="endTimeObserved" type=
+"xs:string"
+
+/>
+         <xs:element name="execBlockUID" type=
+"cldata:stupidEntityRefT"
+
+/>
+         <xs:element name="calDataType" type=
+"cldato:CalDataOrigin"
+
+/>
+         <xs:element name="calType" type=
+"caltyp:CalType"
+
+/>
+         <xs:element name="numScan" type=
+"xs:string"
+
+/>
+         <xs:element name="scanSet" type=
+"xs:string"
+
+/>
+     	 <xs:element name="assocCalDataId" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="assocCalNature" type=
+"ascaln:AssociatedCalNature"
+
+  minOccurs="0"/>
+     	 <xs:element name="fieldName" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sourceName" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="sourceCode" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="scanIntent" type=
+"xs:string"
+
+  minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

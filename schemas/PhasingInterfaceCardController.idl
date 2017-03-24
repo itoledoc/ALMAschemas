@@ -1,0 +1,189 @@
+#ifndef PIC_IDL
+#define PIC_IDL
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ * mmora     2013-07-25  Created.
+ */
+
+#include <acserr.idl>
+#include <acscommon.idl>
+#include <acscomponent.idl>
+#include <CorrErr.idl>
+#include <asdmIDL.idl>
+#include <asdmIDLTypes.idl>
+
+#pragma prefix "alma"
+
+module Correlator
+{
+    /** PIC identification pair for specifying to which card(s) a command
+     ** or data structure applies. Since there is one card per quadrant per
+     ** polarization, polz can be X (node38), Y (node40) or BOTH (applies to
+     ** both polarizations in this quadrant).
+     */
+    struct PICId {
+        BasebandNameMod::BasebandName baseband; //BB_1 BB_2 BB_3 BB_4
+        PolarizationTypeMod::PolarizationType polz; //X Y BOTH
+    };
+    typedef sequence<PICId> PICIdSeq;
+
+    /** VDIF header information to be set for one PIC card. The
+     ** rest of the header has fixed numbers or is produced internally by each
+     ** PIC.
+     */
+    struct VDIFHeaderInfo {
+        PICId id;
+        ACS::uLongLong psn;   //packet serial number (8bytes)
+        unsigned short num_chan_log2; //number of channels in log2 (2^N)
+        unsigned short thread_id;     //thread id
+        unsigned short station_id;    //station id
+    };
+    typedef sequence<VDIFHeaderInfo> VDIFHeaderInfoSeq;
+
+    /** PIC state description that defines certain controller behavior.
+     */
+    enum PICStatus { PIC_SHUTDOWN, //ROACH is off
+                     PIC_STARTUP,  //in process of being initialized (ROACH and/or header)
+                     PIC_ONLINE,   //initialized, without errors
+                     PIC_DOA,      //fault during initialization ("Dead On Arival")
+                     PIC_FAULT     //fault after initialization
+                   };
+
+    /** Status information for online clients.
+     ** These statistics could be compressed (1-bit sym, low-state %-age)
+     */
+    typedef unsigned long VDIFHeader_t[8];
+    typedef unsigned long Statistics_t[32][4];
+    typedef char StatisticsStatus_t[4];
+    typedef char RoachStatus_t[8];
+    struct PICInfo {
+        /* General state */
+        ACS::Time timestamp;      //timestamp when last updated
+        PICStatus status;         //state description
+        boolean diagnostic;       //diagnostic mode (True=on)
+        boolean statisticsValid;  //statistics retrieved at last update
+        /* Hardware status */
+        ACS::uLongLong psn;        //packet serial number at last TE
+        VDIFHeader_t vdifHeader;       //VDIF frame header at last TE
+        unsigned long maserOffset;         //Maser 1PPS offset from PIC 1 PPS
+        unsigned long gpsOffset;           //GPS 1PPS offset from PIC 1 PPS
+        unsigned long teOffset;            //TE at 1PPS offset from PIC 1 PPS
+        RoachStatus_t roachStatus;      //ROACH status bytes
+        StatisticsStatus_t statisticsStatus; //statistics status bytes
+        Statistics_t statistics;   //statistics [channel]x[state]
+    };
+
+    /** Phasing Interface Card controller interface
+     ** This component allows to access all PIC cards, identified by baseband
+     ** and polarization (0=x, 1=y). There is one PIC per basband polarization
+     ** in the BL correlator. This interface is accessed by the observing mode
+     ** and other clients that need to access PIC monitor and/or control.
+     ** 
+     ** Note that some commands have a similar version with the "diagnostic"
+     ** prefix. This is the case for bulk commands, which will only apply to
+     ** cards NOT currently in diagnostic mode, while the "diagnostic" version
+     ** will only work for a card currently in diagnostic mode.
+     */
+    interface PhasingInterfaceCardController : ACS::ACSComponent
+    {
+        /** Setup PIC(s) identified by infoHeader. This includes going
+         ** through the ROACH power-on lifecycle (if PIC_SHUTDOWN) and
+         ** setting the VDIF header. If the status is PIC_DOA the card will be
+         ** powered off first; to force a reset otherwise disablePIC should be
+         ** executed first.
+         ** While being set up a card will be in PIC_STARTUP state.
+         ** This command will skip cards in diagnostic mode.
+         ** @param headerInfo VDIF header parameters, corresponding to only one
+         **        card
+         ** @exception CorrHardwareEx If there is a problem communicating with
+         **            the hardware
+         ** @exception InvalidParameterEx If any given parameter is invalid
+         */
+        void setupPIC(in VDIFHeaderInfoSeq headerInfo)
+            raises(CorrErr::ErrorEx); 
+
+        void diagnosticSetupPIC(in VDIFHeaderInfoSeq headerInfo)
+            raises(CorrErr::ErrorEx); 
+
+        /** Force an internal check of PIC(s). The resulting status data can
+         ** be retrieved through getPICStatus. Since this command is CAN-time
+         ** intensive it should be executed cautiously.
+         ** This command will skip cards in diagnostic mode.
+         ** @param ids
+         ** @param getStatistics True if statistics should be calculated.
+         */
+        void checkPICStatus(in PICIdSeq ids, in boolean getStatistics)
+            raises(CorrErr::ErrorEx); 
+
+        void diagnosticCheckPICStatus(in PICId id, in boolean getStatistics)
+            raises(CorrErr::ErrorEx); 
+
+        /** Return last read structure for the specified card. An update from
+         ** the hardware can only be triggered through checkPICStatus.
+         ** @param id (can only refer to one polz at a time)
+         ** @return PICInfo 
+         ** @exception InvalidParameterEx If any given parameter is invalid
+         */
+        PICInfo getPICStatus(in PICId id)
+            raises(CorrErr::ErrorEx); 
+
+        /** Power off the ROACH of the specified card(s).
+         ** This command will skip cards in diagnostic mode.
+         ** @param ids
+         ** @exception CorrHardwareEx If there is a problem communicating with
+         **            the hardware
+         ** @exception InvalidParameterEx If any given parameter is invalid
+         */
+        void disablePIC(in PICIdSeq ids)
+            raises(CorrErr::ErrorEx); 
+
+        void diagnosticDisablePIC(in PICId id)
+            raises(CorrErr::ErrorEx); 
+
+        /** Toggle the invalidity flag in the VDIF header of the specified
+         ** card. No consistency check or application verification is done.
+         ** @param ids
+         ** @param invalid True to flag the data as invalid. False otherwise.
+         ** @exception CorrHardwareEx If there is a problem communicating with
+         **            the hardware
+         ** @exception InvalidParameterEx If any given parameter is invalid
+         */
+        void setPICInvalid(in PICId id, in boolean invalid)
+            raises(CorrErr::ErrorEx); 
+
+        /** Switch a PIC to diagnostic mode to perform user diagnostics while
+         ** any bulk commands will be skipped for this card.
+         ** @param id
+         ** @param diagnostic True if to be set to diagnostic mode. False if to
+         **        be set back to normal.
+         ** @exception InvalidParameterEx If any given parameter is invalid
+         */
+        void setPICDiagnostic(in PICId id, in boolean diagnostic)
+            raises(CorrErr::ErrorEx); 
+
+    };
+
+};
+#endif
+

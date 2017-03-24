@@ -1,0 +1,94 @@
+#ifndef _REALTIMEFILLER_IDL_
+#define _REALTIMEFILLER_IDL_
+
+/*******************************************************************************
+*    ALMA - Atacama Large Millimiter Array
+*
+*    (c) European Southern Observatory, 2002
+*    Copyright by ESO (in the framework of the ALMA collaboration)
+*    and Cosylab 2002, All rights reserved
+*
+*    This library is free software; you can redistribute it and/or
+*    modify it under the terms of the GNU Lesser General Public
+*    License as published by the Free Software Foundation; either
+*    version 2.1 of the License, or (at your option) any later version.
+*
+*    This library is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    Lesser General Public License for more details.
+*
+*    You should have received a copy of the GNU Lesser General Public
+*    License along with this library; if not, write to the Free Software
+*    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+*
+* "@(#) $Id: RealTimeFiller.idl,v 1.2 2010/03/15 21:52:45 ldavis Exp $"
+*
+* who       when        what
+* --------  ----------  ----------------------------------------------
+* jmlarsen  2008-06-26  created
+*/
+
+#include <acscomponent.idl>
+#include <baci.idl>
+
+#include <bulkDataReceiver.idl>
+#include <DataCapture.idl>
+
+#pragma prefix "alma"
+
+/** @file RealTimeFiller.idl
+ *  Real Time Filler's IDL File
+ */
+
+module offline
+{
+    /** The MSCreatedEvent is published when an MS has been created
+     */
+    struct MSCreatedEvent {
+	long scan;               /*  scan num */
+	long subscan;            /* subscan num */
+	string array;            /* array name */
+	string schedblockid;     /* schedblock uid */
+	string sessionid;        /* session partid */
+	string MSPath;           /* output MS               */
+	/* ACS::Time finishedAt; */
+    };
+
+    const string CHANNELNAME_REALTIMEFILLER = "OfflineRealTimeFillerEventNC";
+
+
+    /** 
+      Generic exception
+    */
+    exception RealTimeFillerException {};
+
+    /** @interface RealTimeFiller
+     */
+    interface RealTimeFiller : bulkdata::BulkDataReceiver
+    {
+	/** 
+	 *  MSDir     Working directory
+	 *  DC        The datacapturer whose events are processed
+	 *
+	 * This method must be called in order to activate the
+	 * component
+	 */
+         void init(in string MSDir, in Control::DataCapturerId DC)
+	   raises (offline::RealTimeFillerException);
+
+         /**
+	    Disconnect from bulk data distributors,
+	    and stop listening to any DataCapturer events.
+	    
+	    This method effectively deactivates the component.
+	    Use init() to reactivate the component. It is not
+	    mandatory to call this method when releasing the
+	    component;
+	 */
+         void deinit()
+	   raises (offline::RealTimeFillerException);
+    };
+};
+
+#endif

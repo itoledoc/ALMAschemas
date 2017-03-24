@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema
+    targetNamespace="Alma/pipelinescience/AlmaSciPipeResults"
+    xmlns:asprx="Alma/pipelinescience/AlmaSciPipeResults"
+    xmlns:ent="Alma/CommonEntity"
+    xmlns:val="Alma/ValueTypes"
+    xmlns:prj="Alma/ObsPrep/ObsProject"
+    xmlns:sbl="Alma/ObsPrep/SchedBlock"
+    xmlns:ps="Alma/Scheduling/ProjectStatus"
+    xmlns:ouss="Alma/Scheduling/OUSStatus"
+    xmlns:sbs="Alma/Scheduling/SBStatus"
+    xmlns:sprq="Common/pipelinescience/SciPipeRequest"
+    xmlns:asprq="Alma/pipelinescience/AlmaSciPipeRequest"
+    xmlns:sprx="Common/pipelinescience/SciPipeResults"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
+  <xs:import namespace="Alma/ValueTypes" schemaLocation="ValueTypes.xsd"/>
+  <xs:import namespace="Alma/ObsPrep/ObsProject" schemaLocation="ObsProject.xsd"/>
+  <xs:import namespace="Alma/ObsPrep/SchedBlock" schemaLocation="SchedBlock.xsd"/>
+  <xs:import namespace="Alma/Scheduling/ProjectStatus" schemaLocation="ProjectStatus.xsd"/>
+  <xs:import namespace="Alma/Scheduling/OUSStatus" schemaLocation="OUSStatus.xsd"/>
+  <xs:import namespace="Alma/Scheduling/SBStatus" schemaLocation="SBStatus.xsd"/>
+  <xs:import namespace="Alma/pipelinescience/AlmaSciPipeRequest" schemaLocation="AlmaSciPipeRequest.xsd"/>
+  <xs:import namespace="Common/pipelinescience/SciPipeRequest" schemaLocation="SciPipeRequest.xsd"/>
+  <xs:import namespace="Common/pipelinescience/SciPipeResults" schemaLocation="SciPipeResults.xsd"/>
+
+  <!-- The science pipeline processing results -->
+      <!-- SciPipeResultsEntity is the pipeline processing results entity          -->
+      <!-- SciPipeRequestRef is the parent pipeline processing request reference          -->
+      <!-- ProjectStructure provides various links to the parent project structure -->
+      <!-- PipelineSummary is the high level pipeline results summary              -->
+      <!-- PipelineResults is the set of pipeline processing results               -->
+  <!-- The science pipeline processing results -->
+
+  <xs:element name="SciPipeResults">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SciPipeResultsEntity" type="asprx:SciPipeResultsEntityT"/>
+        <xs:element name="SciPipeRequestRef" type="asprq:SciPipeRequestRefT"/>
+        <xs:element name="ProjectStructure" type="asprq:AlmaStructureT" minOccurs="0"/>
+        <xs:element name="PipelineSummary" type="sprx:PipelineSummaryT"/>
+        <xs:element name="AlmaPipelineResults" type="asprx:AlmaPipelineResultsT"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- See the AlmaSciPipeRequest schema for a definition of SciPipeRequestRef --> 
+
+  <!-- See the AlmaSciPipeRequest schema for a definition of ProjectStructure  --> 
+
+  <!-- See the SciPipeRresults schema for a definition of PipelineSummary  --> 
+
+  <!-- The ALMA pipeline OUS results -->
+      <!-- The observing units set results                                                 -->
+      <!-- The scheduling block results                                                    -->
+      <!-- The observing unit set data products                                            -->
+  <!-- The observing unit set results -->
+
+  <xs:complexType name="AlmaPipelineResultsT">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element name="OusResults" type="asprx:OusResultsT" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="SbResults" type="asprx:SbResultsT" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:choice>
+     <xs:element name="OusProducts" type="sprx:ProductUnitSetT" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The observing unit set status results -->
+      <!-- The parent observing unit set reference                                          -->
+      <!-- The parent observing unit set status reference                                   -->
+      <!-- The observing unit set data products                                             -->
+  <!-- The scheduling block results -->
+
+  <xs:complexType name="OusResultsT">
+    <xs:sequence>
+      <xs:element name="ObsUnitSetRef" type="prj:ObsProjectRefT"/>
+      <xs:element name="OusStatusRef" type="ouss:OUSStatusRefT"/>
+      <xs:element name="OusProducts" type="sprx:ProductUnitSetT" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The scheduling block results -->
+      <!-- The parent scheduling block reference                                          -->
+      <!-- The parent scheduling block status reference                                   -->
+      <!-- The session results                                                            -->
+      <!-- The scheduling block data products                                             -->
+  <!-- The scheduling block results -->
+
+  <xs:complexType name="SbResultsT">
+    <xs:sequence>
+      <xs:element name="SchedBlockRef" type="sbl:SchedBlockRefT"/>
+      <xs:element name="SBStatusRef" type="sbs:SBStatusRefT"/>
+      <xs:element name="SessionResults" type="asprx:SessionResultsT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="SbProducts" type="sprx:ProductUnitSetT" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The observing session results -->
+      <!-- The parent session reference                                                    -->
+      <!-- The ASDM results                                                                -->
+      <!-- The session data products                                                       -->
+  <!-- The observing session results -->
+
+  <xs:complexType name="SessionResultsT">
+    <xs:sequence>
+      <xs:element name="SessionRef" type="ouss:OUSStatusRefT"/>
+      <xs:element name="AsdmResults" type="asprx:AsdmResultsT" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="SessionProducts" type="sprx:ProductUnitSetT" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Per ASDM data products -->
+      <!-- AsdmUid is the unique identifier of the ASDM                                                -->
+      <!--      ApplyCalFile is the file specifying the caltable apply list                                 -->
+  <!-- Per ASDM data products -->
+
+  <xs:complexType name="AsdmResultsT">
+    <xs:sequence>
+      <xs:element name="AsdmUid" type="val:ExecBlockRefT" minOccurs="0"/>
+      <xs:element name="AsdmProducts" type="sprx:ProductUnitSetT" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The entity definition. -->
+  <xs:complexType name="SciPipeResultsEntityT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="SciPipeResults"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- The entity reference definition. -->
+  <xs:complexType name="SciPipeResultsRefT">
+    <xs:complexContent>
+      <xs:restriction base="ent:EntityRefT">
+        <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="SciPipeResults"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>
+

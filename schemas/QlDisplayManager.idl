@@ -1,0 +1,490 @@
+#ifndef _QLDISPLAYMANAGER_IDL_
+#define _QLDISPLAYMANAGER_IDL_
+
+#include <baci.idl>
+#include <acscomponent.idl>
+#include <asdmIDLTypes.idl>
+#include <QlDisplayExceptions.idl>
+
+#pragma prefix "alma"
+
+module pipelineql {
+
+    /************************ CURRENT ASSUMPTIONS **************************/
+
+     /**
+     *
+     * A session consists of repeated executions of the same scheduling
+     * block. 
+     *
+     * An observing  session is identified by a session id and a scheduling
+     * block id. The session id is an entity part id which must be unique
+     * within a project but may not be unique across projects. The scheduling
+     * block ids are unique but the same scheduling block may be observed in
+     * more than one session.
+     *
+     * At a given time more than one observing session may be active.
+     * Quicklook creates and maintains a separate context for each active
+     * session. Session managements is implemented in the QlDisplayManager
+     * component.
+     *
+     * Each active session creates and maintains its own Telcal monitoring
+     * context. Telcal monitoring is implemented in the QlTelcalMonitor
+     * component. The Telcal monitor retrieves Telcal processing results
+     * from the Control system DataCapture component, transforms them
+     * into a form suitable for Quicklook display, and notifies the Quicklook
+     * GUIs when new results are available. The current implementation does
+     * minimal data processing. This will change as the ASDM / CALDM data
+     * structures stabililize and the heuristics for monitoring Telcal
+     * results over time are developed and implemented.
+     *
+     * The user has no control over the data taking procedures except to
+     * enable and disable them. User interaction is limited to altering the
+     * quicklook display GUI screens and selecting the data to be displayed.
+     *
+     */
+
+    /**************************** TYPEDEFS ********************************/
+    
+
+    /**
+     * An entity id. 
+     */
+    typedef string QlEntityId;
+
+    /**
+     * A part id. 
+     */
+    typedef string QlPartId;
+
+    /** 
+     * A session title
+     */
+
+    typedef string SessionTitle;
+
+    /**
+     * A sequence of entity ids. 
+     */
+    typedef sequence<QlEntityId> QlEntityIdSeq;
+
+    /**
+     * A session reference
+     */
+    typedef asdmIDLTypes::IDLEntityRef SessionRef;
+
+    /**
+     * A schedblock reference
+     */
+    typedef asdmIDLTypes::IDLEntityRef SchedblockRef;
+
+    /******************************* ENUMERATIONS ***************************/
+
+    /**
+     * Enumerate the Quicklook display status options. There are only
+     * two global status conditions.
+     *    QL_STOPPED   Quicklook display will not create new session objects 
+     *                 when the Scheduler invokes the startQlSession method.
+     *    QL_STARTED   Quicklook display will create new session objects when
+     *                 the Scheduler invokes the startQlSession method.
+     * Quicklook display starts up in the QL_STOPPED condition although it is
+     * normally switched to the QL_STARTED condition by the Quicklook display
+     * system master component. If Quicklook display is in the QL_STOPPED
+     * condition when a new session is started by the Scheduler no
+     * corresponding quicklook session is started. This method is automatically
+     * invoked whe the shutdownQlDisplay method is called.
+     */
+    enum QlDisplayStatus { QL_STARTED, QL_STOPPED };
+
+    /**
+     * Enumerate the Quicklook display state options. There are only two
+     * global states.
+     *   QL_DISABLED New Quicklook sessions will be created if Quicklook
+     *               display operations have been started but incoming
+     *               data will not be processed.
+     *   QL_ENABLED  New Quicklook sessions will be created if Quicklook
+     *               display operations have been started and all incoming
+     *               data will be processed.
+     * Quicklook display starts up in the QL_DISABLED condition although it is
+     * normally switched to the QL_ENABLED condition by the Quicklook display
+     * system master component. If Quicklook display is in the QL_DISABLED
+     * condition when a new session is started by the Scheduler incoming data
+     * will not be processed. This method ia automatically invoked when the
+     * shutdownQlDisplay method is called.
+     */
+    enum QlDisplayOpState { QL_DISABLED, QL_ENABLED };
+
+
+    /**
+     * Enumerate the Quicklook session state options. There are only
+     * two global states.
+     *   QLSESSION_DISABLED The sesssion is alive but disabled. Incoming data
+     *                      are not processed.
+     *   QLSESSION_ENABLED  The session is enabled and incoming data are
+     *                      processed.
+     */
+    enum QlSessionState { QLSESSION_DISABLED, QLSESSION_ENABLED };
+
+
+    /**
+     * Enumerate the Quicklook session observing state. There are 
+     * three global states.
+     *    QLOBSERVING_STARTED       Session observing and data processing are
+     *                              ongoing.
+     *    QLOBSERVING_DONE          Session observing has completed but data
+     *                              processing is ongoing.
+     *    QLOBSERVING_DISCONNECTED  Session has be prematurely disconnected  
+     *                              from observing and an attempt made to
+     *                              shutdown gracefully.
+     */
+    enum QlObservingState { QLOBSERVING_STARTED, QLOBSERVING_DONE,
+        QLOBSERVING_DISCONNECTED };
+
+    /**
+     * Enumerate the Quicklook Display processing completion status options.
+     * This will be elaborated on in the future.
+     *
+     *      QLPROCESSING_COMPLETE  Processing completed.
+     *    QLPROCESSING_INCOMPLETE  Processing did not complete.
+     */
+    enum QlProcessingCompletionStatus { QLPROCESSING_COMPLETE,
+        QLPROCESSING_INCOMPLETE };
+
+    /******************************* EVENTS ******************************/
+
+    /**
+     * Define the Quicklook display system notification channel
+     */
+    const string CHANNELNAME_QLDISPLAYMANAGER = "qldisplaymanNC";
+
+    /**
+     * The executive may subscribe to these events for monitoring purposes
+     * or to signal to the Operator and / or the AoD that the Quicklook
+     * results summary is in the archive and / or the Quicklook data products
+     * are on disk ready for inspection.
+     *
+     * At present no other subsystems are monitoring these events. Quicklook
+     * results are not currently recorded in the APDM and are not part of
+     * the ASDM.
+     *
+     * More event granularity will be added if necessary, e.g. subscan,
+     * scan, execblock processing is complete.
+     *
+     * The Quicklook Display system end of session processing event.
+     * This will be issued when Quicklook Display completes data processing
+     * for an entire session and the results are in the archive and / or ready
+     * for inspection on disk.
+     *
+     * @param sessionId  The part id of the observing session.
+     * @param sbId  The entity id of the scheduling block.
+     * @param execBlockIds  The entity ids of the execution table.
+     * @param qlResultsId  The entity id of the quick look display results.
+     * @param completionStatus  The completion status of the session.
+     * @param reason  A comments on the completion status
+     * @param endtime  The time the processing completed in ACS::Time 
+     */
+
+    struct QlSessionProcessingDoneEvent {
+        QlPartId sessionId;
+        QlEntityId sbId;
+	QlEntityIdSeq execBlockIds;
+        QlEntityId qlResultsId;
+	QlProcessingCompletionStatus completionStatus;
+        string reason;
+	ACS::Time endtime;
+    };
+
+    typedef sequence<string> titleSeq;
+    typedef sequence<string> sessionIdSeq;
+    typedef sequence<string> sessionActiveSeq;
+    typedef sequence<ACS::Time> starttimeSeq;
+    typedef sequence<string> sbIdSeq;
+    typedef sequence<string> stateSeq;
+    typedef sequence<string> telcalMonitorSeq;
+    struct QlSessionInfo {
+		titleSeq title;
+		sessionIdSeq sessionId;
+		sessionActiveSeq sessionActive;
+		starttimeSeq starttime;
+		sbIdSeq sbId;
+		stateSeq state;
+		telcalMonitorSeq telcalMonitor;
+    };
+
+
+    /******************************* INTERFACES *****************************/
+
+
+    /**
+     * The Quicklook display executive interface. This interface is used
+     * by the Executive system to start and stop quicklook operations.
+     * The Executive can:
+     *     - start, stop, and determine the status of global Quicklook
+     *       display operations
+     */
+
+    interface QlDisplayExecutive {
+
+	/**
+         * Say hello to the Eexecutive system.
+	 *
+	 * @param None
+	 * @throws None
+	 * @return string  Returns a greeting string
+	 */
+	string helloExecutive();
+
+	/**
+	 * Start Quicklook display operations. New Quicklook sessions will be
+	 * created when the Scheduling system invokes the startQlSession
+	 * method. If quicklook operations have already been started then
+	 * this method is a null operation.
+	 *
+	 * @param None
+	 * @throws InvalidState
+	 * @return None
+	 */
+	void startQlDisplay()
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+	/**
+	 * Stop Quicklook display operations. New Quicklook sessions will not
+	 * be created when the Scheduling system invokes the startQlSession
+	 * method. If quicklook operations have already been stopped then
+	 * this method is a null operation.
+	 *
+	 * @param None
+	 * @throws InvalidState
+	 * @return None
+	 */
+	void stopQlDisplay()
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+	/**
+         * Return the status of the Quicklook Display system.
+	 *
+	 * @param None
+	 * @throws InvalidState. The status of Quicklook display is invalid
+	 * @return QlDisplayStatus  The status of the quicklook display system.
+	 */
+        QlDisplayStatus getQlDisplayStatus() 
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+    };
+
+    /**
+     * The Quicklook display operator interface. This interface inherits
+     * the Quicklook display operator interface. The operator can:
+     *     - start,  stop, determine the status of, and shutdown global
+     *       Quicklook display operations
+     *     - enable and disable global Quicklook display data retrieval and
+     *       processing capabilities,
+     *     - disable global Quicklook display data retrieval and processing
+     *       capabilities for a session
+     *     - shutdown a session
+     * 
+     */
+
+    interface QlDisplayOperator : QlDisplayExecutive {
+
+	/**
+         * Say hello to the quicklook display system.
+	 *
+	 * @param None
+	 * @throws None
+	 * @return string  Returns a greeting string
+	 */
+	string helloOperator();
+
+	/**
+	 * Enable quicklook operations. If quicklook operations are enabled
+	 * new sessions will be able to retrieve and process incoming data.
+	 * If quicklook operations are already enabled this is a null
+	 * operation.
+	 * 
+	 * @param None
+	 * @throws InvalidState
+	 * @return None
+	 */
+        void enableQlDisplay()
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+	/**
+	 *  Set which processing operationa are enabled at session
+	 *  startup by default.
+	 *  
+	 */
+	void setProcessingOptions (in boolean telcalMonitoring,
+	    in boolean arrayMonitoring, in boolean dataReduction);
+
+	/**
+	 * Disable quicklook operations. If quicklook operations are disabled
+	 * new quicklook sessions will not be able to retrieve and process
+	 * incoming data. If quicklook operations are already disabled
+	 * this is a null operation. This method is useful for putting
+	 * quicklook into a test mode where events are received but not
+	 * acted upon.
+	 * 
+	 * @param None
+	 * @throws InvalidState
+	 * @return None
+	 */
+        void disableQlDisplay()
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+	/**
+         * Return the state of the Quicklook Display system.
+	 *
+	 * @param None
+	 * @throws InvalidState. 
+	 * @return QlDisplayState  The state of the quicklook display system.
+	 */
+        QlDisplayOpState getQlDisplayOpState() 
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+	/**
+	 * Shutdown quicklook operations for all current sessions. This implies
+	 * stopping quicklook operations  so that no new sessions can be
+	 * started and then disabling and killing the existing sessions one 
+	 * by one. This operation leaves quicklook alive but in a stopped
+	 * state.
+	 *
+	 * @param None
+	 * @throws InvalidState
+	 * @return None
+	 */
+	void shutdownQlDisplay()
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+	/**
+	 * Disables the session. The session is left alive in its current
+	 * state but no longer processes incoming data. This feature may
+	 * be useful for diagnostics purpose and should be invoked before
+	 * shutting down a session.
+	 *
+         * @param sessionId  The id of the current observing session.
+         * @param schedblockId  The id of the current scheduling block.
+	 * @throws InvalidState
+	 * @return None
+	 *
+	 */
+	void disableQlSession (in SessionRef sessionId,
+	    in SchedblockRef schedblockId)
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+	// Ignore the session reenable issue for now.
+
+	/**
+	 * Shutdown a session. The session is first disabled so no new data
+	 * can be retrieved and processed then it is terminated.
+	 *
+         * @param sessionId  The id of the current observing session.
+         * @param schedblockId  The id of the current scheduling block.
+	 * @throws InvalidState
+	 * @return None
+	 */
+	void shutdownQlSession (in SessionRef sessionId,
+	    in SchedblockRef schedblockId)
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+	/**
+	 * Get the state of a session. Determine whether or not the
+	 * session is disabled.
+	 */
+	QlSessionState getQlSessionState (in SessionRef sessionId,
+	    in SchedblockRef schedblockId)
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+	/**
+	 * Get the observing state of a session. 
+	 * Public method probably not required.
+	 */
+	//QlObservingState getQlOservingState (in string sessionId,
+	    //in string schedblockId)
+	    //raises (QlDisplayExceptions::InvalidStateErrorEx);
+     };
+
+
+    /**
+      * The Quicklook Display interface to the Scheduling system. This
+      * interface is used by the Scheduling system to start and stop
+      * Quicklook display sessions.
+      */
+
+    interface QlDisplayScheduler {
+
+	/**
+         * Say hello to the Scheduling system.
+	 *
+	 * @param None
+	 * @throws None
+	 * @return string  A greeting string
+	 */
+	string helloScheduler();
+
+	/**
+	 * Start the session. Called by the Scheduler when a new session
+	 * begins. This method creates and initializes a new session object and
+	 * ensures that Quicklook display is properly initialized for each
+	 * session before observing begins. This method should be called
+	 * before the Scheduler issues a session start event.
+	 *
+         * @param sessionId  The id of the current observing session.
+         * @param schedblockId  The id of the current scheduling block.
+         * @param title  The title or description of the scheduling block.
+	 * @throws InvalidState. The state of the system is invalid
+	 * @return None
+	 *
+	 */
+	void startQlSession (in SessionRef sessionId, 
+	    in SchedblockRef schedblockId, in string arrayId, in string title)
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+	/**
+	 * End the session. Called by the Scheduler when an existing session
+	 * ends. This method removes the session object from the session list
+	 * when all processing is complete. This method should be called 
+	 * before the Scheduler issues a session end event. This method is
+	 * aynchronous and session termination may happen some time after
+	 * observing has completed.
+	 *
+         * @param sessionId  The part id of the current observing session.
+         * @param schedblockId  The entity id of the current scheduling block.
+	 * @throws InvalidState. The state of the system is invalid
+	 * @return None
+	 *
+	 */
+	void endQlSession (in SessionRef sessionId,
+	    in SchedblockRef schedblockId)
+	    raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+        /**
+	 * Get all session. Called by the QuickLook Monitor when it needs.
+	 * This method will list all start Session in the QuickLook subsystem.
+	 * Caller can read the realize the QuickLook status
+	*/
+	 QlSessionInfo getAllQlSession()
+		raises (QlDisplayExceptions::InvalidStateErrorEx);
+
+    };
+
+    /** Interface to the entire quicklook display system, This is the global
+      * interface to the QlDisplayManager component. This interface is
+      * used by the Quicklook display master component to activate the system.
+      */
+
+    interface QlDisplayManager : QlDisplayOperator, QlDisplayScheduler,
+        ACS::ACSComponent {
+
+	/**
+         * Say hello to the quicklook display system. 
+	 *
+	 * @param None
+	 * @return string  Returns a greeting string
+	 */
+	string helloQlDisplay();
+
+    };
+
+};
+#endif

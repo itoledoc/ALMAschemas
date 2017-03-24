@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File CalibrationFunction.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:calibf="http://Alma/XENUM/CalibrationFunctionMod" targetNamespace="http://Alma/XENUM/CalibrationFunctionMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:calibf="http://Alma/XENUM/CalibrationFunctionMod" 
+                         targetNamespace="http://Alma/XENUM/CalibrationFunctionMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="CalibrationFunction">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="FIRST">
+			<xsd:enumeration value="FIRST" >
 		
 				<xsd:annotation>
 					<xsd:documentation>the scan is the first in a calibration set. </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="LAST">
+			<xsd:enumeration value="LAST" >
 		
 				<xsd:annotation>
 					<xsd:documentation>the scan is the last in a calibration set. </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="UNSPECIFIED">
+			<xsd:enumeration value="UNSPECIFIED" >
 		
 				<xsd:annotation>
 					<xsd:documentation>the function is not specified. </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="CalibrationFunctions">
+	<xsd:simpleType name ="CalibrationFunctions">
 		<xsd:restriction base="calibf:CalibrationFunctionList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

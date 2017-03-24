@@ -1,0 +1,78 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * File MonitorInterface.idl
+ */
+
+#ifndef MonitorInterface_IDL
+#define MonitorInterface_IDL
+
+#include <acscomponent.idl>
+
+/**
+ * External interface to the Monitor package.
+ */
+
+#pragma prefix "alma"
+
+module Control {
+
+	/**
+	 * The StoppedException is thrown if the Monitor object is in
+	 * an unrecoverable error state.
+ 	 */
+	exception StoppedException {
+    	string msg;
+	};  
+
+	/**
+	 * The BadDataException is thrown if there is an invalid argument.
+ 	 */
+	exception BadDataException {
+    	string msg;
+	};  
+
+
+	interface MonitorInterface : ACS::ACSComponent {
+		void setConfigurationName(in string name) raises (StoppedException, BadDataException);
+		void setDatabaseAccess(in string dbUser, in string dbPassword, in string dbUrl) raises (StoppedException, BadDataException);
+		void startMonitoring() raises (StoppedException, BadDataException);
+		void startMonitoringNoNCReader() raises (StoppedException, BadDataException);
+		void stopMonitoring() raises (StoppedException);
+		void textFileOn(in string fullPathFilename) raises (StoppedException, BadDataException);
+		void textFileOnAlt(in string fullPathFilename, in string delimiter) raises (StoppedException, BadDataException);
+		void textFileOff() raises (StoppedException);
+		void databaseOn() raises (StoppedException);
+		void databaseOff() raises (StoppedException);
+		void setDumpInterval(in long milliseconds) raises (StoppedException, BadDataException);		
+		void receiveFloat(in string serialNumber, in string propertyName, in unsigned long long timestamp, in float value);
+		void receiveDouble(in string serialNumber, in string propertyName, in unsigned long long timestamp, in double value);
+		void receiveInteger(in string serialNumber, in string propertyName, in unsigned long long timestamp, in long value);
+		void receiveString(in string serialNumber, in string propertyName, in unsigned long long timestamp, in string value);
+		void receiveBoolean(in string serialNumber, in string propertyName, in unsigned long long timestamp, in boolean value);
+		void receiveEnum(in string serialNumber, in string propertyName, in unsigned long long timestamp, in octet value);
+	};
+
+};
+
+#endif /* MonitorInterface_IDL */

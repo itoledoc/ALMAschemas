@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,27 +30,46 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File CalBandpassTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:clbndp="http://Alma/XASDM/CalBandpassTable" xmlns:ent="Alma/CommonEntity" xmlns:netsdb="http://Alma/XENUM/NetSidebandMod" xmlns:poltyp="http://Alma/XENUM/PolarizationTypeMod" xmlns:recvrb="http://Alma/XENUM/ReceiverBandMod" xmlns:atmphc="http://Alma/XENUM/AtmPhaseCorrectionMod" xmlns:bbnam="http://Alma/XENUM/BasebandNameMod" xmlns:clcurt="http://Alma/XENUM/CalCurveTypeMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/CalBandpassTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:clbndp="http://Alma/XASDM/CalBandpassTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:netsdb="http://Alma/XENUM/NetSidebandMod"
+	xmlns:atmphc="http://Alma/XENUM/AtmPhaseCorrectionMod"
+	xmlns:clcurt="http://Alma/XENUM/CalCurveTypeMod"
+	xmlns:recvrb="http://Alma/XENUM/ReceiverBandMod"
+	xmlns:poltyp="http://Alma/XENUM/PolarizationTypeMod"
+	xmlns:bbnam="http://Alma/XENUM/BasebandNameMod"
+					   targetNamespace="http://Alma/XASDM/CalBandpassTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
-		<!-- No specific import for ArrayTime -->
 		<!-- We need the schema of NetSideband -->
-		<xs:import namespace="http://Alma/XENUM/NetSidebandMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/NetSideband.xsd" />
-		<!-- No specific import for String -->
-		<!-- No specific import for int -->
-		<!-- We need the schema of PolarizationType -->
-		<xs:import namespace="http://Alma/XENUM/PolarizationTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/PolarizationType.xsd" />
-		<!-- We need the schema of ReceiverBand -->
-		<xs:import namespace="http://Alma/XENUM/ReceiverBandMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverBand.xsd" />
+		<xs:import namespace="http://Alma/XENUM/NetSidebandMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/NetSideband.xsd"/>
 		<!-- We need the schema of AtmPhaseCorrection -->
-		<xs:import namespace="http://Alma/XENUM/AtmPhaseCorrectionMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/AtmPhaseCorrection.xsd" />
-		<!-- No specific import for Frequency -->
+		<xs:import namespace="http://Alma/XENUM/AtmPhaseCorrectionMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/AtmPhaseCorrection.xsd"/>
+		<!-- No specific import for ArrayTime -->
+		<!-- We need the schema of CalCurveType -->
+		<xs:import namespace="http://Alma/XENUM/CalCurveTypeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalCurveType.xsd"/>
+		<!-- We need the schema of ReceiverBand -->
+		<xs:import namespace="http://Alma/XENUM/ReceiverBandMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/ReceiverBand.xsd"/>
 		<!-- No specific import for double -->
+		<!-- No specific import for Frequency -->
+		<!-- No specific import for String -->
+		<!-- We need the schema of PolarizationType -->
+		<xs:import namespace="http://Alma/XENUM/PolarizationTypeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/PolarizationType.xsd"/>
 		<!-- No specific import for float -->
 		<!-- We need the schema of BasebandName -->
-		<xs:import namespace="http://Alma/XENUM/BasebandNameMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/BasebandName.xsd" />
-		<!-- We need the schema of CalCurveType -->
-		<xs:import namespace="http://Alma/XENUM/CalCurveTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CalCurveType.xsd" />
+		<xs:import namespace="http://Alma/XENUM/BasebandNameMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/BasebandName.xsd"/>
+		<!-- No specific import for int -->
 	
 	
 	
@@ -67,35 +86,95 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="basebandName" type="bbnam:BasebandName" />
-         <xs:element name="sideband" type="netsdb:NetSideband" />
-         <xs:element name="atmPhaseCorrection" type="atmphc:AtmPhaseCorrection" />
-         <xs:element name="typeCurve" type="clcurt:CalCurveType" />
-         <xs:element name="receiverBand" type="recvrb:ReceiverBand" />
-         <xs:element name="startValidTime" type="xs:string" />
-         <xs:element name="endValidTime" type="xs:string" />
-         <xs:element name="numAntenna" type="xs:string" />
-         <xs:element name="numPoly" type="xs:string" />
-         <xs:element name="numReceptor" type="xs:string" />
-         <xs:element name="antennaNames" type="xs:string" />
-         <xs:element name="refAntennaName" type="xs:string" />
-         <xs:element name="freqLimits" type="xs:string" />
-         <xs:element name="polarizationTypes" type="xs:string" />
-         <xs:element name="curve" type="xs:string" />
-         <xs:element name="reducedChiSquared" type="xs:string" />
-     	 <xs:element name="numBaseline" type="xs:string" minOccurs="0" />
-     	 <xs:element name="rms" type="xs:string" minOccurs="0" />
-         <xs:element name="calDataId" type="xs:string" />
-         <xs:element name="calReductionId" type="xs:string" />
+         <xs:element name="basebandName" type=
+"bbnam:BasebandName"
+
+/>
+         <xs:element name="sideband" type=
+"netsdb:NetSideband"
+
+/>
+         <xs:element name="atmPhaseCorrection" type=
+"atmphc:AtmPhaseCorrection"
+
+/>
+         <xs:element name="typeCurve" type=
+"clcurt:CalCurveType"
+
+/>
+         <xs:element name="receiverBand" type=
+"recvrb:ReceiverBand"
+
+/>
+         <xs:element name="startValidTime" type=
+"xs:string"
+
+/>
+         <xs:element name="endValidTime" type=
+"xs:string"
+
+/>
+         <xs:element name="numAntenna" type=
+"xs:string"
+
+/>
+         <xs:element name="numPoly" type=
+"xs:string"
+
+/>
+         <xs:element name="numReceptor" type=
+"xs:string"
+
+/>
+         <xs:element name="antennaNames" type=
+"xs:string"
+
+/>
+         <xs:element name="refAntennaName" type=
+"xs:string"
+
+/>
+         <xs:element name="freqLimits" type=
+"xs:string"
+
+/>
+         <xs:element name="polarizationTypes" type=
+"xs:string"
+
+/>
+         <xs:element name="curve" type=
+"xs:string"
+
+/>
+         <xs:element name="reducedChiSquared" type=
+"xs:string"
+
+/>
+     	 <xs:element name="numBaseline" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="rms" type=
+"xs:string"
+
+  minOccurs="0"/>
+         <xs:element name="calDataId" type=
+"xs:string"
+
+/>
+         <xs:element name="calReductionId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

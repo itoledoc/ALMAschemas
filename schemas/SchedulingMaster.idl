@@ -1,0 +1,135 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * $Id: SchedulingMaster.idl,v 1.12 2012/05/09 23:32:35 javarias Exp $
+ */
+
+#ifndef _SCHEDULINGMASTER_IDL_
+#define _SCHEDULINGMASTER_IDL_
+
+#include <acscommon.idl>
+#include <acscomponent.idl>
+#include <SchedulingMasterExceptions.idl>
+#include <SchedulingTypes.idl>
+
+#pragma prefix "alma"
+
+module scheduling {
+  
+  /**
+    * All the interested classes in receive notifications about Arrays changes
+    * must implement this interface and register with @ref Master "Master Scheduler component".
+    */
+  interface ArrayStatusCallback : ACS::OffShoot {
+    /**
+      * Called by the @ref Master "Master Scheduler component" to notify about a change related to Arrays
+      */ 
+    oneway void report (in ArrayEvent operation,
+			in ArrayModeEnum arrayMode,
+			in string arrayName);
+  };
+  
+/**
+  * @brief Master is the responsible of Scheduling Array managament.
+  *
+  * Master is the responsible of Scheduling Array managament.
+  * 
+  */  
+  interface Master : ACS::ACSComponent {
+    /**
+      * @brief Create an Array configured according to the deatils given
+	  *
+	  * The creation of the scheduling array involves two step: 
+	  * <ol>
+	  * <li><b>Creation of Control Array</b>: In this step the Master must use the CONTROL's master
+	  * interface to create an control::Array according to the parameters required, these could be: antenna list,
+	  * correlator type, photonics reference lists, etc. These required parameters could change in the future and 
+	  * depends only on CONTROL subsystem. If an extra parameter is required it should be added in
+	  * @ref ArrayDescriptor </li>  
+	  * <li><b>Creation of the Scheduling Array</b>: In this step an @ref Array "scheduling::Array" 
+	  * component must be instantiated and configured properly, the name of the array component must be similar to the name given by CONTROL's master
+	  * Array but adding<i>SCHEDULING/</i> prefix. The array component created must be configured according to the
+	  * parameters given in the @ref ArrayDescriptor "details parameter", these are: the @ref ArrayModeEnum "Scheduling Modes",
+	  * @ref ArraySchedulerLifecycleType "Project Lifecycle type".</li>
+	  * </ol> 
+	  *
+      * @param[in] deatils The parameters given to configure the array. It must not be NULL
+      *
+      * @exception SchedulingMasterExceptions::ControlInternalExceptionEx if during
+      * the control's array creation something goes wrong. The underlaying cause must be
+      * nested in this exception.
+      * @exception SchedulingMasterExceptions::ACSInternalExceptionEx if during the scheduling
+      * array component creation something goes wrong, or if there are problems with CORBA
+      * communucations. The underlaying cause must benested in this exception
+      * @exception SchedulingMasterExceptions::SchedulingInternalExceptionEx if a problem
+      * in scheduling code occurs during the array creation. The underlaying cause must be
+      * nested in this exception. In general any unknown exception must be nested in this type
+      * of exception.
+	  * 
+	  * @returns Info related to the array creation @see ArrayCreationInfo
+	  * 
+      */
+    ArrayCreationInfo createArray(in ArrayDescriptor details)
+      raises (SchedulingMasterExceptions::ControlInternalExceptionEx,
+	      SchedulingMasterExceptions::SchedulingInternalExceptionEx, 
+	      SchedulingMasterExceptions::ACSInternalExceptionEx);
+
+    /**
+      * Destroys an Array already created
+
+      * @param[in] deatils The parameters given to configure the array. It must not be NULL
+      *
+      * @exception SchedulingMasterExceptions::ControlInternalExceptionEx if during
+      * the control's array creation something goes wrong. The underlaying cause must be
+      * nested in this exception.
+      * @exception SchedulingMasterExceptions::ACSInternalExceptionEx if during the scheduling
+      * array component creation something goes wrong, or if there are problems with CORBA
+      * communucations. The underlaying cause must benested in this exception
+      * @exception SchedulingMasterExceptions::SchedulingInternalExceptionEx if a problem
+      * in scheduling code occurs during the array creation. The underlaying cause must be
+      * nested in this exception. In general any unknown exception must be nested in this type
+      * of exception.
+	  * 
+	  * @returns Info related to the array creation @see ArrayCreationInfo
+	  * 
+      */
+    void destroyArray(in ArrayIdentifier arrayId, in string name, in string role)
+      raises (SchedulingMasterExceptions::ControlInternalExceptionEx,
+	      SchedulingMasterExceptions::SchedulingInternalExceptionEx, 
+	      SchedulingMasterExceptions::ACSInternalExceptionEx);
+    
+    ArrayIdentifierSeq getActiveAutomaticArrays();
+
+    ArrayIdentifierSeq getActiveManualArrays();
+
+    ArrayModeEnum getSchedulerModeForArray(in string arrayName)
+      raises (SchedulingMasterExceptions::ArrayNotFoundExceptionEx);
+
+    void addMonitorMaster(in string monitorName,
+			  in ArrayStatusCallback callback);
+
+    void removeMonitorQueue(in string monitorName);
+
+    };
+};
+#endif // _SCHEDULINGMASTER_IDL_

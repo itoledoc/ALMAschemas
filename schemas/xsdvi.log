@@ -1,29 +1,46 @@
-Aug 27, 2014 4:12:25 PM xsdvi.XsdVi printUsage
-SEVERE: 
-USAGE:
-java -jar xsdvi.jar <input1.xsd> [<input2.xsd> [<input3.xsd> ...]] [style]
-  STYLE:
-    -embodyStyle                css style will be embodied in each svg file, this is default
-    -generateStyle <style.css>  new css file with specified name will be generated and used by svgs
-    -useStyle      <style.css>  external css file at specified url will be used by svgs
-
-Aug 27, 2014 4:12:35 PM xsdvi.XsdVi main
+Mar 24, 2017 5:21:54 PM xsdvi.XsdVi main
 INFO: The style will be embodied
-Aug 27, 2014 4:12:35 PM xsdvi.XsdVi main
-INFO: Parsing ObsProject.xsd...
-Aug 27, 2014 4:12:36 PM xsdvi.XsdVi main
+Mar 24, 2017 5:21:54 PM xsdvi.XsdVi main
+INFO: Parsing SchedBlock.xsd...
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+WARNING: [xs-warning]: schema_reference.4: Failed to read schema document 'CommonEntity.xsd', because 1) could not find the document; 2) the document could not be read; 3) the root element of the document is not <xsd:schema>. (line: 4)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+WARNING: [xs-warning]: schema_reference.4: Failed to read schema document 'CommonEntity.xsd', because 1) could not find the document; 2) the document could not be read; 3) the root element of the document is not <xsd:schema>. (line: 4)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+WARNING: [xs-warning]: schema_reference.4: Failed to read schema document 'CommonEntity.xsd', because 1) could not find the document; 2) the document could not be read; 3) the root element of the document is not <xsd:schema>. (line: 4)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+WARNING: [xs-warning]: schema_reference.4: Failed to read schema document 'CommonEntity.xsd', because 1) could not find the document; 2) the document could not be read; 3) the root element of the document is not <xsd:schema>. (line: 4)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+WARNING: [xs-warning]: schema_reference.4: Failed to read schema document 'CommonEntity.xsd', because 1) could not find the document; 2) the document could not be read; 3) the root element of the document is not <xsd:schema>. (line: 4)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+WARNING: [xs-warning]: schema_reference.4: Failed to read schema document 'CommonEntity.xsd', because 1) could not find the document; 2) the document could not be read; 3) the root element of the document is not <xsd:schema>. (line: 4)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+WARNING: [xs-warning]: schema_reference.4: Failed to read schema document 'CommonEntity.xsd', because 1) could not find the document; 2) the document could not be read; 3) the root element of the document is not <xsd:schema>. (line: 4)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+WARNING: [xs-warning]: schema_reference.4: Failed to read schema document 'CommonEntity.xsd', because 1) could not find the document; 2) the document could not be read; 3) the root element of the document is not <xsd:schema>. (line: 4)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+SEVERE: [xs-error]: src-resolve: Cannot resolve the name 'ent:EntityPartIdT' to a(n) 'type definition' component. (line: 145)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+SEVERE: [xs-error]: src-resolve: Cannot resolve the name 'ent:EntityPartIdT' to a(n) 'simpleType definition' component. (line: 145)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+SEVERE: [xs-error]: src-resolve: Cannot resolve the name 'ent:EntityPartIdT' to a(n) 'simpleType definition' component. (line: 807)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+SEVERE: [xs-error]: src-resolve: Cannot resolve the name 'ent:EntityPartIdT' to a(n) 'simpleType definition' component. (line: 337)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+SEVERE: [xs-error]: src-resolve: Cannot resolve the name 'ent:EntityPartIdT' to a(n) 'simpleType definition' component. (line: 583)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+SEVERE: [xs-error]: src-resolve: Cannot resolve the name 'ent:EntityPartIdT' to a(n) 'simpleType definition' component. (line: 1244)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+SEVERE: [xs-error]: src-resolve: Cannot resolve the name 'ent:EntityPartIdT' to a(n) 'simpleType definition' component. (line: 695)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+SEVERE: [xs-error]: src-resolve: Cannot resolve the name 'ent:EntityPartIdT' to a(n) 'simpleType definition' component. (line: 73)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+SEVERE: [xs-error]: src-resolve: Cannot resolve the name 'ent:EntityPartIdT' to a(n) 'simpleType definition' component. (line: 63)
+Mar 24, 2017 5:21:55 PM xsdvi.utils.XsdErrorHandler handleError
+SEVERE: [xs-error]: src-resolve: Cannot resolve the name 'ent:EntityPartIdT' to a(n) 'simpleType definition' component. (line: 97)
+Mar 24, 2017 5:21:55 PM xsdvi.XsdVi main
 INFO: Processing XML Schema model...
-Aug 27, 2014 4:12:36 PM xsdvi.XsdVi main
-INFO: Drawing SVG ObsProject.svg...
-Aug 27, 2014 4:12:36 PM xsdvi.XsdVi main
-INFO: Done.
-Sep 02, 2014 8:22:39 PM xsdvi.XsdVi main
-INFO: The style will be embodied
-Sep 02, 2014 8:22:39 PM xsdvi.XsdVi main
-INFO: Parsing ObsProposal.xsd...
-Sep 02, 2014 8:22:40 PM xsdvi.XsdVi main
-INFO: Processing XML Schema model...
-Sep 02, 2014 8:22:40 PM xsdvi.XsdVi main
-INFO: Drawing SVG ObsProposal.svg...
-Sep 02, 2014 8:22:40 PM xsdvi.XsdVi main
+Mar 24, 2017 5:21:55 PM xsdvi.XsdVi main
+INFO: Drawing SVG SchedBlock.svg...
+Mar 24, 2017 5:21:55 PM xsdvi.XsdVi main
 INFO: Done.

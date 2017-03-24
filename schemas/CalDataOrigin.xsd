@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,12 +31,17 @@
    /////////////////////////////////////////////////////////////////
   
    File CalDataOrigin.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cldato="http://Alma/XENUM/CalDataOriginMod" targetNamespace="http://Alma/XENUM/CalDataOriginMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:cldato="http://Alma/XENUM/CalDataOriginMod" 
+                         targetNamespace="http://Alma/XENUM/CalDataOriginMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="CalDataOrigin">
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="TOTAL_POWER">
+			<xsd:enumeration value="TOTAL_POWER" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Total Power data (from detectors) </xsd:documentation>
@@ -44,7 +49,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="WVR">
+			<xsd:enumeration value="WVR" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Water vapour radiometrers </xsd:documentation>
@@ -52,7 +57,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="CHANNEL_AVERAGE_AUTO">
+			<xsd:enumeration value="CHANNEL_AVERAGE_AUTO" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Autocorrelations from channel average data </xsd:documentation>
@@ -60,7 +65,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="CHANNEL_AVERAGE_CROSS">
+			<xsd:enumeration value="CHANNEL_AVERAGE_CROSS" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Crosscorrelations from channel average data </xsd:documentation>
@@ -68,7 +73,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="FULL_RESOLUTION_AUTO">
+			<xsd:enumeration value="FULL_RESOLUTION_AUTO" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Autocorrelations from full-resolution data </xsd:documentation>
@@ -76,7 +81,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="FULL_RESOLUTION_CROSS">
+			<xsd:enumeration value="FULL_RESOLUTION_CROSS" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Cross correlations from full-resolution data </xsd:documentation>
@@ -84,7 +89,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="OPTICAL_POINTING">
+			<xsd:enumeration value="OPTICAL_POINTING" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Optical pointing data </xsd:documentation>
@@ -92,7 +97,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="HOLOGRAPHY">
+			<xsd:enumeration value="HOLOGRAPHY" >
 		
 				<xsd:annotation>
 					<xsd:documentation>data from holography receivers </xsd:documentation>
@@ -100,7 +105,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="NONE">
+			<xsd:enumeration value="NONE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Not applicable </xsd:documentation>
@@ -126,9 +131,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="CalDataOrigins">
+	<xsd:simpleType name ="CalDataOrigins">
 		<xsd:restriction base="cldato:CalDataOriginList">
-			<xsd:maxLength value="9" />
+			<xsd:maxLength value = "9" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

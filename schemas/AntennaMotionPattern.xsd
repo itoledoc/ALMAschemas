@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File AntennaMotionPattern.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:antmop="http://Alma/XENUM/AntennaMotionPatternMod" targetNamespace="http://Alma/XENUM/AntennaMotionPatternMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:antmop="http://Alma/XENUM/AntennaMotionPatternMod" 
+                         targetNamespace="http://Alma/XENUM/AntennaMotionPatternMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="AntennaMotionPattern">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="NONE">
+			<xsd:enumeration value="NONE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>No pattern. </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="CROSS_SCAN">
+			<xsd:enumeration value="CROSS_SCAN" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Crossed scan (continuous pattern) </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="SPIRAL">
+			<xsd:enumeration value="SPIRAL" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Spiral pattern </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="CIRCLE">
+			<xsd:enumeration value="CIRCLE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Circular pattern </xsd:documentation>
@@ -72,7 +77,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="THREE_POINTS">
+			<xsd:enumeration value="THREE_POINTS" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Three points pattern. </xsd:documentation>
@@ -80,7 +85,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="FOUR_POINTS">
+			<xsd:enumeration value="FOUR_POINTS" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Four points pattern. </xsd:documentation>
@@ -88,7 +93,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="FIVE_POINTS">
+			<xsd:enumeration value="FIVE_POINTS" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Five points pattern. </xsd:documentation>
@@ -96,7 +101,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="TEST">
+			<xsd:enumeration value="TEST" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Reserved for development. </xsd:documentation>
@@ -104,11 +109,19 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="UNSPECIFIED">
+			<xsd:enumeration value="UNSPECIFIED" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Unspecified pattern. </xsd:documentation>
 				</xsd:annotation>
+		
+			</xsd:enumeration>
+     
+			<xsd:enumeration value="STAR" >
+		
+			</xsd:enumeration>
+     
+			<xsd:enumeration value="LISSAJOUS" >
 		
 			</xsd:enumeration>
      
@@ -130,9 +143,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="AntennaMotionPatterns">
+	<xsd:simpleType name ="AntennaMotionPatterns">
 		<xsd:restriction base="antmop:AntennaMotionPatternList">
-			<xsd:maxLength value="9" />
+			<xsd:maxLength value = "11" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

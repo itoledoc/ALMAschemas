@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File SBType.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sbtype="http://Alma/XENUM/SBTypeMod" targetNamespace="http://Alma/XENUM/SBTypeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:sbtype="http://Alma/XENUM/SBTypeMod" 
+                         targetNamespace="http://Alma/XENUM/SBTypeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="SBType">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="OBSERVATORY">
+			<xsd:enumeration value="OBSERVATORY" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Observatory mode scheduling block </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="OBSERVER">
+			<xsd:enumeration value="OBSERVER" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Observer mode scheduling block </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="EXPERT">
+			<xsd:enumeration value="EXPERT" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Expert mode scheduling block </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="SBTypes">
+	<xsd:simpleType name ="SBTypes">
 		<xsd:restriction base="sbtype:SBTypeList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

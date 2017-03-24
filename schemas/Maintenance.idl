@@ -1,0 +1,483 @@
+#ifndef MAINTENANCE_IDL
+#define MAINTENANCE_IDL
+/*******************************************************************************
+* ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+*
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+*
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+* 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+* 
+ * "@(#) $Id: Maintenance.idl,v 1.10 2013/02/28 22:13:05 jperez Exp $"
+* 
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+*/
+
+#include <acscommon.idl>
+#include <CorrStateModel.idl>
+#include "AntennaNumberMap.idl"
+
+#pragma prefix "alma"
+
+module Correlator
+{
+    /** \enum Hardware systems to diagnose.
+     ** A list of correlator hardware systems applicable for the various
+     ** commands.
+     */
+    enum eSystem
+    {
+	MAINT_NONE,
+	CHW,    //! Correlator HW only
+	CCC,    //! Correlator Control Computer only
+	CDP,    //! Corr. Data Processor Computer only
+	CHW_CCC,    //! CHW & CCC
+	CHW_CDP,    //! CHW & CDP
+	CCC_CDP //! CCC & CDP
+    };
+
+    /// Swap states for quadrature tests
+    enum eInSwapState
+    {
+	NO_SWAP_STATE_ACTION,
+	SET_SWAP_STATE_0,
+	SET_SWAP_STATE_1,
+	MAX_SWAP_STATE
+    };
+
+    /// Error flags
+    enum eInErrorMode
+    {
+	NO_ERROR_MODE_ACTION,
+	ACCUMULATE_ERROR_COUNTS,
+	CYCLE_ERROR_COUNTS,
+	MAX_ERROR_MODE
+    };
+
+    /** A sequence of CAN data */
+    typedef sequence<octet> CorrCanData;
+
+    /** A sequence of CAN data as floats*/
+    typedef sequence<float> CorrCanFloatData;
+
+    /** A sequence of node addresses */
+    typedef sequence<short>  CorrCanNodeSeq;
+  
+    typedef sequence<long> LOOffsetMultiplierSeq;
+    /** DiagnosticTests Correlator Diagnostic Tests.  The
+     ** \b Diagnostics interface allows one to run diagnostics on the
+     ** correlator. Diagnostics must be run while the correlator
+     ** is in \e off-line mode, i.e., non-operational.
+     */
+    interface Diagnostic : ACS::CharacteristicComponent
+    {
+	/*! \enum Test lag patterns */
+	enum eLagPattern
+	{
+	    CONSTANT_PATTERN,		//! set lags to a constant value
+	    RAMP_UP_PATTERN,		//! set lags to ascending values 0 - N-1
+	    FOUR_RAMPS_PATTERN	//! set lags to 4 acsending sequences 0 - (N/4-1)
+	};
+
+	exception InvalidSystem {};
+
+	/** A simple query.
+	 ** Does any part of the correlator need maintenance?
+	 ** @return System(s) which need scheduled maintenance 
+	 */
+	Correlator::eSystem doesCorrelatorSystemNeedMaintenance();
+
+	/** \defgroup CorrelatorCardTests Correlator Card Tests 
+	 ** These test the functionality of the correlator card.
+	 */
+	/*@{*/  
+	    
+	/** Run a fixed pattern test.
+	 ** Run a test which sets the lags to a fixed pattern. The lags are
+	 ** then read out via the CAN bus. If any lag is not the expected value,
+	 ** then a bad correlator chip can be located.  The lag results are
+	 ** published on a notification channel.
+	 ** @param busIndex The CAN bus for the target.
+	 ** @param ticks16ms The number of 16-ms ticks to accumulate before bank switch
+	 ** @param lagPattern The lag pattern to use: Constant values, ramp up, 4 ramps
+	 ** @return true if test successful, false otherwise
+	 */ 
+	boolean runFixedLagPatternTest(in short busIndex,
+				       in eLagPattern lagPattern, 
+				       in short ticks16ms);
+	  
+	/** Run a spectral line test.
+	 ** This test uses the correlator cards to internally generate 2 sinusoids
+	 ** on top of pseudo-random noise. After an FFT, this creates a bandpass
+	 ** shape with a spectral line. The lag results are published on a
+	 ** notification channel.
+	 ** @param busIndex The CAN bus for the target.
+	 ** @param sineASpecChannel Number of spectral channels for sinusoid A
+	 ** @param sineAAmp Relative amplitude for sinusoid A 
+	 ** @param sineBSpecChannel Number of spectral channels for sinusoid B
+	 ** @param sineBAmp Relative amplitude for sinusoid B 
+	 ** @param ticks16ms The number of 16-ms ticks to accumulate before bank switch
+	 ** @return true if successful setup, false otherwise
+	 */
+	boolean runSpectralLineTest(in short busIndex,
+				    in octet sineASpecChannel,
+				    in octet sineAAmp,
+				    in octet sineBSpecChannel,
+				    in octet sineBAmp,
+				    in short ticks16ms);
+
+	/** Publish the lags from a test.
+	 ** Issuing this command causes the LTA to publish the resulting lags
+	 ** from either a runFixedLagPatternTest() or runSpectralLineTest().
+	 ** Specify the row-col intersection chip of the correlator card at
+	 ** specified plane relative to LTA. Lags are sent via notification channel.
+	 ** domain: 'ALMA' channel name: 'PCORR_CAN_LAGS'
+	 ** Lags are sent as a longSeq
+	 ** @param busIndex The CAN bus for the target.
+	 ** @param plane  Plane occupied by the correlator card (0 - 7)
+	 ** @param row    The row of correlator card (0 - 31)
+	 ** @param col    The column of correlator card (0 - 31)
+	 */
+	boolean publishLags(in short busIndex,
+			    in short plane,
+			    in short row,
+			    in short col);
+	/*@}*/
+
+	/** Reset a system. Use this to reset a subsystem: CCC, CDP, or 
+	 ** Correlator
+	 ** @param systemToReset The hardware system to reset.
+	 ** @exception InvalidSystem Raised if \e systemToDiagnose is out
+	 **   of range
+	 **/
+	void reset( in Correlator::eSystem systemToReset ) raises(InvalidSystem);
+    
+	/** Set the antenna numbers.
+	 ** Set the mapping of fixed antenna numbers to Correlator Antenna 
+	 ** Inputs (\e CAI ). This interface is used by the Control system when an
+	 ** antenna moves to a new pad. The antenna's baseband data cable must
+	 ** be patched to a new CAI. This mapping allows the CDP output to have
+	 ** the 'correct' antenna numbers.
+	 ** @param antennaMappings An array of antennaNumberMap_t which 
+	 **   maps antenna numbers to correlator antenna inputs.
+	 ** @exception InvalidAntennaMap Thrown if any problem with antenna
+	 **   mapping structure, i.e., invalid antenna numbers or CAIs.
+	 */
+	void setAntennaNumbers( in AntennaNumberMap::antennaNumberMapSeq antennaMappings )
+	    raises( AntennaNumberMap::InvalidAntennaMap );
+    }; // End of Diagnostic Interface
+
+    /** \enum Card types that may be in a correlator CAN bus */
+    enum eOutSlaveType
+    {
+	UNKNOWN_SLAVE_TYPE, //! Older firmware does not support slave types but we need to run with it at present (2002-10-03).
+	LTA,            //! Long term accumulator card
+	SCC,            //! Station control card
+	QCC,            //! Quadrant control card
+	FINAL_ADDER,    //! Final adder card
+	FPDP            //! Front panel data port card
+    };
+      
+    /** The serial number of a CAN node consists of 8 characters */
+    const short SERIAL_NUMBER = 8;
+    typedef sequence<octet, SERIAL_NUMBER> serialNumber_t;
+    /** \struct Correlator card ID that consists of their CAN addresses, quadrant,
+     ** types, and serial #.
+     */
+    struct corrCardID_t
+    {
+	octet address;
+	octet quadrant;
+	eOutSlaveType cardType;
+	serialNumber_t serialNumber;
+    };
+	    
+    /** \defgroup QuadratureConstants Constants used by the quadrature
+     ** tests.
+     */
+    /*@{*/  
+    const short ERROR_COUNTS = 8192;
+    const short LAGS_PER_MSG = 256;
+    const short CONTROL_BYTES = 64;
+    const short PHASE_BYTES = 64;
+    typedef sequence<unsigned long, ERROR_COUNTS> ctResults_t ;
+    typedef sequence<unsigned long, LAGS_PER_MSG> pCorrLags_t;
+    typedef sequence<corrCardID_t> corrCardIDs_t ;
+    typedef sequence<octet> streamIsAlive_t;
+    typedef sequence<octet> corrCards_t;
+    //typedef octet controlBytes_t[CONTROL_BYTES];
+    typedef sequence<octet, CONTROL_BYTES> controlBytes_t;
+    //typedef octet phaseBytes_t[PHASE_BYTES];
+    typedef sequence<octet, PHASE_BYTES> phaseBytes_t;
+    /*@}*/
+    /**
+     * This defines the channel name for use with all quadrature test NC
+     ** suppliers and consumers for the Maintenance component.
+     */
+    const string CHANNELNAME_QUADRATURE = "CABLE_TRAINING_RESULTS";
+    const string CHANNELNAME_CAN_LAGS = "PCORR_CAN_LAGS";
+
+    /** Run Correlator Quadrature Tests.
+     ** The \b Quadrature (cable training) interface allow for the measurement and
+     ** adjustment of cable lengths within the correlator. These cables
+     ** carry signals between cards in a bin and also between bins which
+     ** must be of equal length in time so that samples are correlated 
+     ** together. These tests measure the timing of samples between to 
+     ** points of a cable to ensure that the timing samples are synchronized
+     ** for all cables. These tests must be run while the correlator
+     ** is in \e off-line mode, i.e., non-operational.
+     ** \sa "CAN Protocol Plan: Correlator Control Computer <--> Long Term Accumulator"
+     ** CORL-60.02.03.00-001-A-PLA CCC-LTA-CanProtocol.doc Section 9.5 pp. 50 - 60
+     ** \sa "CAN Protocol Plan: Correlator Control Computer <--> Station Control Cards"
+     ** CORL-60.01.05.00-001-A-PLA CCC-SCC-CanProtocol.doc Section 8.2.3 pp. 25 - 26 
+     ** Section 6.2.1 pp. 12 - 13
+     */
+    interface Quadrature : ACS::CharacteristicComponent
+    {
+	exception invalidTestParam {};
+
+	/** Stop quadrature/cable training tests. Use this to stop the
+	 ** quadrature test.
+	 ** @return true if successfully issued stop quadrature test command
+	 ** to correlator
+	 */
+	boolean stopCtTest();
+	  
+	/** Is Quadrature test complete.
+	 ** Use this to Check progress of quadrature/cable training tests.
+	 ** @return true if quadrature tests have stopped
+	 */
+	boolean ctTestDone();
+	    
+	/** Configure and start a quadrature/cable training test. This function
+	 ** defines a quadrature test. Use it to start one and then call
+	 ** ctTestDone() to check on the progress of the test.
+	 ** @param numTests number of test iterations -- 0 is forever
+	 ** @param phaseSwapCycle determines if tests will cycle through all
+	 **   phases and swap states (true or false)
+	 ** @param phaseIn indicates which phase delay the station interface
+	 **   card will use at start of tests (0 - 0 degrees, 1 - 90 degrees,
+	 **   2 - 180 degrees, 3 - 270 degrees)
+	 ** @param swapState determines what swap state will be used by the
+	 **   correlator interface
+	 ** cards at the start of the tests
+	 ** @param errorMode Determines whether errors are accumulated through
+	 **   test iterations
+	 */
+	boolean setupCtTest(in short ltaAddr,
+			    in long numTests, 
+			    in boolean phaseSwapCycle, in octet phaseIn, 
+			    in Correlator::eInSwapState swapState, 
+			    in Correlator::eInErrorMode errorMode);
+//	      raises (invalidTestParam);
+	  
+	/** Download fractional phases.
+	 ** Download the phase delay bytes for all station interface cards
+	 ** controlled by the specified SCC.
+	 ** @param sccAddr CAN address of SCC
+	 ** @param phaseBytes array of bytes (64) to download to the specified SCC
+	 ** @return true if successfully downloaded
+	 */
+	boolean downloadFractionalPhases(in short sccAddr, 
+					 in phaseBytes_t phaseBytes);
+	  
+	/** Download swap control bytes.
+	 ** Download the swap control bytes for all correlator interface cards
+	 ** controlled by the specified LTA.
+	 ** @param ltaAddr CAN address of LTA
+	 ** @param controlBytes array of bytes (64) to download to the specified LTA
+	 ** @return true if successfully downloaded
+	 */
+	boolean downloadSwapControlBytes(in short ltaAddr, 
+					 in controlBytes_t controlBytes);
+	  
+	/** Publish quadrature test results. Request all quadrature test results.
+	 ** Error counts are sent via notification channel as a longSeq
+	 ** domain: 'ALMA' channel name: 'CABLE_TRAINING_RESULTS'
+	 ** @param streamIsAlive Used to return a sequence of octets
+	 **   specifying which streams are alive (0 - not alive, '@' - alive) 
+	 ** @param corrCards Used to return a sequence of octets specifying
+	 **   which correlator cards are present (0 - not present, 1 - present)
+	 ** @param corrIntCards Used to return a sequence of octets specifying
+	 **   which correlator interface cards are present (0 - not present, 
+	 **   1 - present) 
+	 ** @param numTests Returns number of tests ran since the last
+	 **   setup/start command was issued.
+	 ** @return true if successfully published error counts and returned
+	 **   all out parameters
+	 ** @todo Add parameters to determine which results to publish
+	 */
+	boolean publishCtTestResults( out streamIsAlive_t streamIsAlive,
+				      out corrCards_t corrCards,
+				      out corrCards_t corrIntCards,
+				      out long numTests);
+    }; // end of Quadrature interface
+
+
+    /** CorrCanMngr Interface.
+     ** The \b CorrCanMngr interface allows a program written in any language using Corba to directly and 
+     ** simply talk to the correlator hardware through the CAN bus.  This interface should only
+     ** be used in non-operational mode.
+     */
+    interface CorrCanMngr : CorrelatorPrivate::CorrStateModel
+    {
+	/** Get the number of CAN channels in CAN interface card.
+	 ** Return the number of CAN channels in system. 
+	 */
+	unsigned long  numberOfChannels();
+
+	/** Get the number of CAN channels with nodes present.
+	 ** Return the number of CAN channels with nodes present. 
+	 */
+	unsigned long  numberOfActiveChannels();
+
+	/** Get the number of nodes.
+	 ** Return the number of nodes in all CAN channels. 
+	 */
+	unsigned long  numberOfNodes();
+
+	/** Get the number of nodes connected to a specified CAN channel.
+	 ** Return the number of nodes in the specified CAN channel (0-based).
+	 ** @param channel Index of specified channel
+	 ** @return Number of channels
+	 */
+	unsigned long  numberOfNodesInChannel(in short channel);
+
+	/** Get list of node addresses connected to a specified channel.
+	 ** Return a list of node addresses in a specific channel. 
+	 ** @param channel Index of specified channel 
+	 ** @return Sequence of node addresses
+	 ** @todo Make it return additional info such as S/N, card type, CAN channel
+	 */
+	CorrCanNodeSeq getNodes(in short channel);
+
+	/** Return a list of current node addresses. 
+	 ** @return Sequence of node addresses
+	 ** @todo Make it return additional info such as S/N, card type, CAN channel
+	 */
+	CorrCanNodeSeq getAllNodes();
+	    
+	/** Broadcast a block of data to the specified nodes.
+	 ** Broadcast the data to the specified nodes. 
+	 ** This data is to be placed in the device's location specified by targetMemAddr.
+	 ** @param targetMemAddr Data destination address.
+	 ** @param channel Index of specified channel
+	 ** @param nodes Sequence of broadcast node addresses
+	 ** @param data Sequence of data to be sent.  
+	 */
+	void blockBroadcast(in long targetMemAddr, in short channel,
+			    in CorrCanNodeSeq nodes, in CorrCanData data);
+
+	/** Read a block of data.
+	 ** Read a block of data of numExpected size at the specified device's memory
+	 ** address.
+	 ** @param node Address of node to read from.
+	 ** @param channel Index of specified channel.
+	 ** @param memReadAddr  Address of source data.
+	 ** @param numExpected Number of bytes to be read.  
+	 ** @return Sequence of read data. 
+	 */
+	CorrCanData blockRead(in short node, in short channel,
+			      in unsigned long memReadAddr, in unsigned long numExpected);
+
+	/** Broadcast a block of data to the specified nodes.
+	 ** Broadcast the data to the specified nodes. 
+	 ** This data is to be placed in the device's location specified by targetMemAddr.
+	 ** @param targetMemAddr Data destination address.
+	 ** @param channel Index of specified channel
+	 ** @param nodes Sequence of broadcast node addresses
+	 ** @param data Sequence of data to be sent.  
+	 */
+	void dataBroadcast(in short channel, in CorrCanNodeSeq nodes, 
+			   in CorrCanData header, in CorrCanData data);
+
+	/** Read a block of data.
+	 ** Read a structured block of data as specified by the control message.
+	 ** @param node Address of node to read from.
+	 ** @param channel Index of specified channel.
+	 ** @param controlMsg  CAN message that will be sent to retrieve the block of data.
+	 ** @return Sequence of read data. 
+	 */
+	CorrCanData dataRead(in short node, in short channel, in CorrCanData controlMsg);
+
+	/** Read a non-compliant block of data.
+	 ** Read a structured block of data as specified by the control message.
+	 ** The size of the block is not part of the message.
+	 ** @param node Address of node to read from.
+	 ** @param channel Index of specified channel.
+	 ** @param controlMsg  CAN message that will be sent to retrieve the block of data.
+	 ** @return Sequence of read data. 
+	 */
+	CorrCanData specialDataRead(in short node, in short channel, in CorrCanData controlMsg, in short numExpected);
+
+	/** Read a block of floating point values.
+	 ** Read a structured block of floating point values as specified by the control message.
+	 ** @param node Address of node to read from.
+	 ** @param channel Index of specified channel.
+	 ** @param controlMsg CAN message that will be sent to retrieve the block of data.
+	 ** @return Sequence of read floating point values. 
+	 */
+	CorrCanFloatData floatDataRead(in short node, in short channel, in CorrCanData controlMsg);
+
+	/** Get a monitor.
+	 ** Get monitor data from specified node. 
+	 ** @param channel Index of specified channel.
+	 ** @param node Address of node to read from.
+	 ** @param RCA  Relative CAN address.
+	 ** @return Sequence of read data. 
+	 */
+	CorrCanData monitor(in short channel, in short node, in unsigned long RCA);
+
+	/** CAN command.
+	 ** Issue a CAN command to specified node. 
+	 ** @param channel Index of specified channel.
+	 ** @param node Address of node to command.
+	 ** @param RCA  Relative CAN address.
+	 ** @param data Sequence of bytes that constitute command.  
+	 */
+	void command(in short channel, in short node,
+		     in unsigned long RCA, in CorrCanData data);
+
+	/** CAN command.
+	 ** Issue a reset command to all QCCs in system. 
+	 ** @return Sequence of node addresses
+	 ** @todo Make it return additional info such as S/N, card type, CAN channel
+	 */
+	CorrCanNodeSeq resetCorrelator();
+
+	/** Determines how long to wait after a reset before system is fully up
+	 * @param resetWait Amount of time to wait after a reset before correlator cards are 
+	 * ready to repond to CAN commands
+	 */
+	void setResetWait(in long resetWait);
+
+	/** Set LO offset multipliers for antennas
+	 ** @param Sequence of LO offset multipliers to be applied
+	 */
+	void setLOOffsetMultipliers(in LOOffsetMultiplierSeq loOffsetMultipliers);
+
+	/** Disable/enable TFB phase applications
+	 */
+	void tfbPhases(in boolean enable);
+            
+	/** Gets the current TFB application status. 
+	 */
+	boolean getTFBPhasesStatus();
+
+    }; // End of CorrCanMngr interface
+};
+#endif

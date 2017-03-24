@@ -1,0 +1,46 @@
+#ifndef _QLDISPLAYMASTER_IDL_
+#define _QLDISPLAYMASTER_IDL_
+
+#include <mastercomp_if.idl>
+
+#pragma prefix "alma"
+
+module pipelineql {
+
+    /**
+     * This IDL file contains the Quicklook Display master component interface.
+     * This interface is part of the PIPELINE subsystem pipelineql module.
+     * <P>
+     * The Quicklook Display master component starts up and shuts down the
+     * Quicklook Display system and maintains knowledge of its internal state.
+     * It provides a standard interface for the Executive.
+     * <P>
+     * The Quickloook Display master component implements the ComponentLifecycle
+     * interface methods defined in ACS as part of the ACS component container
+     * model. The Quicklook Display master component inherits the ACS
+     * MasterComponent interface, which provides the doTransition method for
+     * transitioning from one master component state to another. The
+     * quicklook display system master component implements the
+     * AlmaSubsystemActions interface methods, defined in ACS as part of the
+     * master component state model. These methods implement the state
+     * transitions.
+     */
+
+    interface QlDisplayMaster : ACS::MasterComponent {
+
+        /**
+	 * Say hello to the quicklook display system master component !
+	 * This is just a sanity check.
+	 *
+	 * @param None
+	 * @return string A string which contains a greeting message.
+	 * @throws None
+	 */
+
+	string helloQlDisplayMaster();
+
+    };
+
+
+};
+#endif

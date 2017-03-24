@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- $Id: CorrConfigModeErr.xml,v 1.9 2011/12/27 20:13:26 ramestic Exp $ -->
+<Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="Alma/ACSError"
+      xsi:schemaLocation="Alma/ACSError ACSError.xsd"
+      name="CorrConfigModeErr"
+      type="27500"
+      _prefix="alma">
+  <ErrorCode name="ConstructorFailure" 
+             shortDescription="class constructor has failed to complete" 
+             description="for some reason the instantiation of an object has caught a non fixable error while being constructed. Look at the exception context information for specific information.">
+    <Member name="Reason"
+            type="string"
+            description="text description of the error"/>
+  </ErrorCode>
+  <ErrorCode name="InvalidResolution"
+             shortDescription="configuration parameters do not map to any valid mode"
+             description="a correlator mode is individualized by a set of fundamental parameters: spectral resolution, bits, overSampled, polarizationProducts, filterMode and mode fraction. The current set of values does not map to any valid mode.">
+    <Member name="ResolutionHz"
+            type="double"
+            description="spectral resolution in Hz per channel"/>
+    <Member name="Channels"
+            type="long"
+            description="number of nominal spectral channels"/>
+    <Member name="Bits"
+            type="string"
+            description="number of bits during correlation"/>
+    <Member name="OverSampled"
+            type="string"
+            description="at Nyquist or 2 times Nyquist"/>
+    <Member name="PolarizationProducts"
+            type="string"
+            description="polarization products at output"/>
+    <Member name="Fraction"
+            type="string"
+            description="fraction of an original correlator mode"/>
+  </ErrorCode>
+  <ErrorCode name="InvalidMode"
+             shortDescription="configuration parameters do not map to any valid mode"
+             description="a correlator mode is individualized by a set of fundamental parameters: bandwidthGHz, channels, bits, overSampled, polarizationProducts and filterMode. The current set of values does not map to any valid mode.">
+    <Member name="BandwidthMHz"
+            type="double"
+            description="nominal band-width in mega Hz"/>
+    <Member name="Channels"
+            type="long"
+            description="number of nominal spectral channels"/>
+    <Member name="Bits"
+            type="string"
+            description="number of bits during correlation"/>
+    <Member name="OverSampled"
+            type="string"
+            description="at Nyquist or 2 times Nyquist"/>
+    <Member name="PolarizationProducts"
+            type="string"
+            description="polarization products at output"/>
+    <Member name="FilterMode"
+            type="string"
+            description="type of data processing before correlation"/>
+  </ErrorCode>
+  <ErrorCode name="InvalidKey" 
+             shortDescription="given key is not present in modes table"
+             description="a given key value that does not address any mode in the current modes table. That is, there is not configuration mode associated with this key value.">
+    <Member name="Key"
+            type="long"
+            description="invalid key value"/>
+  </ErrorCode>
+  <ErrorCode name="ReadType" 
+             shortDescription="failed to read type from CDB"
+             description="error while reading correlator type from online CDB">
+    <Member name="Path"
+            type="string"
+            description="path to CDB branch"/>
+    <Member name="Field"
+            type="string"
+            description="CDB field name"/>
+  </ErrorCode>
+  <ErrorCode name="AccessFile" 
+             shortDescription="ascii modes file cannot be accessed"
+             description="correlator modes for different types are kept in an ascii file installed during ICD/CORR compilation. That file is then read at any given moment the CorrConfigMode class is instantiated. The idea of the file is to allow the CorrConfigMode to instantiate in a system not running ACS services. If the file is not there or read permission is not good then this exception is thrown">
+    <Member name="FileName"
+            type="string"
+            description="file name"/>
+  </ErrorCode>
+  <ErrorCode name="InvalidFormat" 
+             shortDescription="parsing of the configuration file failed"
+             description="at some stage of the file content parsing the algorithm found an unexpected content, or lack of it.">
+    <Member name="Reason"
+            type="string"
+            description="parse failure description"/>
+  </ErrorCode>
+  <ErrorCode name="InvalidType" 
+             shortDescription="unknow correlator type"
+             description="the correlator type received at instantiation time or retrieved from CDB is unknown. Given that the specific cosntructor is type safe for its parameter it is reasonable to think that the actual value retrieved from the CDB is invalid for the given types defined in the header file">
+    <Member name="TypeName"
+            type="string"
+            description="invalid type value"/>
+  </ErrorCode>
+  <ErrorCode name="EmptyTable" 
+             shortDescription="empty modes table"
+             description="for some reason the table is empty after building it"/>
+  <ErrorCode name="ModeInconsistency" 
+             shortDescription="mode attributes make not possible to compute"
+             description="helper methods takes a mode and compute some synthetic and extended attribute of a given mode based on those fundamental attributes defined in struct ConfigMode. This error code signals a problem for computing that extended attribute, probably the configuration ascii table is broken, or the operation is not valid for the given mode.">
+    <Member name="Key"
+            type="long"
+            description="key of troublesome mode"/>
+    <Member name="Detail"
+            type="string"
+            description="short explanation of specific problem"/>
+  </ErrorCode>
+  <ErrorCode name="InvalidFc" 
+             shortDescription="frequency center not an integer multiple of DDS step"
+             description="for any given TFB mode the center frequencies of all involved sub-bands are configured at hardware level by means of a Direct Digital Synthesizer. The resolution step of this devices is 2000MHz/(2^16), that is, 30.517578125 kHz. In order to properly allocate the sub-bands around the central frequency of a spectral window is mandatory that this center frequency is an integer multiple of the step mentioned before.">
+    <Member name="Fc"
+            type="double"
+            description="invalid frequency center in MHz"/>
+  </ErrorCode>
+  <ErrorCode name="FcOutOfRange"
+             shortDescription="frequency center makes the effective bandwidth to clip"
+             description="for any given TFB the frequency center of a spectral is adjustable within the full 2GHz bandwidth. However, its actuall value must avoid clipping the effective bandwidth of the mode below zero and beyond 2GHz.">
+    <Member name="Key"
+            type="long"
+            description="key of troublesome mode"/>
+    <Member name="Fc"
+            type="double"
+            description="invalid frequency center in MHz"/>
+    <Member name="EffectiveBandwidth"
+            type="double"
+            description="invalid frequency center in MHz"/>
+  </ErrorCode>
+  <ErrorCode name="InvalidStokesParameter"
+             shortDescription="the Stokes squence makes no sense"
+             description="an invalid sequence can be tracked to one of many mistakes: repeated items, out of range items (XX, YY, XY or YX), incorrect length (1, 2, or 4)">
+    <Member name="Length"
+            type="long"
+            description="length of the invalid sequence"/>
+    <Member name="Detail"
+            type="string"
+            description="verbose explanation of the problem"/>
+  </ErrorCode>
+</Type>
+

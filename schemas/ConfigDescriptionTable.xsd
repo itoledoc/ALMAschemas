@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,20 +30,35 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File ConfigDescriptionTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cnfdsc="http://Alma/XASDM/ConfigDescriptionTable" xmlns:ent="Alma/CommonEntity" xmlns:procrt="http://Alma/XENUM/ProcessorTypeMod" xmlns:crlmod="http://Alma/XENUM/CorrelationModeMod" xmlns:sprslt="http://Alma/XENUM/SpectralResolutionTypeMod" xmlns:atmphc="http://Alma/XENUM/AtmPhaseCorrectionMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/ConfigDescriptionTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:cnfdsc="http://Alma/XASDM/ConfigDescriptionTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:atmphc="http://Alma/XENUM/AtmPhaseCorrectionMod"
+	xmlns:procrt="http://Alma/XENUM/ProcessorTypeMod"
+	xmlns:crlmod="http://Alma/XENUM/CorrelationModeMod"
+	xmlns:sprslt="http://Alma/XENUM/SpectralResolutionTypeMod"
+					   targetNamespace="http://Alma/XASDM/ConfigDescriptionTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
+		<!-- We need the schema of AtmPhaseCorrection -->
+		<xs:import namespace="http://Alma/XENUM/AtmPhaseCorrectionMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/AtmPhaseCorrection.xsd"/>
 		<!-- We need the schema of ProcessorType -->
-		<xs:import namespace="http://Alma/XENUM/ProcessorTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/ProcessorType.xsd" />
+		<xs:import namespace="http://Alma/XENUM/ProcessorTypeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/ProcessorType.xsd"/>
 		<!-- We need the schema of CorrelationMode -->
-		<xs:import namespace="http://Alma/XENUM/CorrelationModeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/CorrelationMode.xsd" />
-		<!-- No specific import for String -->
+		<xs:import namespace="http://Alma/XENUM/CorrelationModeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/CorrelationMode.xsd"/>
 		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
 		<!-- No specific import for int -->
 		<!-- We need the schema of SpectralResolutionType -->
-		<xs:import namespace="http://Alma/XENUM/SpectralResolutionTypeMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/SpectralResolutionType.xsd" />
-		<!-- We need the schema of AtmPhaseCorrection -->
-		<xs:import namespace="http://Alma/XENUM/AtmPhaseCorrectionMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/AtmPhaseCorrection.xsd" />
+		<xs:import namespace="http://Alma/XENUM/SpectralResolutionTypeMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/SpectralResolutionType.xsd"/>
 	
 	
 	
@@ -55,33 +70,87 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="numAntenna" type="xs:string" />
-         <xs:element name="numDataDescription" type="xs:string" />
-         <xs:element name="numFeed" type="xs:string" />
-         <xs:element name="correlationMode" type="crlmod:CorrelationMode" />
-         <xs:element name="configDescriptionId" type="xs:string" />
-         <xs:element name="numAtmPhaseCorrection" type="xs:string" />
-         <xs:element name="atmPhaseCorrection" type="xs:string" />
-         <xs:element name="processorType" type="procrt:ProcessorType" />
-     	 <xs:element name="phasedArrayList" type="xs:string" minOccurs="0" />
-         <xs:element name="spectralType" type="sprslt:SpectralResolutionType" />
-     	 <xs:element name="numAssocValues" type="xs:string" minOccurs="0" />
-     	 <xs:element name="assocNature" type="xs:string" minOccurs="0" />
-         <xs:element name="antennaId" type="xs:string" />
-     	 <xs:element name="assocConfigDescriptionId" type="xs:string" minOccurs="0" />
-         <xs:element name="dataDescriptionId" type="xs:string" />
-         <xs:element name="feedId" type="xs:string" />
-         <xs:element name="processorId" type="xs:string" />
-         <xs:element name="switchCycleId" type="xs:string" />
+         <xs:element name="numAntenna" type=
+"xs:string"
+
+/>
+         <xs:element name="numDataDescription" type=
+"xs:string"
+
+/>
+         <xs:element name="numFeed" type=
+"xs:string"
+
+/>
+         <xs:element name="correlationMode" type=
+"crlmod:CorrelationMode"
+
+/>
+         <xs:element name="configDescriptionId" type=
+"xs:string"
+
+/>
+         <xs:element name="numAtmPhaseCorrection" type=
+"xs:string"
+
+/>
+         <xs:element name="atmPhaseCorrection" type=
+"xs:string"
+
+/>
+         <xs:element name="processorType" type=
+"procrt:ProcessorType"
+
+/>
+     	 <xs:element name="phasedArrayList" type=
+"xs:string"
+
+  minOccurs="0"/>
+         <xs:element name="spectralType" type=
+"sprslt:SpectralResolutionType"
+
+/>
+     	 <xs:element name="numAssocValues" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="assocNature" type=
+"xs:string"
+
+  minOccurs="0"/>
+         <xs:element name="antennaId" type=
+"xs:string"
+
+/>
+     	 <xs:element name="assocConfigDescriptionId" type=
+"xs:string"
+
+  minOccurs="0"/>
+         <xs:element name="dataDescriptionId" type=
+"xs:string"
+
+/>
+         <xs:element name="feedId" type=
+"xs:string"
+
+/>
+         <xs:element name="processorId" type=
+"xs:string"
+
+/>
+         <xs:element name="switchCycleId" type=
+"xs:string"
+
+/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

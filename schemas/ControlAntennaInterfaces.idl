@@ -1,0 +1,210 @@
+// @(#) $Id: ControlAntennaInterfaces.idl 211881 2014-12-02 19:58:44Z rmarson $
+//
+// ALMA - Atacama Large Millimeter Array
+// (c) Associated Universities Inc., 2007 - 2009, 2013 - 2014
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+
+#ifndef _CONTROLANTENNAINTERFACES_IDL_
+#define _CONTROLANTENNAINTERFACES_IDL_
+
+#include <ControlBasicInterfaces.idl> // for BadResourceSeq
+#include <asdmIDLTypes.idl>
+#include <ControlExceptions.idl>
+#include <acscommon.idl> // For ACS::Time
+
+#pragma prefix "alma"
+
+/**
+ * This IDL module contains the public IDL interfaces implemented
+ * by the Control system which refer to Antennas.  These external 
+ * interfaces are used by ALMA subsystems outside of Control and 
+ *are defined in the CVS IDL/CONTROL module.
+ * <p>
+ * 
+ */
+module Control {
+  
+  //////////////
+  // Typedefs //
+  //////////////
+  typedef string AntennaId;
+  typedef sequence < AntennaId > AntennaSeq;
+  typedef sequence < long, 4 > DataValidBitMask;
+  //////////////////
+  // Enumerations //
+  //////////////////
+  /**
+   * An Enumeration of the states of the Antenna
+   */
+  enum AntennaState {
+    AntennaInaccessable,
+    AntennaOperational,
+    AntennaShutdown,
+    AntennaDegraded
+  };
+
+  /**
+   * An Enumeration of the substates of the Antenna
+   */
+  enum AntennaSubstate {
+    AntennaError,
+    AntennaNoError
+  };
+
+  /**
+   * An enumeration of the possible modes on an antenna.
+   */
+  enum AntennaMode {
+    ANTENNA_ONLINE,
+    ANTENNA_OFFLINE 
+  };  
+
+  ////////////////////////////////
+  //    Events and Structures   //
+  ////////////////////////////////
+  struct AntennaStateEvent {
+    /**
+     * The name of the antenna that had a state change
+     */
+    AntennaId antennaName;
+    
+    /**
+     * The time at which this change took place.
+     */
+    ACS::Time eventTime;
+    
+    /**
+     * The new state of the antenna
+     */
+    AntennaState newState;
+    
+    /**
+     * The new substate of the antenna
+     */
+    AntennaSubstate newSubstate;
+  };
+  typedef sequence<AntennaStateEvent> AntennaStateEventSeq;
+
+  /**
+   * The DataVaidBitMask asserts the correct functioning of all
+   * componenet necessary for the baseband data to be good.
+   * Each of the 4 entries corresponds to a baseband pair.
+   * Within a single baseband pair value each bit represents one of the
+   * 21 TE intervals w/ the lower significant bit being TE[0] to bit
+   * 20 being TE[20]:
+   *<pre>
+   * TE Interval:  TE[20]|TE[19]| ... |TE[2]|TE[1]|TE[0]|
+   * Bit Value:       1  |   0  | ... |  0  |  1  |  1  | blanking here
+   * Bit position:   20     19           2     1     0
+   *</pre>
+   */  
+  struct AntennaBlankingEvent
+  {
+    /**
+     * Time stamp of the begining of the event interval.
+     */
+    ACS::Time timeStamp;
+    /**
+     * Antenna ID as a string, e.g., 'ALMA001'.
+     */
+    AntennaId antennaName;
+    /**
+     * The bitmask for each TE interval LSB is the 1-st TE.
+     */
+    DataValidBitMask teOffsetBitMask;
+  };
+
+  ////////////////////////////
+  ///      Interfaces      ///
+  ////////////////////////////
+
+  /**
+   * The AntennaCharacteristics structure is used by Control in sending 
+   * data about the antennas in an array to Data Capture at the beginning
+   * of a scheduling block execution.
+   */
+  struct AntennaCharacteristics {
+    string antennaName;
+    asdmIDLTypes::IDLLength dishDiameter;
+    asdmIDLTypes::IDLLength xPosition;
+    asdmIDLTypes::IDLLength yPosition;
+    asdmIDLTypes::IDLLength zPosition;
+    asdmIDLTypes::IDLLength xOffset;
+    asdmIDLTypes::IDLLength yOffset;
+    asdmIDLTypes::IDLLength zOffset;
+    ACS::Time               dateOfCommission;
+    string                  padId;
+    asdmIDLTypes::IDLLength padxPosition;
+    asdmIDLTypes::IDLLength padyPosition;
+    asdmIDLTypes::IDLLength padzPosition;
+    double                  cableDelay;
+  };
+
+  typedef sequence < AntennaCharacteristics > AntennaCharacteristicsSeq;
+
+  /**
+   * The antenna monitor interface can be used to get information about the 
+   * current state of a particular antenna.
+   * None of these methods modify the array.
+   */
+  interface AntennaMonitor {
+    /**
+     * Return the name of this antenna.
+     */
+    string getName()
+      raises(ControlExceptions::INACTErrorEx);	
+    
+    /** 
+     * Return the structure with the current state of the antenna
+     */
+    AntennaStateEvent getAntennaState();
+    
+    /**
+     * Return the list of resources of this antenna that are in an
+     * error state.
+     * An empty list is returned if there are no resources in error.
+     */
+    BadResourceSeq getBadResources()
+      raises(ControlExceptions::INACTErrorEx);
+    
+    /**
+     * Return true if and only if this antenna is currently allocated
+     * to an array.
+     */
+    boolean isAssigned();
+  };
+
+  /// This structure is sent, on the CONTROL_REALTIME notification channel, by
+  /// the water vapour radiometers in each antenna. Its picked up by the
+  /// correlator software (baseline or ACA) and used, in conjunction with
+  /// coefficients calculated by the telescope calibration subsystem, to adjust
+  /// the phase on each sub-integration. The correlator software also puts this
+  /// data into the ASDM.
+  struct WVRData {
+    string antennaName; /// The name of the antenna e.g., "DV23".
+    ACS::TimeInterval interval; /// The WVR integration interval. This is
+                                /// always a multiple of 0.192 seconds.
+    ACS::Time timestamp; /// The time at the midpoint of the interval
+    boolean valid; /// True if the WVR data believed to be OK
+    double temp0; /// Temperature, in deg. K, from channel 0
+    double temp1; /// Temperature, in deg. K, from channel 1
+    double temp2; /// Temperature, in deg. K, from channel 2
+    double temp3; /// Temperature, in deg. K. from channel 3
+  };
+
+}; // End of module Control
+
+#endif

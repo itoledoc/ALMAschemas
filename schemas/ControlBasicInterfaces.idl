@@ -1,0 +1,223 @@
+// @(#) $Id: ControlBasicInterfaces.idl 234047 2016-07-25 19:47:11Z rmarson $
+//
+// ALMA - Atacama Large Millimeter Array
+// (c) Associated Universities Inc., 2007, 2009 - 2011, 2013 - 2014, 2016
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+
+#ifndef _CONTROLBASICINTERFACES_IDL_
+#define _CONTROLBASICINTERFACES_IDL_
+
+#pragma prefix "alma"
+
+/**
+ * This IDL Module Contains some basic definitions which are used
+ * throughout the CONTROL System and it's interfaces.
+ * <p>
+ * 
+ */
+module Control {
+  //////////////////////////
+  // Notification Channel //
+  //////////////////////////
+  
+  /**
+   * The name of the external event notification channel created
+   * by Control that is used to publish events of interest to 
+   * subsytems outside of Control.
+   */
+  const string CHANNELNAME_CONTROLSYSTEM = "CONTROL_SYSTEM";
+	
+  /**
+   * The name of the internal event notification channel created
+   * by Control that is used internally in Control and the Correlator
+   * for high-speed, real-time traffic.
+   */
+  const string CHANNELNAME_CONTROLREALTIME = "CONTROL_REALTIME";
+	
+
+  /**
+   * The key in user level exception properties to look for
+   * in order to find a user friendly error message. 
+   */
+  const string EX_USER_ERROR_MSG = "UserErrorMessage";
+
+  //////////////////
+  // Enumerations //
+  //////////////////
+  
+  /**
+   * An enumeration of the possible reasons a request is invalid.
+   */
+  enum InvalidReason {
+    NotOperational,
+    BadArrayId,
+    BadAntennaId,
+    NotIdle,
+    CannotAccess
+  };
+
+  /**
+   * An enumeration of the possible states of the Control System.
+   */
+  enum SystemState { 
+    INACCESSIBLE, 
+    OPERATIONAL 
+  };
+	
+  /**
+   * An enumeration of the possible substates of the Control System.
+   */
+  enum SystemSubstate { 
+    STARTING_UP_PASS1, 
+    STARTED_UP_PASS1, 
+    STARTING_UP_PASS2,
+    WAITING, 
+    SHUTTING_DOWN_PASS1, 
+    SHUT_DOWN_PASS1, 
+    SHUTTING_DOWN_PASS2,
+    STOPPED,
+    NOERROR, 
+    ERROR 
+  };
+
+  //////////////
+  // Typedefs //
+  //////////////
+  typedef sequence < string > BadResourceSeq;
+  typedef sequence < string > ResourceNameSeq;
+
+  ////////////////
+  // Exceptions //
+  ////////////////
+  
+  /**
+   * The invalid request exception is thrown if the request is not
+   * valid: if the requested object is not properly named or if
+   * it is not currently idle.
+   */
+  exception InvalidRequest {
+    /**
+     * The name of the object that is in error.
+     */
+    string name;
+    /**
+     * The reason this request is not valid.
+     */
+    InvalidReason reason;
+    /**
+     * A detailed message stating the cause of the error.
+     */
+    string msg;
+  };
+  
+  /**
+   * The inaccessible exception is thrown if the request is not
+   * valid because the requested object is in the INACCESSIBLE
+   * state.
+   */
+  exception InaccessibleException {
+    /**
+     * The name of the object that is in the inaccessible state.
+     */
+    string name;
+    /**
+     * The substate this object is in.
+     */
+    SystemSubstate why;
+    /**
+     * A detailed message stating the cause of the error.
+     */
+    string msg;
+  };  
+  
+  /* *****************************
+   *      Structures and Events
+   * *****************************/
+    
+  /**
+   * ResourceId is a structure that provides the name of a resource (Id)
+   * as well as the software component that manages it.
+   */
+  struct ResourceId {
+    /**
+     * The name of the resource.
+     */
+    string ResourceName;
+    /**
+     * The name of the software component that manages the resource.
+     */
+    string ComponentName;
+  };
+  typedef sequence < ResourceId > ResourceSeq;
+
+  /**
+   * New Bulk Data Streaming Information structure.
+   */
+  struct BDStreamInfo {
+    string stream;
+    string fullResolutionFlow;
+    string channelAverageFlow;
+    string wvrFlow;
+    string totalPowerFlow;
+  };
+
+  /////////////////////////
+  // These are temporary till they get moved
+  /////////////////////////
+   /**
+   * An enumeration of the possible purposes of a scan.
+   */
+  enum ScanPurpose {
+    TARGET,     
+    CALIBRATION,	
+
+    // Calibration SubIntents
+    FOCUS, 
+    HOLOGRAPHY, 
+    POINTING, 
+    ATMOSPHERE, 
+    POINTINGMODEL, 
+    PHASECAL, 
+    AMPLICAL, 
+    DELAY, 
+    ANTENNAPOSITIONS,
+    PHASECURVE, 
+    AMPLICURVE, 
+    SKYDIP,
+    POLARIZATION,
+    BANDPASS,
+
+    // Special Keywords
+    LAST,        // End of a sequency (i.e. final optical pointing target)
+    OFFLINEPROCESSING      // Telcal ignores this scan
+  };
+  
+  typedef sequence < ScanPurpose > ScanPurposeSeq;
+  
+  /**
+   * An enumeration of possible purposes associated at the SubScan Level
+   */
+  enum SubScanPurpose {
+    HOLOGRAPHYRASTER,
+    HOLOGRAPHYPHASECAL,
+    UNSPECIFIED
+  };
+
+ 
+
+}; // End of module Control
+
+#endif

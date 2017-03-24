@@ -1,0 +1,79 @@
+/*
+ * Alma - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * File ControlInterfaces.midl
+ * 
+ * Version: after merge of SharedSimulator-2006-02-B to CVS head.
+ *
+ */
+
+#ifndef _CONTROLTIMESOURCEINTERFACES_IDL_
+#define _CONTROLTIMESOURCEINTERFACES_IDL_
+
+#include <baci.idl>
+#include <acscomponent.idl>
+#include <ControlExceptions.idl>
+
+#pragma prefix "alma"
+
+/**
+ * This IDL module contains the public IDL interfaces TimeSource 
+ * implemented by the Control system.  These external interfaces 
+ * are used by ALMA subsystems outside of Control and are defined 
+ * in the CVS IDL/CONTROL module.
+ * <p>
+ * 
+ */
+module Control {
+  /**
+   * The time source interface provides time synchronization service on 
+   *all real-time
+   * computers in the ALMA Control Subsystem.  This interface only exists
+   * on systems directly connected to a hardware timing source, such as the
+   * GPS or maser systems.  In order to make use of this interface, a client
+   * must be connected to the 48ms timing pulse distributed throughout the
+   * array.  The primary purpose of this interface is to identify the
+   * absolute time associated with each timing pulse.
+   * <p>
+   * Non real-time computers will obtain time synchronization from the NTP
+   * server, which will alsobe attached to the hardware timing standards.
+   */
+  interface TimeSource : ACS::ACSComponent {
+    
+    /**
+     * This function responds to the caller with the correct array time value
+     * valid at the next timing tick.  Clients should verify that this method
+     * returns within 48ms.  If this is not the case, then there will be an
+     * ambiguity about which tick is referenced by the method.
+     * <p>
+     * Once a real-time computer has established a time reference with this
+     * method, it can maintiin its timing accuracy by incrementing its own
+     * time reference by 48ms at each timing pulse.
+     */
+    ACS::Time timeAtNextTE()
+        raises(ControlExceptions::MasterClockErrorEx);
+    
+  };
+}; // End of module Control
+
+#endif

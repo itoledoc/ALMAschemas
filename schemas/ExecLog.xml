@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<LogDefinitionType 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="Alma/ACSLogTS"
+  name="ExecLog" 
+  type="75000"
+  shortDescription="Executive Logs" 
+  description="Executive logs intended for specific audiences"
+  URL="http://almasw.hq.eso.org/almasw/bin/view/EXEC/WebHome"
+  _prefix="alma">
+
+<LogDefinition logName="OperatorLoginLog" 
+  shortDescription="Operator has logged in"
+  description="An operator has logged in and started the OMC" 
+  priority="INFO"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+  <Member name="role" type="string" description="Role of operator"/>
+</LogDefinition>
+
+<LogDefinition logName="OperatorLogoutLog" 
+  shortDescription="Operator has logged out"
+  description="An operator has logged out of OMC" 
+  priority="INFO"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+</LogDefinition>
+
+<LogDefinition logName="StateActionLog" 
+  shortDescription="Operator has requested change of system state"
+  description="Operator has pressed a button requesting a system to change its state"  
+  priority="INFO"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+  <Member name="system" type="string" description="System"/>
+  <Member name="state" type="string" description="Requested state"/>
+</LogDefinition>
+
+<LogDefinition logName="EmergencyStopLog" 
+  shortDescription="Operator pressed Emergency Button"
+  description="The emergency Button was pressed by operator" 
+  priority="INFO"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+</LogDefinition>
+
+<LogDefinition logName="StopSBLog" 
+  shortDescription="Operator requested to stop an SB"
+  description="Operator has stopped SB through dataflow panel" 
+  priority="INFO"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+  <Member name="schedblock" type="string" description="Id of schedblock"/>
+</LogDefinition>
+
+<LogDefinition logName="CreateArrayTabLog" 
+  shortDescription="New Array-tab was created"
+  description="An Array-tab was created in the OMC" 
+  priority="INFO"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+  <Member name="array" type="string" description="Name of array"/>
+</LogDefinition>
+
+<LogDefinition logName="CreatePanelLog" 
+  shortDescription="New panel was created"
+  description="A new panel was created in the OMC" 
+  priority="INFO"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+  <Member name="panel" type="string" description="Name of panel"/>
+</LogDefinition>
+
+<LogDefinition logName="DeleteArrayTabLog" 
+  shortDescription="Array-tab was removed"
+  description="An Array-tab was deleted from the OMC" 
+  priority="INFO"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+  <Member name="array" type="string" description="Name of array"/>
+</LogDefinition>
+
+<LogDefinition logName="DeletePanelLog" 
+  shortDescription="Panel was removed"
+  description="A panel was deleted from hte OMC" 
+  priority="INFO"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+  <Member name="panel" type="string" description="Name of panel"/>
+</LogDefinition>
+
+<LogDefinition logName="DeviceStateLog" 
+  shortDescription="SNMP device changed state"
+  description="SNMP monitoring of devices reported a state change" 
+  priority="INFO"  audience="Operator">
+  <Member name="device" type="string" description="Name of device"/>
+  <Member name="state" type="string" description="New state"/>
+  <Member name="info" type="string" description="Additional information on state change"/>
+</LogDefinition>
+
+<LogDefinition logName="PowerSwitchLog" 
+  shortDescription="Operator requested change of powerswitch port"
+  description="A state change of a powerswitch port was requested" 
+  priority="NOTICE"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+  <Member name="powerswitch" type="string" description="Name of powerswitch"/>
+  <Member name="port" type="long" description="Port on powerswitch"/>
+  <Member name="state" type="string" description="New state of port"/>
+</LogDefinition>
+
+<LogDefinition logName="ScriptExecutionLog" 
+  shortDescription="Operator requested a remote script to be executed"
+  description="Operator has requested to execute a remove script through SNMP" 
+  priority="INFO"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+  <Member name="device" type="string" description="Name of device"/>
+  <Member name="script" type="string" description="Name of script"/>
+</LogDefinition>
+
+<LogDefinition logName="ScriptReturnLog" 
+  shortDescription="Remote script has terminated"
+  description="A remove script has rterminated" 
+  priority="INFO"  audience="Operator">
+  <Member name="device" type="string" description="Name of device"/>
+  <Member name="script" type="string" description="Name of script"/>
+  <Member name="code" type="long" description="Return code of script"/>
+  <Member name="output" type="string" description="First line of output"/>
+</LogDefinition>
+
+<LogDefinition logName="SnmpTrapLog" 
+  shortDescription="SNMP trap received"
+  description="An SNMP trap was received from a device" 
+  priority="NOTICE"  audience="Operator">
+  <Member name="device" type="string" description="Name of device"/>
+  <Member name="trap" type="long" description="Trap no."/>
+</LogDefinition>
+
+<LogDefinition logName="RebootAcknowledge" 
+  shortDescription="Operator acknowledgement of device reboot"
+  description="Operator has acknowledge that a device has rebooted" 
+  priority="INFO"  audience="Operator">
+  <Member name="device" type="string" description="Name of device"/>
+</LogDefinition>
+
+<LogDefinition logName="NoPrivilegeLog" 
+  shortDescription="Operator has no privilege for action"
+  description="Operator attempted to perform restricted action" 
+  priority="NOTICE"  audience="Operator">
+  <Member name="operator" type="string" description="UserId of operator"/>
+  <Member name="action" type="string" description="Attempted action"/>
+</LogDefinition>
+
+<LogDefinition logName="DeviceErrorLog" 
+  shortDescription="Error state for device reported by SNMP"
+  description="SNMP reports an error on device" 
+  priority="WARNING"  audience="Operator">
+  <Member name="device" type="string" description="Name of device"/>
+  <Member name="state" type="string" description="New state"/>
+  <Member name="info" type="string" description="Additional information on state change"/>
+</LogDefinition>
+
+<LogDefinition logName="DeviceAccessError" 
+  shortDescription="SNMP cannot access device"
+  description="A device cannot be accessed though SNMP" 
+  priority="WARNING"  audience="Operator">
+  <Member name="device" type="string" description="Name of device"/>
+</LogDefinition>
+
+<LogDefinition logName="ScriptTimeoutError" 
+  shortDescription="Timeout for remote SNMP script"
+  description="A remote script being initiated through SNMP has timeout" 
+  priority="WARNING"  audience="Operator">
+  <Member name="device" type="string" description="Name of device"/>
+  <Member name="script" type="string" description="Name of script"/>
+</LogDefinition>
+
+<LogDefinition logName="LdapAccessLog" 
+  shortDescription="LDAP cannot be accessed"
+  description="LDAP cannot be accessed" 
+  priority="WARNING"  audience="Operator">
+</LogDefinition>
+
+<LogDefinition logName="AcsAccessLog" 
+  shortDescription="ACS manager cannot be accessed"
+  description="ACS manager cannot be accessed" 
+  priority="WARNING"  audience="Operator">
+</LogDefinition>
+
+<LogDefinition logName="TmcdbAccessLog" 
+  shortDescription="TMCDB cannot be accessed"
+  description="TMCDB cannot be accessed" 
+  priority="WARNING"  audience="Operator">
+</LogDefinition>
+
+<LogDefinition logName="SnmpTrapBindingLog" 
+  shortDescription="SNMP trap listener cannot bind to IP port"
+  description="Listener for SNMP trap cannot bind to port" 
+  priority="WARNING"  audience="Operator">
+</LogDefinition>
+
+</LogDefinitionType>
+<!--___oOo___-->

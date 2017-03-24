@@ -1,0 +1,858 @@
+/*
+ *    ALMA - Atacama Large Millimiter Array
+ *    (c) European Southern Observatory, 2004
+ *    Copyright by ESO (in the framework of the ALMA collaboration),
+ *    All rights reserved
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation; either
+ *    version 2.1 of the License, or (at your option) any later version.
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    Lesser General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Lesser General Public
+ *    License along with this library; if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ *    MA 02111-1307  USA
+ */
+
+#ifndef _DATACAPTURER_IDL_
+#define _DATACAPTURER_IDL_
+
+#include <acscommon.idl>
+#include <asdmIDL.idl>
+#include <asdmIDLTypes.idl>
+#include <DataCaptureExceptions.idl>
+#include <ControlBasicInterfaces.idl>
+#include <ControlDataInterfaces.idl>
+#include <DataCaptureInterfaces.idl>
+#include <almaEnumerations_IF.idl>
+#include <TMCDBComponent.idl>
+#include <archive_xmlstore_if.idl>
+
+#include <xmlentity.idl>
+#pragma prefix "alma"
+
+module Control
+{
+
+  /* Some basic definitions: */
+  typedef long   ScanNum;
+  typedef long   SubScanNum;
+  typedef ACS::Time DCCTime;
+  typedef string BulkDataDistributorId;
+
+  struct DataCapturerId{
+    string name;
+    ArrayId array;
+    asdmIDLTypes::IDLEntityRef session;
+    asdmIDLTypes::IDLEntityRef schedBlock;
+    Control::BDStreamInfo totalPowerArrayStream;
+    Control::BDStreamInfo correlatorArrayStream;
+  };
+
+
+/*************************************
+ *            Events
+ *************************************/
+  /* Stuff to define the necessary Event on the Event channel */
+
+  /* we use from now on the notification channel from control */
+  /* CHANNELNAME_CONTROLSYSTEM = "CONTROL_SYSTEM";*/
+  /* const string CHANNELNAME_DATACAPTURER="datacapturerNC";*/
+
+  struct DataCapturerStartedEvent{
+    DataCapturerId workingDCId;
+    string status; 
+    DCCTime finishedAt;
+  };
+
+  struct ExecBlockProcessedEvent{
+    DataCapturerId workingDCId;
+    string status; 
+    asdmIDLTypes::IDLEntityRef processedExecBlockId;
+    DCCTime finishedAt;
+  };
+
+  struct ScanProcessedEvent{
+    DataCapturerId workingDCId;
+    string status;
+    asdmIDLTypes::IDLEntityRef processedExecBlockId;
+    ScanNum processedScanNum;
+    DCCTime finishedAt;
+  };
+
+/* This result distributes the type of calibration as 
+   an enumerated property for QL*/ 
+  struct ScanReducedEvent{
+    DataCapturerId workingDCId;
+    string status;
+    CalTypeMod::CalType calibResultType;
+    CalCurveTypeMod::CalCurveType calibCurveType;
+    asdmIDLTypes::IDLEntityRef reducedExecBlockId;
+    ScanNum reducedScanNum;
+    DCCTime finishedAt;
+  };
+
+  struct SubScanSequenceEndedEvent{
+    /* DataCapturer ID structure */
+    DataCapturerId workingDCId;
+
+    /* The status of the sequence. This is currently always "finished" */
+    string status;
+
+    /* ExecBlock/ASDM UID */
+    asdmIDLTypes::IDLEntityRef processedExecBlockId;
+
+    /* Scan number */
+    ScanNum scanNumber;
+  
+    /* ACS time when the event was issued */
+    DCCTime finishedAt;
+
+    /* Array of successful subscans in the current sequence.
+     * Note that the subscans are numbered with respect to the scan,
+     * not the sequence.
+    */
+    ACS::longSeq successfulSubscans;
+  };
+    
+  struct SubScanProcessedEvent{
+    /* DataCapturer ID structure */
+    DataCapturerId workingDCId;
+
+    /* The status of the subscan. This is currently always "finished" */
+    string status;
+
+    /* ExecBlock/ASDM UID */
+    asdmIDLTypes::IDLEntityRef processedExecBlockId;
+
+    /* Scan number */
+    ScanNum processedScanNum;
+
+    /* Subscan number */
+    SubScanNum processedSubScanNum;
+
+    /* ACS time when the event was issued */
+    DCCTime finishedAt;
+
+    /* Start time of the subscan, as defined by Control */
+    DCCTime subscanStartTime;
+
+    /* End time of the subscan, as defined by Control */
+    DCCTime subscanEndTime;
+    
+    /* True if this subscan is for a "representative science subscan"
+     * That is, 
+     * FieldSource = Representative Target field source
+     * SpectralSpec = Representative Target instrument spec
+     * ScanIntent = OBSERVE_TARGET
+     * SubscanIntent = ON_SOURCE 
+     *
+     * To get the true Representative Target we would need
+     * to compare the FieldSource partID, SpectralSpec partID and
+     * the ObservingParameters partID of the current subscan with those
+     * of the Representative Target, as given by the APDM. 
+     * However, the ObservingParameters of the current observation
+     * are used by the SSR but not passed on to Control or DataCapturer.
+     * 
+     * Therefore the assumption is made that the ObservingParameters of
+     * the Representative Target will be ScienceParameters, which will
+     * translate to a ScanIntent of OBSERVE_TARGET and 
+     * a SubscanIntent of ON_SOURCE. 
+    */
+    boolean representativeScienceSubScan;
+  };
+
+  /* The following event is not currently used */
+  struct SubScanDataReadyEvent{
+    DataCapturerId workingDCId;
+    string status; 
+    asdmIDLTypes::IDLEntityRef receivedExecBlockId;
+    ScanNum receivedScanNum;
+    SubScanNum receivedSubscanNum;
+    /* The number of SubscanDataReadyEvent events which will be sent for this subscan */
+    long expectedEvents;
+    DCCTime finishedAt;
+  };
+
+  struct ASDMArchivedEvent{
+    DataCapturerId workingDCId;
+    string status; 
+    asdmIDLTypes::IDLEntityRef asdmId;
+    DCCTime archivedAt;  
+  };
+
+
+  /* ******************************
+   *         Structures
+   * ******************************/
+
+  /* Currently curve polynomials are of 0 order.
+    * It's in the plan to define a class in the ASDM that would encapsulate
+    * polynomials, so in anticipation this IDL structure has been defined.
+    * Beware that this class will go away when the ASDM Poly class be
+    * implemented, being replaced by its IDL representation.
+    */
+  /* Disable this as it is in conflict with the Polynomial definition in 
+   * ControlDataInterfaces.idl when moving DataCapture from OFFLINE to 
+   * CONTROL. ICT-6098 */
+  /*
+   struct Polynomial {
+
+       asdmIDLTypes::IDLArrayTime time; //Start time for the curve
+
+       double coeff0; //Polynomial coefficient 
+  };
+  typedef sequence<Polynomial> PolynomialDirSeq;
+  */
+
+  /* A sequence for the associated fields. Is this defined elsewhere? */
+
+  typedef sequence<asdmIDLTypes::IDLTag> IDLTagSeq;
+
+  typedef sequence<asdmIDLTypes::IDLFrequency> IDLFrequencySeq;
+  typedef sequence<IDLFrequencySeq> BasebandFrequencySetup;
+
+  typedef sequence<long> SidebandSeq;
+  typedef sequence<SidebandSeq> BasebandSidebandSetup;
+
+  /**
+   * Definition of structure to send arbitrary values
+   */
+  /* Disable AntennaSeq as it is in conflict with the same definition in 
+   * ControlAntennaInterfaces.idl 
+   * Change BaseBandSeq to BaseBandNameSeq as it is in conflict 
+   * with the same definition in ObservingModeDefs.idl
+   * when moving DataCapture from OFFLINE to 
+   * CONTROL. ICT-6098 */
+
+  //typedef sequence <string> AntennaSeq;
+  typedef sequence <BasebandNameMod::BasebandName> BaseBandNameSeq;
+  typedef sequence <double> AntennaDValueSeq;
+  typedef sequence <long long>   AntennaLValueSeq;
+  typedef sequence <AntennaDValueSeq> BaseBandDSeqSeq;
+  typedef sequence <AntennaLValueSeq> BaseBandLSeqSeq;
+
+  struct ArbitraryData{
+      boolean dValueSet;
+      double dValue;
+      boolean lValueSet;
+      long long lValue;
+      AntennaSeq antennaNames;
+      AntennaDValueSeq antennaDValues;
+      AntennaLValueSeq antennaLValues;
+      BaseBandNameSeq basebandNames;
+      BaseBandDSeqSeq basebandDValues;
+      BaseBandLSeqSeq basebandLValues;
+  };
+
+  /**
+   * A structure to send State data.
+   */
+  struct StateData{
+      string antennaName;
+      CalibrationDeviceMod::CalibrationDevice calDevice; // The name of the calibration device
+      double hotLoadTemperature; // The measured temperature of the hot load
+      double ambientLoadTemperature;  // The measured temperature of the ambient load
+      ACS::Time timestamp; // Mean time when temperatures were measured
+  };
+  typedef sequence<StateData> StateDataSeq;
+
+  /**
+   * A structure to contain flagging data.
+   */
+  typedef sequence <PolarizationTypeMod::PolarizationType> PolarizationSeq;
+  struct FlagData{
+      // The start time during which the flag is in force
+      ACS::Time time;
+      
+      // Start (true) or end (false) of flagging period
+      boolean flag;
+      
+      // The flagging condition
+      string reason;
+      
+      // The antennas to which this flag applies.
+      // An empty sequence denotes all antennas.
+      AntennaSeq antennaName;
+      
+      // The basebands to which this flag applies
+      // An empty sequence denotes all basebands.
+      BaseBandNameSeq baseband;
+      
+      // The polarisations to which this flag applies
+      // An empty sequence denotes all polarisations
+      PolarizationSeq polarization;
+  };
+  typedef sequence<FlagData> FlagDataSeq;
+
+
+  /* Interface description of the dataCapturer. It
+     is called by Control and other subsystems to add chunks of
+     data to the current dataset. And retrieve/extract data from the
+     actual data set which is produced */
+  interface DataCapturer : ACS::ACSComponent
+  {
+
+    /**
+     * Method to send information about sessionId, arrayId to dataCapturer 
+     */
+    void setDataCapturerId(in DataCapturerId infoDataCapturer)
+      raises(DataCaptureExceptions::SettingDataCapturerIdErrorEx);
+
+    /**
+     * retrieving data  from Memory for use in QuickLook and TelCal 
+     */
+    asdmIDL::ASDMDataSetIDL getInitialMetaData(in long scanNum, in long subscanNum)
+      raises(DataCaptureExceptions::RetrievingInitialMetaDataErrorEx);
+
+    asdmIDL::ASDMDataSetIDL getFinalMetaData(in long scanNum, in long subscanNum)
+      raises(DataCaptureExceptions::RetrievingFinalMetaDataErrorEx);
+
+    asdmIDL::ASDMDataSetIDL getFinalMetaDataQL(in long scanNum)
+      raises(DataCaptureExceptions::RetrievingFinalMetaDataErrorEx);
+
+ 
+    /**
+     * The startSB method is called by Control at the start of the execution  
+     * of a scheduling block.
+     *
+     * @param arrayId The name of the array on which this SB is executing.
+     * @param startTime The time (ACS time) at which this SB began execution.
+     */
+    void startSB(
+        in string arrayName, 
+        in ACS::Time startTime)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+ 
+
+    /**
+     * Called by Control at the start of execution of a scheduling block.
+     *
+     * @param schedBlockEntity The scheduling block that is executing.
+     * @param sessionEntRef The session reference of which this SB is a part.
+     * @param asdmEntRef The reference of the asdm dataset that is to be archived.
+     * @param antennaList The list of antennas that belong to this array.
+     * @param weatherStationList The list of weather stations contributing data.
+     * @param site Data about the ALMA site.
+     * @param useSumAntenna If true use the special Correlator sum antenna.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void setSBConfig(
+        in xmlentity::XmlEntityStruct schedBlkEntity,
+        in asdmIDLTypes::IDLEntityRef sessionEntRef, 
+        in asdmIDLTypes::IDLEntityRef asdmEntRef, 
+        in Control::AntennaCharacteristicsSeq antennaList, 
+        in Control::WeatherStationCharacteristicsSeq weatherStationList,
+        in Control::SiteData site,
+        in boolean useSumAntenna) 
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * The endSB interface method is called by Control at the end of 
+     * the execution of a scheduling block.
+     *
+     * @param arrayName The name of the array on which this SB was executed.
+     * @param endTime The time (ACS time) at which this SB ended execution.
+     * @param numberOfScans The number of scans that were executed.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void endSB(
+        in string arrayName, 
+        in ACS::Time endTime, 
+        in long numberOfScans) 
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * The startScan interface method is called by Control at the start of a
+     * scan.
+     *
+     * @param arrayName The name of the array on which this scan is executing.
+     * @param startTime The time (ACS time) at which this scan began execution.
+     * @param intent The designated data describing the intent or intents of this scan.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void startScan(
+        in string arrayName, 
+        in ACS::Time startTime, 
+        in Control::ScanIntentDataSeq intents) 
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * This method is called by Control after starting a holography scan. 
+     *
+     * @param arrayName The name of the array on which this scan is executing.
+     * @param holoScanData The holography ScanData that is associated with this scan.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void setScanHolographyConfig(
+        in string arrayName,  
+        in  Control::HolographyScanData holoScanData) 
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+    
+    /**
+     * The endScan interface method is called by Control at the end of a
+     * scan.  The following actions are performed.
+     * <ul>
+     * <li> Update the appropriate row in the Scan table
+     * <li> A final meta-data snapshot is taken.
+     * <li> Publish a ScanProcessed event.
+     * </ul>
+     * @param arrayName The name of the array on which this scan was executed.
+     * @param endTime The time (ACS time) at which this scan ended execution.
+     * @param scanNumber The number of this scan.
+     * @param numberOfSubscans The number of subscans that were executed during this scan.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void endScan(
+        in string arrayName, 
+        in ACS::Time endTime, 
+        in long scanNumber, 
+        in long numberOfSubscans)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * Method called by Control to start a sequence of subscans
+     * It is assumed, after this method is called, that an appropriate subset
+     * of setSubscanSequence* methods will be called, followed by
+     * setSequenceTiming().
+     * @param arrayName The name of the array on which this subscan was executed.
+     * @param subscanIntents An array, with one element per subscan, of
+     * SubscanIntent sequences. The length of this array defines the number
+     * of subscans in the sequence
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void startSubscanSequence(
+        in string arrayName,
+        in Control::SubscanIntentSeqSeq subscanIntents)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * Called by Control as part of the sequence setup.
+     * @param arrayName The name of the array on which this sequence will be executed.
+     * @param src A sequence containing the sources associated with each of the subscans
+     * in the sequence. 
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    typedef sequence<xmlentity::XmlEntityStruct> XmlEntityStructSeq;
+    void setSubscanSequenceSource(
+        in string arrayName,
+        in XmlEntityStructSeq src,
+        in Control::EquatorialDirectionSeq delayCenter,
+        in Control::SourceOffsetSeq delayOffset)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * Called by Control as part of the sequence setup. The SpectralSpec parts
+     * of the SubscanSpectralSpec is extracted from the SB and contains the
+     * requested setup, with the Doppler correction applied, when required.
+     *
+     * @param arrayName The name of the array on which this sequence will be executed.
+     * @param spec A sequence of Spectral Specs, one per subscan in the sequence.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void setSubscanSequenceSpectrum(
+        in string arrayName,
+        in XmlEntityStructSeq spec)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+    
+    /**
+     * @param arrayName The name of the array on which this sequence will be executed.
+     * @param subscanNumber The number of the subscan in the subscan sequence.
+     * @param numberOfIntegrations The number of integrations in subscan subscanNumber.
+     * @param dataUID The string containing the data UID
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    typedef string URI;
+    void sendSubScanTPData(
+        in string arrayName,
+        in long subscanNumber,
+        in long numberOfIntegrations,
+	in URI dataUID)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * Called by Control as part of the Sequence setup.
+     * @param arrayName The name of the array on which this sequence will be executed.
+     * @param startTime A sequence of ACS starting times, one per subscan in the Sequence.
+     * @param endTime A sequence of ACS time, giving the end of each subscan within the Sequence.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    typedef sequence<ACS::Time> TimeSeq;
+    void setSubscanSequenceTiming(
+        in string arrayName,
+        in TimeSeq startTime, 
+        in TimeSeq endTime)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+    
+    /**
+     * Called by Control at the end of a sequence of subscans.
+     * @param arrayName The name of the array on which this subscan was executed.
+     * @param successfulSubscans The IDs of subscans successfully observed in this Sequence.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void endSubscanSequence(
+        in string arrayName, 
+        in ACS::longSeq successfulSubscans)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * Called by Control, when aborting an observation.
+     * @param arrayName The name of the array on which the observation was executed.
+     * @param successfulSubscans The IDs of subscans successfully observed in the aborted Sequence.
+     */
+    void abort(
+        in string arrayName, 
+        in ACS::longSeq successfulSubscans);
+
+    /**
+     * The sendSubScanTotalPowerData interface method is called by the Control
+     * at the end of a subscan.    The following actions are performed.
+     * <ul>
+     * <li> Check the arrayId.
+     * <li> Update the Main table.
+     * <li> Publish a SubScanDataReady event.
+     * </ul>
+     * @param arrayId The name of the array on which this subscan is executing.
+     * @param data The correlator meta-data acumulated over the subscan.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendSubScanTotalPowerData(
+        in string arrayId,
+        in Control::SubScanTotalPowerRow data)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * The sendSubScanCorrelatorData interface method is called by the Correlator
+     * at the end of a subscan.  The data sent by the Correlator is the meta-data
+     * accumulated over the subscan.  The following actions are performed.
+     * <ul>
+     * <li> Check the arrayId.
+     * <li> Update the Main table.
+     * <li> Publish a SubScanDataReady event.
+     * </ul>
+	 * </br>
+	 * <b>NOTE:</b> This will work as long as the order in which the data is sent from the observing mode is the following:
+	 * <ol>
+	 * <li>Correlator data is sent to DC.</li>
+	 * <li>Pointing data is sent to DC.</li>
+	 * </ol>
+     * @param arrayId The name of the array on which this subscan is executing.
+     * @param subscanNumber The number of the subscan in the subscan sequence.
+     * @param data The correlator meta-data acumulated over the subscan.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendSubScanCorrelatorData(
+        in string arrayId,
+        in long subscanNumber,
+        in SubScanCorrelatorData data)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx,DataCaptureExceptions::GetUVWErrorEx);
+
+    /**
+     * The sendSubScanOpticalPointingData interface method is called by Control
+     * at the end of a subscan.  The data sent by Control is the meta-data
+     * accumulated over the subscan.  The following actions are performed.
+     * <ul>
+     * <li> Check the arrayId.
+     * <li> ... incomplete ...
+     * <li> Publish a SubScanDataReady event.
+     * </ul>
+     * @param arrayId The name of the array on which this subscan is executing.
+     * @param data The optical pointing meta-data acumulated over the subscan.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendSubScanOpticalPointingData(
+        in string arrayId,
+        in Control::SubScanOpticalPointingData data)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * The sendSubScanHolographyData interface method is called by Control
+     * at the end of a subscan.  The data sent by Control is the meta-data
+     * accumulated over the subscan.  The following actions are performed.
+     * <ul>
+     * <li> Check the arrayId.
+     * <li> ... incomplete ...
+     * <li> Publish a SubScanDataReady event.
+     * </ul>
+     * @param arrayId The name of the array on which this subscan is executing.
+     * @param data The holography meta-data acumulated over the subscan.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendSubScanHolographyData(
+        in string arrayId,
+        in Control::HolographySubScanData data)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+    
+    /**
+     * The sendArbitaryData interface method is used by Control to send
+     * additional data periodically throughout the execution of a
+     * scheduling block. The data ends up in the 
+       ASDM bucket table The following actions are performed.
+     * <ul>
+     * <li> Check the arrayId.
+     * <li> ... incomplete ...
+     * </ul>
+     * @param arrayId The name of the array on which this antenna is executing.
+     * @param time The time (ACS time) at which these data were recorded.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendArbitraryData (
+        in string arrayId,
+        in ACS::Time recTime,
+                in string issue,
+                in string details)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * The sendArbitaryTotalPowerData interface method is used by Control to send
+     * additional data periodically throughout the execution of a
+     * scheduling block. The data ends up in the 
+       ASDM bucket table The following actions are performed.
+     * <ul>
+     * <li> Check the arrayId.
+     * <li> ... incomplete ...
+     * </ul>
+     * @param arrayId The name of the array on which this antenna is executing.
+     * @param time The time (ACS time) at which these data were recorded.
+     * @param data The total power data.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendArbitraryTotalPowerData (
+        in string arrayId,
+        in ACS::Time recTime,
+                in string issue,
+                in string details,
+                in ArbitraryData data)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+ 
+    /**
+     * The sendAntennaPointingModel interface method is used by the control
+     * subsystem to send the pointing model of an antenna at the beginning of a
+     * schedblock and when changes occur (such as when the receiver band
+     * changes).
+     *
+     * @param antennaName The name of the antenna e.g., "DV01"
+     * @param receiverBand The receiver band that uses this model.
+     * @param primaryModel The primary antenna pointing model. Normally users do not change this.
+     * @param auxModel The auxiliary antenna pointing model. Used to locally improve the pointing.
+     * If the auxiliary pointing model is non-zero length it should be stored
+     * and associated with the primary pointing model with association nature
+     * "LOCAL_POINTING_MODEL" *unless* the primary pointing model is zero
+     * length. Pointing models of zero length are not stored.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendAntennaPointingModel (
+        in string antennaName, 
+        in ReceiverBandMod::ReceiverBand recvrBand,
+        in TMCDB::PointingModel primaryModel,
+        in TMCDB::PointingModel auxModel)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+
+    /**
+     * The sendAntennaFocusModel interface method is used by the control
+     * subsystem to send the focus model of an antenna at the beginning of a
+     * schedblock and when changes occur (such as when the receiver band
+     * changes).
+     *
+     * @param antennaName The name of the antenna e.g., "DV01"
+     * @param receiverBand The receiver band that uses this model.
+     * @param focusModel The antenna focus model. Normally users do not change this.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendAntennaFocusModel (
+        in string antennaName,
+        in ReceiverBandMod::ReceiverBand recvrBand,
+        in TMCDB::FocusModel focusModel)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+
+    /**
+     * The sendPositionData interface method is used by Control to send
+     * antenna positions at the end of a subscan.
+     * The following actions are performed.
+     * <ul>
+     * <li> ... incomplete ...
+     * </ul>
+     * @param data The antenna position data.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendPositionData (in Control::AntennaPointingDataSeq data)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+
+    /**
+     * The sendFocusData interface method is used by Control to send
+     * antenna focus data at the end of a subscan.
+     *
+     * @param data The antenna focus data.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendFocusData (in Control::FocusData data)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * The State Data for each antenna is sent, by Control, to Data Capture
+     * once per subscan.
+     * @param scanNumber The scan number when the data were measured
+     * @param subScanNumber The subscan that was in progress when the data were      * measured
+     * @param data The state data for antennas in the array. Some antennas may
+     * be missing if the state data could not be obtained. This should usually
+     * be no more than 20% of the antennas where the data are missing.
+     *
+     * This method must be called before DataCapture.startCorrelatorSubscan(),
+     * to ensure that a reference to the state data is correctly inserted into
+     * the main table.
+     *
+     * This function was changed to oneway to prevent it blocking
+     * loops, inside the control subsystem, from taking too long and
+     * becoming desynchronised with the subscan execution. See the
+     * comment from 23/Jun/13 in http://ictjira.alma.cl/browse/ICT-333
+     * for how this can occur.
+     */
+     oneway void sendSubScanStateData(
+	in ScanNum scanNumber,
+	in SubScanNum subScanNumber,
+	in StateDataSeq data);
+
+    /**
+     * The sendTotalPowerData interface method is used by Control to send
+     * total power data periodically throughout the execution of a
+     * scheduling block.  The following actions are performed.
+     * <ul>
+     * <li> Check the arrayId.
+     * <li> ... incomplete ...
+     * </ul>
+     * @param arrayId The name of the array on which this antenna is executing.
+     * @param time The time (ACS time) at which these data were recorded.
+     * @param data The total power data.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendTotalPowerData (
+        in string arrayId,
+        in ACS::Time recTime,
+        in Control::TotalPowerData data)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * The sendWeatherData interface method is used by Control to send
+     * weather data periodically throughout the execution of a
+     * scheduling block.  The following actions are performed.
+     * <ul>
+     * <li> ... incomplete ...
+     * </ul>
+     * @param data The weather data.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendWeatherData (
+        in Control::WeatherDataSeq data)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * The sendHistoryData interface method is used by Control to send
+     * history data at random intervals throughout the execution of a
+     * scheduling block.  The following actions are performed.
+     * <ul>
+     * <li> Check the arrayId.
+     * <li> Add a row to the History table.
+     * </ul>
+     * @param arrayId The name of the array on which this antenna is executing.
+     * @param time The time (ACS time) at which this message was recorded.
+     * @param message The message to be added to a row of the History table.
+     * @throws DataErrorEx If any error in the input data is detected.
+     * @throws TableUpdateErrorEx If any error occurs in updating ASDM tables.
+     */
+    void sendHistoryData (
+        in string arrayId,
+        in ACS::Time recTime,
+        in string message)
+    raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    string getASDMUID();
+
+    /**
+     * The saveDataToDisc interface method is used by Control to force
+     * the internally aquired ASDM dataset to the local file system.
+       * <ul>
+       * <li> Check if the filename is not null.
+       * <li> write workingDataSet to disc
+       * </ul>
+     * @param filename The directory name of the dataset including path.
+       * @throws DataErrorEx If any error in the input filename is detected.
+       * @throws WriteToDiscErrorEx If any error occurs in updating ASDM tables.
+     */
+     void saveDataToDisc(in string filename)
+     raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::WriteToDiscErrorEx);
+
+     /**
+      * The sendLLCStretcherReset method is used by Control to send
+      * Line-length Corrector reset parameters at the start of a scheduling block
+      * and at other times, if required.
+      * @param data The LLC reset data
+      * @param interval The time interval, during which the data are valid. 
+      */
+     void sendLLCStretcherReset(in Control::LLCStretcherResetDataSeq data, 
+                                in ACS::Time startTime,in ACS::Time stopTime )
+       raises (DataCaptureExceptions::DataErrorEx,
+               DataCaptureExceptions::TableUpdateErrorEx);
+               
+    /**
+     * The expectWvrData method is called by Control to notify DataCapturer that 
+     * WVR data should be expected for the current Scan/Subscan.
+     */
+     void expectWvrData(in boolean expectData);
+     
+    /**
+     * The sendWVRCoefficients method is used by Control to send the 
+     * WVR data actually being used by the system. These data are written,
+     * by DataCapturer, to the WVMCal table in the ASDM.
+     *
+     * @param arrayId The name of the array to which the WVR data correspond.
+     * @param wvrCoefficients The WVR coefficients which have been applied to the correlator data. 
+     */
+     void sendWVRCoefficients(in string arrayId, in asdmIDL::CalWVRTableIDL wvrCoefficients)
+     raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+    /**
+     * This method is used asynchronously to send flag data from Control to
+     * DataCapturer.
+     */
+     oneway void sendFlagData(
+         in FlagData data);
+     //raises (DataCaptureExceptions::DataErrorEx, DataCaptureExceptions::TableUpdateErrorEx);
+
+               
+  };
+};
+
+#endif

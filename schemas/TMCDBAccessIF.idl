@@ -1,0 +1,321 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ * 
+ * "@(#) $Id: TMCDBAccessIF.idl,v 1.7 2011/08/09 15:48:17 rhiriart Exp $" 
+ */
+ 
+#ifndef TMCDBAccessIF_IDL
+#define TMCDBAccessIF_IDL
+
+#include <TMCDBDataStructures.idl>
+#include <TmcdbErrType.idl>
+#include <acscomponent.idl>
+#include <almaEnumerations_IF.idl>
+#include <TMCDBComponent.idl>
+
+#pragma prefix "alma"
+
+module TMCDB {
+	
+	struct HolographyTowerRelativePadDirection {
+	    string holographyTowerName;
+	    double azimuth;
+	    double elevation;
+	};
+	typedef sequence<HolographyTowerRelativePadDirection> HolographyTowerRelativePadDirectionSeq;
+	typedef sequence<double, 2> PolarizationOrientationSeq;
+	typedef sequence<TMCDB_IDL::AntennaIDL> AntennaSeq;
+
+	struct AcaBasebandDelays {
+		double bb1Delay;
+		double bb2Delay;
+		double bb3Delay;
+		double bb4Delay;
+	};
+	
+	typedef sequence<float> WVRSkyCouplingSpectrumSeq;
+	/**
+	 * WVR channel parameters.
+	 * These parameters define assembly-specific parameters (i.e., they are different for each
+	 * WVR assembly), and need to be passed to TelCal via the ASDM SpectralWindow and Feed
+	 * tables.
+	 * See http://ictjira.alma.cl/browse/ICT-899 for details.
+	 */
+	struct WVRChannel {
+	    /** Central channel frequency (MHz) */
+	    float centralFrequency;
+	    /** Channel bandwidth (MHz) */
+	    float bandwidth;
+	    /**
+	     * Sky coupling efficiency.
+	     * If the value is < 0, then this field should be ignored (i.e., it should *not*
+	     * be written in the ASDM Feed table).
+         * The fields skyCoupling and skyCouplingSpectrum are exclusive. Only one of them should be
+         * transferred to the Feed table.
+	     * If the length of the skyCouplingSpectrum is non zero, then skyCouplingSpectrum should be used
+	     * instead of the single value of skyCoupling in the ASDM Feed table.
+	     */
+	    float skyCoupling;
+	    /**
+	     * Sky coupling spectrum.
+	     * The length of the sequence should be the same as the respective spectral window.
+	     * If the length of the sequence is zero, then this field shoud be ignored.
+	     * This field overrides the skyCoupling field, if it's length is non-zero.
+	     */
+	    WVRSkyCouplingSpectrumSeq skyCouplingSpectrum;
+	};
+	typedef sequence<WVRChannel, 4> WVRChannelSeq;
+	
+	interface CorrAccess : ACS::ACSComponent {
+	    /**
+         * This method returns the name of the antenna which is connected to the
+         * the given correlator input, if the antenna is active.
+	     * This method replaces the antennaCAIMap.dat file.
+	     */
+	    string getConnectedAntenna(in CorrelatorNameMod::CorrelatorName correlator, in long cai)
+	        raises (TmcdbErrType::TmcdbErrorEx);
+
+	    /**
+	     * This method returns a quadrant number which corresponds to the 
+         * baseband specified with the BasebandName. Currently, we implicitly 
+         * assume that BB_1 corresponds to the quadrant#1, BB_2 corresponds to 
+         * the quadrant#2, and so on. However, the mapping between the 
+         * baseband and quadrants may be changed when one quadrant or more 
+         * are unavailable due to a failure, for example. For these cases, having
+         * configurable mapping between the baseband and the quadrant might be 
+         * useful.
+	     */
+	    long getQuadrant(in CorrelatorNameMod::CorrelatorName correlator, in string BasebandName)
+	        raises (TmcdbErrType::TmcdbErrorEx);
+	};
+
+    interface Access : CorrAccess, ACS::ACSComponent {
+
+        string getConfigurationName() raises (TmcdbErrType::TmcdbErrorEx);
+    
+        /**
+         * The getStartupAntennasInfo interface supplies the information needed
+         * to initialize all antennas.  Included are the name of the antenna,
+         * the pad on which it resides, the name of front end, the assembly
+         * locations in the front end, and the assembly locations in the
+         * antenna.
+         */
+        StartupAntennaSeq getStartupAntennasInfo() 
+            raises (TmcdbErrType::TmcdbErrorEx);
+
+        /**
+         * The getStartupWeatherStationControllerInfo interface supplies the
+         * information needed to initialize the WeatherStation Controller,
+         * including WeatherStation devices list and its locations
+         */
+        TMCDB_IDL::StartupWeatherStationControllerIDL getStartupWeatherStationControllerInfo() 
+            raises (TmcdbErrType::TmcdbErrorEx);
+
+        TMCDB_IDL::StartupAOSTimingIDL getStartupAOSTimingInfo() 
+            raises (TmcdbErrType::TmcdbErrorEx);
+
+        /**
+         * The getStartupCLOInfo interface supplies the information 
+         * needed to initialize the Central LO.  Included are SAS/LLC 
+         * power supplies, LFRD, ML, and a sequence of photonic referneces.
+         */
+        TMCDB_IDL::StartupCLOIDL getStartupCLOInfo()
+            raises (TmcdbErrType::TmcdbErrorEx);
+        
+        /**
+         * The getAntennaInfo interface supplies static information about the
+         * named antenna.  If there is no such antenna, a TmcdbErrorEx is
+         * raised.
+         */
+        TMCDB_IDL::AntennaIDL getAntennaInfo(in string antennaName) 
+            raises (TmcdbErrType::TmcdbSqlEx, 
+                    TmcdbErrType::TmcdbNoSuchRowEx, 
+                    TmcdbErrType::TmcdbDuplicateKeyEx);
+        
+        /**
+         * The getCurrentAntennaPadInfo interface returns the pad data
+         * structure for the pad on which the antenna currently resides.  The
+         * SQL query is: select the pad for antennaName where
+         * AntennaToPad.EndTime is null and AntennaToPad.Planned is �n�.
+         * If there is no such selection, an empty structure is returned.  In
+         * this case the antenna is not currently on a pad, i.e. it is being
+         * transported or in the workshop.
+         */
+        TMCDB_IDL::PadIDL getCurrentAntennaPadInfo(in string antennaName) 
+            raises (TmcdbErrType::TmcdbSqlEx, 
+                    TmcdbErrType::TmcdbNoSuchRowEx, 
+                    TmcdbErrType::TmcdbDuplicateKeyEx, 
+                    TmcdbErrType::TmcdbRowAlreadyExistsEx);
+
+        /**
+         * Gets the HW assembly configuration data.
+         *
+         * serialNumber HW serial number, this is usually read directly from
+         * the device (AMSI card) at run time.
+         */
+        AssemblyConfigXMLData getAssemblyConfigData(in string serialNumber)
+            raises (TmcdbErrType::TmcdbSqlEx, TmcdbErrType::TmcdbNoSuchRowEx);
+
+        /**
+         * *** 6.1.0 HACK ***
+         * This function is only defined in 6.1.0. In future versions, the
+         * metrology coefficients will be included in the Pad or AntennaToPad
+         * table.
+         */
+        MetrologyCoeffSeq getMetrologyCoefficients(in string antennaName);
+        
+        /**
+         * Get the array phase reference location.
+         * Delays are calculated relative to this position.
+         */
+        ArrayReferenceLocation getArrayReferenceLocation();
+
+        /**
+         * Sets up the startup antennas information. This function provides a
+         * way to set up this structure from test cases.  This is a temporary
+         * hack while a way to do this is implemented at the TMCDB layer.
+         */
+        void setStartupAntennasInfo(in StartupAntennaSeq sai);
+
+        /**
+         * Sets up the antennas information. This function provides a way to
+         * set up this structure from test cases.  This is a temporary hack
+         * while a way to do this is implemented at the TMCDB layer.
+         */
+        void setAntennaInfo(in string an, in TMCDB_IDL::AntennaIDL ai);
+
+        /**
+         * Sets up the antenna pads information. This function provides a way
+         * to set up this structure from test cases.  This is a temporary hack
+         * while a way to do this is implemented at the TMCDB layer.
+         */
+        void setAntennaPadInfo(in string an, in TMCDB_IDL::PadIDL api);
+
+        /**
+         * Sets up the startup central lo configuration. This function provides
+         * a way to set up this structure from test cases.  This is a temporary
+         * hack while a way to do this is implemented at the TMCDB layer.
+         */
+        void setStartupCLOInfo(in TMCDB_IDL::StartupCLOIDL clo);
+
+        BandPointingModel getCurrentAntennaPointingModel(in string antennaName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+
+        BandFocusModel getCurrentAntennaFocusModel(in string antennaName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+        
+        AntennaDelays getCurrentAntennaDelays(in string antennaName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+                    
+        XPDelaySeq getCrossPolarizationDelays()
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+                    
+        string getTelescopeName()
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+                    
+        long getAntennaLOOffsettingIndex(in string antennaName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+                    
+        long getAntennaWalshFunctionSeqNumber(in string antennaName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+        
+        long getAntennaBaselineCAI(in string antennaName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+            		TmcdbErrType::TmcdbNoSuchRowEx);
+
+        string getAntennaBaselineName(in long cai)
+           raises (TmcdbErrType::TmcdbNoSuchRowEx);
+
+        string getAntennaAcaName(in long cai)
+           raises (TmcdbErrType::TmcdbNoSuchRowEx);
+        
+        long getAntennaAcaCAI(in string antennaName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+            		TmcdbErrType::TmcdbNoSuchRowEx);
+
+        AcaBasebandDelays getAcaBasebandDelays(in string antennaName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+            		TmcdbErrType::TmcdbNoSuchRowEx);
+        
+        HolographyTowerRelativePadDirectionSeq getHolographyTowerRelativePadDirection(in string padName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+        
+        PolarizationOrientationSeq getPolarizationOrientation(in string antenna,
+                in ReceiverBandMod::ReceiverBand band)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+        
+        /**
+         * Get WVR channel parameters for the WVR device installed in a specific antenna.
+         */
+        WVRChannelSeq getWVRParameters(in string antenna) raises
+                (TmcdbErrType::TmcdbErrorEx, TmcdbErrType::TmcdbNoSuchRowEx);
+        
+        /**
+         * Report that an antenna is about to become online.
+         * 
+         * This function will add a record in the BaseElementOnline table, closing the previous
+         * record. Closing the record means updating the previous record setting a non-null
+         * EndTime.
+         * 
+         * This function should be called before the assemblies that belong to the antenna call
+         * the function reportAssemblyOperational, as this function assumes that the proper record in
+         * the BaseElementOnline table has already been created.
+         * 
+         * As this function needs to be called before the Assemblies become operational, the antenna
+         * is not actually online. It will become online only after all its subdevices are operational.
+         * This is the reason why we said that the antenna is "about to become" online in the first
+         * sentence. May be another function could be introduced to update the StartTime, although it
+         * is not clear that this is required at this point.
+         */
+        void reportAntennaOnline(in string antennaName);
+        
+        /**
+         * Reports that an Assembly has been initialized.
+         * 
+         * This will create a record in the BaseElementAssemblyList table. This table is kept
+         * for historical purposes, and to allow the system to query for the current assemblies present
+         * in the system without the need to activate and ask the Control Devices directly.
+         * 
+         * This function should be called by Control Devices at the end of the hwOperational function.
+         * Control Devices shouldn't take any action in case there is an error inside this function.
+         * For this reason, no exception is thrown. This function has the semantic of a pure
+         * notification, and the Control Device should start regardless if the historical record is
+         * recorded or not.
+         */
+        void reportAssemblyOperational(in string serialNumber, in string componentName);
+        
+        AntennaSeq getAntennas() raises (TmcdbErrType::TmcdbErrorEx,
+                TmcdbErrType::TmcdbNoSuchRowEx);
+    };
+};
+
+#endif // TMCDBAccessIF_IDL

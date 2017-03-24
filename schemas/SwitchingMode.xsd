@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File SwitchingMode.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:swtchm="http://Alma/XENUM/SwitchingModeMod" targetNamespace="http://Alma/XENUM/SwitchingModeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:swtchm="http://Alma/XENUM/SwitchingModeMod" 
+                         targetNamespace="http://Alma/XENUM/SwitchingModeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="SwitchingMode">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="NO_SWITCHING">
+			<xsd:enumeration value="NO_SWITCHING" >
 		
 				<xsd:annotation>
 					<xsd:documentation>No switching </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="LOAD_SWITCHING">
+			<xsd:enumeration value="LOAD_SWITCHING" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Receiver beam is switched between sky and load </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="POSITION_SWITCHING">
+			<xsd:enumeration value="POSITION_SWITCHING" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Antenna (main reflector) pointing direction  is switched  </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="PHASE_SWITCHING">
+			<xsd:enumeration value="PHASE_SWITCHING" >
 		
 				<xsd:annotation>
 					<xsd:documentation>90 degrees phase switching  (switching mode used for sideband separation or rejection with DSB receivers) </xsd:documentation>
@@ -72,7 +77,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="FREQUENCY_SWITCHING">
+			<xsd:enumeration value="FREQUENCY_SWITCHING" >
 		
 				<xsd:annotation>
 					<xsd:documentation>LO frequency is switched (definition context sensitive: fast if cycle shrorter than the integration duration, slow if e.g. step one step per subscan) </xsd:documentation>
@@ -80,7 +85,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="NUTATOR_SWITCHING">
+			<xsd:enumeration value="NUTATOR_SWITCHING" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Switching between different directions by nutating the sub-reflector </xsd:documentation>
@@ -88,7 +93,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="CHOPPER_WHEEL">
+			<xsd:enumeration value="CHOPPER_WHEEL" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Switching using a chopper wheel </xsd:documentation>
@@ -114,9 +119,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="SwitchingModes">
+	<xsd:simpleType name ="SwitchingModes">
 		<xsd:restriction base="swtchm:SwitchingModeList">
-			<xsd:maxLength value="7" />
+			<xsd:maxLength value = "7" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

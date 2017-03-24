@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File SidebandProcessingMode.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdbprm="http://Alma/XENUM/SidebandProcessingModeMod" targetNamespace="http://Alma/XENUM/SidebandProcessingModeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:sdbprm="http://Alma/XENUM/SidebandProcessingModeMod" 
+                         targetNamespace="http://Alma/XENUM/SidebandProcessingModeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="SidebandProcessingMode">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="NONE">
+			<xsd:enumeration value="NONE" >
 		
 				<xsd:annotation>
 					<xsd:documentation>No processing </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="PHASE_SWITCH_SEPARATION">
+			<xsd:enumeration value="PHASE_SWITCH_SEPARATION" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Side band separation using 90-degree phase switching </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="FREQUENCY_OFFSET_SEPARATION">
+			<xsd:enumeration value="FREQUENCY_OFFSET_SEPARATION" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Side band separation using offsets of first ans second oscillators </xsd:documentation>
@@ -64,7 +69,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="PHASE_SWITCH_REJECTION">
+			<xsd:enumeration value="PHASE_SWITCH_REJECTION" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Side band rejection 90-degree phase switching </xsd:documentation>
@@ -72,7 +77,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="FREQUENCY_OFFSET_REJECTION">
+			<xsd:enumeration value="FREQUENCY_OFFSET_REJECTION" >
 		
 				<xsd:annotation>
 					<xsd:documentation>Side band rejection using offsets of first and second oscillators </xsd:documentation>
@@ -98,9 +103,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="SidebandProcessingModes">
+	<xsd:simpleType name ="SidebandProcessingModes">
 		<xsd:restriction base="sdbprm:SidebandProcessingModeList">
-			<xsd:maxLength value="5" />
+			<xsd:maxLength value = "5" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

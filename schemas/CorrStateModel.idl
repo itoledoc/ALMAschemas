@@ -1,0 +1,112 @@
+#ifndef CORR_STATE_MODEL_IDL
+#define CORR_STATE_MODEL_IDL
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * "@(#) $Id: CorrStateModel.idl,v 1.6 2011/11/01 14:15:16 ramestic Exp $"
+ *
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ */
+
+#include <baci.idl>
+#include "CorrStateModelErr.idl"
+#pragma prefix "alma"
+
+/** This IDL file defines the State Model for correlator Components
+ */
+module CorrelatorPrivate
+{
+    /** These are the various states for the state model
+     */
+    enum eState
+    {
+      UNDEFINED_STATE,	   ///< An undefined state
+      OFFLINE_STATE,	   ///< The offline state
+      INITIAL_1_STATE,     ///< The first initialization state
+      INITIAL_2_STATE,     ///< The second initialization state
+      ONLINE_STATE,                ///< The operational state
+      ERROR_STATE,                 ///< The error state
+      DEGRADED_STATE,      ///< Degraded operational state
+      MAINTENANCE_MODE_STATE       ///< State when running diagnostics
+    };
+
+    /** This is the CorrStateModel interface. This class MUST BE SUB-CLASSED due to the way
+     ** MACI works with DLL instantiations. This interface derives from an ACS
+     ** CharacteristicComponent, so all classes that wish to implement this interface
+     ** must also be a CharacteristicComponent.
+     ** All derived components should override each of these methods to provide explicit
+     ** state information specific to the component.
+     ** 
+     ** @see http://almasw.hq.eso.org/almasw/bin/view/CORR/CorrelatorStateModel for
+     ** a detailed description of states and transitions.
+     */
+    interface CorrStateModel : ACS::CharacteristicComponent
+    {
+        /** Get the current state & sub-state
+         ** @param busy On return, this flags if the sub-state is busy (true) or
+         ** ready (false).
+         ** @return Current state.
+	*/
+        CorrelatorPrivate::eState currentState(out boolean busy);
+
+        /** Transition from offline -> initial 1 -> initial 2 -> online
+         **/
+        void start()
+	  raises( CorrStateModelErr::InvalidStartTransitionEx,
+		CorrStateModelErr::SubStateBusyEx);
+
+        /// Recover from error state -> Degraded -> Online
+        void recover()
+	  raises( CorrStateModelErr::InvalidRecoverTransitionEx,
+		CorrStateModelErr::SubStateBusyEx);
+
+        /// Restart from Error -> Offline
+        void restart()
+	  raises( CorrStateModelErr::InvalidRestartTransitionEx,
+		CorrStateModelErr::SubStateBusyEx);
+
+        /// Transition from online to Maintenance mode
+        void runDiagnostics()
+	  raises( CorrStateModelErr::InvalidRunDiagnosticsEx,
+		CorrStateModelErr::SubStateBusyEx);
+
+        /// Transition from online to offline
+        void shutDown()
+          raises( CorrStateModelErr::InvalidShutdownTransitionEx,
+                CorrStateModelErr::SubStateBusyEx);
+
+        /// One possible transition from DEGRADED to ONLINE state
+        void suspendMonitoring()
+          raises( CorrStateModelErr::InvalidMonitorStartEx,
+                CorrStateModelErr::SubStateBusyEx);
+
+        /// One possible transition from ONLINE to DEGRADED state
+        void resumeMonitoring()
+          raises( CorrStateModelErr::InvalidMonitorStopEx,
+                CorrStateModelErr::SubStateBusyEx);
+
+        /// Returns TRUE if currently monitoring, FALSE otherwise
+        boolean isMonitoring();
+        
+    };
+};
+#endif

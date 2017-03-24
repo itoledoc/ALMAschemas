@@ -1,0 +1,346 @@
+#ifndef ACA_MAINTENANCE_IDL
+#define ACA_MAINTENANCE_IDL
+/**
+****************************************************************************
+*
+* Copyright (C) 2012 National Astronomical Observatory of Japan and Fujitsu LIMITED 
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+* 
+* "@(#) $Id: ACACorrMaintenance.idl,v 1.12 2012/06/25 02:55:54 ykitayama Exp $"
+* who       when       what
+* --------  ---------- ----------------------------------------------
+* yKitayama 2007-05-11 Build in CorrStateModel.
+* yKitayama 2007-07-12 Update toward R5.0.
+* yKitayama 2009-05-18 Add new interface for R7.0.
+* yKitayama 2010-11-15 Add new interfaces() for R8.1.
+* yKitayama 2012-06-22 Modified setCAIConnectivity() for R10.0 dev-cycle 1
+* mYokoyama 2013-11-11 Modified doCorrelatorSelfTest() for R10.0 dev-cycle 6
+*/
+
+#include <acscomponent.idl>
+#include <AntennaNumberMap.idl>
+#include "ACACorrErr.idl"
+#include <CorrStateModel.idl>
+#include <CorrErr.idl>
+//#include <ControlInterfaces.idl>
+#include <ControlAntennaInterfaces.idl>
+
+#pragma prefix "alma"
+
+module ACACorrelator
+{
+    /** type of ACA correlator module.
+     */
+    enum eModuleId
+    {
+        MODULE_MCI,   // MCI module
+        MODULE_DFP0,  // DFP module #0
+        MODULE_DFP1,  // DFP module #1
+        MODULE_DFP2,  // DFP module #2
+        MODULE_DFP3,  // DFP module #3
+        MODULE_DFP4,  // DFP module #4
+        MODULE_DFP5,  // DFP module #5
+        MODULE_DFP6,  // DFP module #6
+        MODULE_DFP7,  // DFP module #7
+        MODULE_CIP0,  // CIP module #0
+        MODULE_CIP1,  // CIP module #1
+        MODULE_CIP2,  // CIP module #2
+        MODULE_CIP3   // CIP module #3
+    };
+
+    /** type of ACA correlator program.
+     */
+    enum eProgramType
+    {
+        PROGRAM_OS,    // Operating System.
+        PROGRAM_AP,    // Application program.
+        PROGRAM_DTSR   // Firmware of DTS-R.
+    };
+
+    /** statuf of ACA correlator static parameter update.
+     */
+    enum eResultStatus
+    {
+        FINISHED,        // The update was finished. 
+        NOTSET,          // Un-setting.(Initial defalut)
+        EXECUTING        // The update was executing.
+    };
+
+
+    /// The maximum number of ACA correlator antenna inputs.
+    const short ACA_CAI_MAX = 16;
+
+    typedef sequence<short, ACA_CAI_MAX> CAIs;
+    typedef sequence<boolean, ACA_CAI_MAX> CaiConnectivity;
+    typedef sequence<boolean, ACA_CAI_MAX> CaiValidity;
+
+   /** Maintenance Interface.
+    ** The Maintenance interface is used by the Control system to invoke maintenance functions
+    ** on the ACA correlator hardware and computers.
+    ** Diagnostics can be run to determine which components may need maintenance.
+    **/
+    interface ACACorrMaintenance : CorrelatorPrivate::CorrStateModel
+    {
+        /** @brief The function is donwload HFSC data from Correlator HW, and the result is output to file.
+         ** @return none. 
+         ** @param ACACorrNumber (in)ACA correlator number. 
+         **   0 = ACA correlator set 1, 1 = ACA correlator set 2,
+         **   2 = ACA correlator set 3, 3 = ACA correlator set 4
+         ** @param subArrayID (in)Index of subarray in the Correlator HW(1 or 2)
+         ** @param tableID (in)The specifies the memory slot which the correlator data of HFSC to be used.(1 or 2)
+         ** @param fileName (in)The specifies the file name which output to file.
+         ** @exception InvalidParameterEx when specified parameter is out of allowable range
+         ** @exception FailedToDownloadEx when aborted download from Correlator HW.
+         */                                                                                                                                                                                         
+        void downloadHFSCdata ( in long ACACorrNumber,
+                                in long subArrayID,
+                                in long tableID,
+                                in string fileName)
+            raises(ACACorrErr::InvalidParameterEx,
+                   ACACorrErr::FailedToDownloadEx );
+                                                                                                                                                                                                    
+        /** @brief The function is donwload LFSC data from Correlator HW, and the result is output to file.
+         ** @return none. 
+         ** @param ACACorrNumber (in)ACA correlator number. 
+         **   0 = ACA correlator set 1, 1 = ACA correlator set 2,
+         **   2 = ACA correlator set 3, 3 = ACA correlator set 4
+         ** @param subArrayID (in)Index of subarray in the Correlator HW(1 or 2)
+         ** @param fileName (in)The specifies the file name which output to file.
+         ** @exception InvalidParameterEx when specified parameter is out of allowable range
+         ** @exception FailedToDownloadEx when aborted download from Correlator HW.
+         */                                                                                                                                                                                         
+        void downloadLFSCdata ( in long ACACorrNumber,
+                                in long subArrayID,
+                                in string fileName)
+            raises(ACACorrErr::InvalidParameterEx,
+                   ACACorrErr::FailedToDownloadEx );
+
+        /** @brief The specified ACA correlator is initialized.
+         **     details are as follows.
+         **     step1::Query whether the ACA correlator is running or not.
+         **     step2::TE counter synchronizes BTW ACA correlator and CCC.
+         **     step3::Instruct the ACA correlator to load the configuration data stored
+         **            in the non-volatile memory into the runtime memory of each module.
+         **     step4::Publish the configuration data stored in runtime memory to CDPCs.
+         ** @return none.
+         ** @param ACACorrNumber (in)ACA correlator number. 
+         **     0 = ACA correlator set 1, 1 = ACA correlator set 2,
+         **     2 = ACA correlator set 3, 3 = ACA correlator set 4
+         ** @exception InvalidACACorrNumberEx ACA correlator number is outside the range.
+         ** @exception InitializeACACorrErrorEx It failed in the initialization
+         **     of the ACA correlator.
+         */
+        void initializeACACorr( in long ACACorrNumber )
+          raises(ACACorrErr::InvalidACACorrNumberEx,
+                 ACACorrErr::InitializeACACorrErrorEx);
+
+        /** @brief Set the antenna numbers.
+         **   Set the mapping of fixed antenna numbers to Correlator Antenna 
+         **   Inputs (\e CAI ). This interface is used by the Control system when an
+         **   antenna moves to a new pad. The antenna's baseband data cable must
+         **   be patched to a new CAI. This mapping allows the CDP output to have
+         **   the 'correct' antenna numbers.
+         ** @return none.
+         ** @param antennaMappings (in)An array of antennaNumberMap_t which 
+         **   maps antenna numbers to correlator antenna inputs.
+         ** @exception InvalidAntennaMap Thrown if any problem with antenna
+         **   mapping structure, i.e., invalid antenna numbers or CAIs.
+         */
+        void setAntennaNumbers( in Correlator::AntennaNumberMap::antennaNumberMapSeq antennaMappings )
+          raises( Correlator::AntennaNumberMap::InvalidAntennaMap );
+
+        /** @brief It is an external interface for the unit test.
+         ** @return long.(0 = success , 0 != falied)
+         ** @param none.
+         ** @pre none.
+         ** @post none.
+         ** @exception none.
+         ** @see
+         */
+         long unitTestMain( );
+
+
+        /** @brief Destroy the antenna numbers.
+         **   Destroy the mapping of fixed antenna numbers to Correlator Antenna 
+         **   Inputs (\e CAI ).
+         ** @return none.
+         ** @param antennaMappings (in)Destroy correlator antenna inputs is specified.
+         ** @exception InvalidAntennaMap Thrown if any problem with antenna
+         **   mapping structure, i.e., invalid CAIs or observation conflict.
+         */
+         void destroyAntennaNumbers( in ACACorrelator::CAIs CAIs  )
+           raises( Correlator::AntennaNumberMap::InvalidAntennaMap );
+
+        /** @brief Get the serial numbers of all modules of the ACA correlator.
+         ** @return none.
+         ** @param ACACorrNumber (in)ACA correlator number. 
+         **   0 = ACA correlator set 1, 1 = ACA correlator set 2,
+         **   2 = ACA correlator set 3, 3 = ACA correlator set 4
+         ** @param serialNumbersOfMCI (out)The serial number of MCI module is return.
+         **     --serialNumbersOfMCI[0] = Serial number of MCI.
+         ** @param serialNumbersOfDFP (out)The serial numbers of all DFP modules are return.
+         **     details are as follows. 
+         **     --serialNumbersOfDFP[0] = Serial number of DFP#0.
+         **     --serialNumbersOfDFP[1] = Serial number of DFP#1.
+         **     --serialNumbersOfDFP[2] = Serial number of DFP#2.
+         **     --serialNumbersOfDFP[3] = Serial number of DFP#3.
+         **     --serialNumbersOfDFP[4] = Serial number of DFP#4.
+         **     --serialNumbersOfDFP[5] = Serial number of DFP#5.
+         **     --serialNumbersOfDFP[6] = Serial number of DFP#6.
+         **     --serialNumbersOfDFP[7] = Serial number of DFP#7.
+         ** @param serialNumbersOfCIP (out)The serial numbers of all CIP modules are return.
+         **     details are as follows. 
+         **     --serialNumbersOfCIP[0] = Serial number of CIP#0.
+         **     --serialNumbersOfCIP[1] = Serial number of CIP#1.
+         **     --serialNumbersOfCIP[2] = Serial number of CIP#2.
+         **     --serialNumbersOfCIP[3] = Serial number of CIP#3.
+         ** @exception InvalidACACorrNumberEx when ACA correlator number is out of allowable range
+         ** @exception InvalidParameterEx when specified parameter (moduleId, programType) is out of allowable range
+         ** @exception GetModuleSerialNumbersErrorEx Failed to get the module serial numbers of ACA correlator.
+         */
+        void getModuleSerialNumbers ( in long ACACorrNumber,
+		   		      inout ACS::stringSeq serialNumbersOfMCI,
+		   		      inout ACS::stringSeq serialNumbersOfDFP,
+		   		      inout ACS::stringSeq serialNumbersOfCIP )
+          raises(ACACorrErr::InvalidACACorrNumberEx,
+                 ACACorrErr::InvalidParameterEx,
+                 ACACorrErr::GetModuleSerialNumbersErrorEx);
+
+        /** @brief Instruct the ACA correlator to execute self-test a specified module.
+         ** @return none. 
+         ** @param ACACorrNumber (in)ACA correlator number. 
+         **   0 = ACA correlator set 1, 1 = ACA correlator set 2,
+         **   2 = ACA correlator set 3, 3 = ACA correlator set 4
+         ** @param moduleId (in)Module of ACA correlator.
+         ** @exception InvalidACACorrNumberEx when ACA correlator number is out of allowable range
+         ** @exception InvalidParameterEx when specified parameter (moduleId, programType) is out of allowable range
+         ** @exception SelfTestForACACorrelatorErrorEx Failed to self-test of ACA correlator.
+         */
+        void selfTest ( in long ACACorrNumber,
+                        in eModuleId moduleId )
+            raises(ACACorrErr::InvalidACACorrNumberEx,
+                   ACACorrErr::InvalidParameterEx,
+                   ACACorrErr::SelfTestForACACorrelatorErrorEx);
+
+        /** @brief Get status of the self-test of each module of ACA correlator.
+         ** @return none. 
+         ** @param ACACorrNumber (in)ACA correlator number. 
+         **   0 = ACA correlator set 1, 1 = ACA correlator set 2,
+         **   2 = ACA correlator set 3, 3 = ACA correlator set 4
+         ** @param moduleId (in)Module of ACA correlator.
+         ** @param resultStatus (out)status of ACA correlator static parameter update.
+         ** @param resultInfo (out)completion code of ACA correlator static parameter update
+         ** @exception InvalidACACorrNumberEx when ACA correlator number is out of allowable range
+         ** @exception InvalidParameterEx when specified parameter (moduleId, programType) is out of allowable range
+         */
+        void getSelfTestStatus ( in long ACACorrNumber,
+                                 in eModuleId moduleId,
+                                 inout ACACorrelator::eResultStatus resultStatus,
+                                 inout long resultInfo)
+            raises(ACACorrErr::InvalidACACorrNumberEx,
+                   ACACorrErr::InvalidParameterEx);
+
+
+/** Add new new interface for R7.0 <Start> **/
+
+        /** Constants defining the number of input channels, input states, number of TFB cards per baseband,
+         ** and number of basebands per antenna.  These constants will be used by the digitizer statistics
+         ** methods.
+         */
+        const short NUMBER_OF_INPUT_STATES = 8;
+        const short NUMBER_OF_TFBS_PER_BASEBAND = 2;
+        const short NUMBER_OF_BASEBANDS_PER_ANTENNA = 4;
+
+         /// Multi-dimensional array of digitizer statistics average input state values
+        typedef float digitizerAvg_t[NUMBER_OF_BASEBANDS_PER_ANTENNA]
+                                    [NUMBER_OF_TFBS_PER_BASEBAND]
+                                    [NUMBER_OF_INPUT_STATES];
+
+        /// Structure containing a multi-dimensional array of digitizer statistics average input state values
+        /// and its associated antenna name.
+        struct AntennaDigitizerAvgStats
+        {
+            Control::AntennaId antennaId;
+            digitizerAvg_t avgDigitizerStats;
+        };
+
+        /// Sequence of antennas with their associated digitizer average input statistics
+        typedef sequence<AntennaDigitizerAvgStats> AntennaDigitizerAvgStatsSeq_t;
+
+        /** Get averaged digitizer statistics for all TFBs that are
+         ** handling inputs from antennas in the passed-in antenna list.
+         ** @param arrayID Name of array whose antennas will be used to generate digitizer statistics.
+         ** @return A sequence of structures for each antenna containing the antennaId and an
+         ** array of input channel averages for each baseband available (note that the 2-antenna 
+         ** correlator supports only 2 basebands)
+         ** @exception InvalidArrayEx The array has not been previously created or has
+         ** already been destroyed.
+         ** @exception CorrHardwareEx There was a problem setting up the correlator hardware to
+         ** generate digitizer statistics (e.g. no SCCs were found, there were communication timeouts, incorrect 
+         ** number of bytes were received, etc.).  Specific text of the error expands on
+         ** the nature of the problem.
+         */
+        AntennaDigitizerAvgStatsSeq_t getAvgDigitizerStatistics(in string arrayId)
+            raises (CorrErr::ErrorEx);
+
+/** Add new new interface for R7.0 <End> **/
+
+/** Add new new interfaces for R8.1 <Start> **/
+
+        /** @brief Initialze to availavle correlator hardware sets.
+         ** The interface called by ACACorrelatorMasterComponent::initPass2().
+         ** @return if true initialization of all availavle correlator hardware set(s)  
+         ** was complet, otherwise false.
+         */
+        boolean initializeACACorrs ( );
+    
+        /** @brief Set anntena name to CAI mapping.
+         ** The interface called by ACACorrelatorMasterComponent::initPass2().
+         ** @return if true set anntena name to CAI mapping was complete, otherwise false.  
+         */
+        boolean setDefaultAntennaCAIMapping (); 
+/** Add new new interfaces for R8.1 <End> **/
+
+        
+/** Add new new interfaces for R9.1 <Start> **/
+        /** @brief Setup CAI connectivity and CAI validiry for eachi correlator set
+         ** @param caiConnectivity CAI connectivity
+         ** @param caiValidityForCorr0 CAI validity for correlator set #0.
+         ** @param caiValidityForCorr1 CAI validity for correlator set #1.
+         ** @param caiValidityForCorr2 CAI validity for correlator set #2.
+         ** @param caiValidityForCorr3 CAI validity for correlator set #3.
+         ** @exception FailedToSetCAIConnecitivityEx failed to set CAI connectivity.
+         */
+        void setCAIConnectivity ( 
+                                 in CaiConnectivity connectivity,
+                                 in CaiValidity validityForCorr0,
+                                 in CaiValidity validityForCorr1,
+                                 in CaiValidity validityForCorr2,
+                                 in CaiValidity validityForCorr3)
+            raises(ACACorrErr::FailedToSetCAIConnecitivityEx);
+/** Add new new interfaces for R9.1 <End> **/
+
+/** Add new new interfaces for R10.6 <Start> **/
+        /** @brief self test to availavle correlator hardware sets.
+         ** The interface called by ACACorrelatorMasterComponent::initPass2().
+         ** @return if true self test of all availavle correlator hardware set(s)
+         ** was complete, otherwise false.
+         */
+        boolean doCorrelatorSelfTest ( );
+/** Add new new interfaces for R10.6 <End> **/
+
+    }; // End of ACACorrMaintenance interface
+};
+#endif

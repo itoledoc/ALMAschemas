@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  ALMA - Atacama Large Millimeter Array
  (c) European Southern Observatory, 2002
@@ -30,18 +30,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
  File AnnotationTable.xsd
- --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:annttn="http://Alma/XASDM/AnnotationTable" xmlns:ent="Alma/CommonEntity" xmlns:bbnam="http://Alma/XENUM/BasebandNameMod" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://Alma/XASDM/AnnotationTable" version="3 -1">
- 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd" />
+ -->
+<xs:schema   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		               elementFormDefault="qualified" 
+                       attributeFormDefault="unqualified"
+					   xmlns:annttn="http://Alma/XASDM/AnnotationTable"
+					   xmlns:ent="Alma/CommonEntity"
+	xmlns:bbnam="http://Alma/XENUM/BasebandNameMod"
+					   targetNamespace="http://Alma/XASDM/AnnotationTable"
+                       version="3 -1">
+ 	<xs:import namespace="Alma/CommonEntity" schemaLocation="http://almaobservatory.org/XML/Common/2.1/CommonEntity.xsd"/>
  
 		<!-- No specific import for ArrayTime -->
-		<!-- No specific import for Interval -->
-		<!-- No specific import for int -->
-		<!-- No specific import for String -->
-		<!-- No specific import for Tag -->
-		<!-- No specific import for long -->
 		<!-- No specific import for double -->
+		<!-- No specific import for Tag -->
+		<!-- No specific import for String -->
 		<!-- We need the schema of BasebandName -->
-		<xs:import namespace="http://Alma/XENUM/BasebandNameMod" schemaLocation="http://almaobservatory.org/XML/XENUM/1/BasebandName.xsd" />
+		<xs:import namespace="http://Alma/XENUM/BasebandNameMod" 
+	        schemaLocation="http://almaobservatory.org/XML/XENUM/1/BasebandName.xsd"/>
+		<!-- No specific import for int -->
+		<!-- No specific import for long -->
+		<!-- No specific import for Interval -->
 	
 	
 	
@@ -54,30 +63,75 @@
         <xs:complexType>
             <xs:sequence>
              	<!-- This table's Entity . -->
-            	<xs:element name="Entity" type="ent:EntityT" />
+            	<xs:element name="Entity" type="ent:EntityT"/>
 
             	<!-- This table's Container's Entity. -->
-            	<xs:element name="ContainerEntity" type="ent:EntityT" />
+            	<xs:element name="ContainerEntity" type="ent:EntityT"/>
             	
             	<!-- And then the sequence of its rows -->
                 <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-         <xs:element name="annotationId" type="xs:string" />
-         <xs:element name="time" type="xs:string" />
-         <xs:element name="issue" type="xs:string" />
-         <xs:element name="details" type="xs:string" />
-     	 <xs:element name="numAntenna" type="xs:string" minOccurs="0" />
-     	 <xs:element name="basebandName" type="xs:string" minOccurs="0" />
-     	 <xs:element name="numBaseband" type="xs:string" minOccurs="0" />
-     	 <xs:element name="interval" type="xs:string" minOccurs="0" />
-     	 <xs:element name="dValue" type="xs:string" minOccurs="0" />
-     	 <xs:element name="vdValue" type="xs:string" minOccurs="0" />
-     	 <xs:element name="vvdValues" type="xs:string" minOccurs="0" />
-     	 <xs:element name="llValue" type="xs:string" minOccurs="0" />
-     	 <xs:element name="vllValue" type="xs:string" minOccurs="0" />
-     	 <xs:element name="vvllValue" type="xs:string" minOccurs="0" />
-     	 <xs:element name="antennaId" type="xs:string" minOccurs="0" />
+         <xs:element name="annotationId" type=
+"xs:string"
+
+/>
+         <xs:element name="time" type=
+"xs:string"
+
+/>
+         <xs:element name="issue" type=
+"xs:string"
+
+/>
+         <xs:element name="details" type=
+"xs:string"
+
+/>
+     	 <xs:element name="numAntenna" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="basebandName" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="numBaseband" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="interval" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="dValue" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="vdValue" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="vvdValues" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="llValue" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="vllValue" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="vvllValue" type=
+"xs:string"
+
+  minOccurs="0"/>
+     	 <xs:element name="antennaId" type=
+"xs:string"
+
+  minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

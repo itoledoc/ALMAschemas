@@ -1,0 +1,325 @@
+#ifndef CCC_MONITOR_IDL
+#define CCC_MONITOR_IDL
+/*******************************************************************************
+ * ALMA - Atacama Large Millimeter Array
+ * Copyright (c) AUI - Associated Universities Inc., 2011
+ * (in the framework of the ALMA collaboration).
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *******************************************************************************
+ * 
+ * "@(#) $Id: CCC_Monitor.idl,v 1.11 2011/11/01 14:15:16 ramestic Exp $"
+ *
+ * who       when        what
+ * --------  ----------  ----------------------------------------------
+ */
+
+#include <baci.idl>
+#include <ACSErrTypeCommon.idl>
+#include <CorrErr.idl>
+#include <CorrStateModel.idl>
+
+#pragma prefix "alma"
+
+module Correlator
+{
+    // Enum specifying hardware configuration -- both prototypes, single quad, full system
+    enum eCorrHWConfig
+    {
+        PROTOTYPE_HW,
+        SINGLE_QUAD_HW,
+        TWO_QUAD_HW,
+        FULL_SYSTEM_HW
+    };
+
+    // Enum specifying filter type in use by correlator
+    enum eCorrFilterType
+    {
+        FIR_FILTER,
+        TFB_FILTER
+    };
+
+    /** CCC_Monitor Interface.
+     ** This interface defines the monitor information for the
+     ** correlator hardware and the Correlator Control Computer (CCC). It is the
+     ** responsibility of the Control system to retrieve the relevant monitor
+     ** points and save them in the MonitorStore of the Archive as it does with
+     ** its other monitor data.
+     */
+    interface CCC_Monitor: CorrelatorPrivate::CorrStateModel
+    {
+        /**
+         ** \defgroup CCC_MonitorConstants Correlator Hardware Definitions.
+         ** These constants reflect the type of correlator in use and will be supplied
+         ** by the TMCDB in the future.
+         ** The 6U bins (otherwise known as STATION bins) contain the station control cards, 
+         ** station cards, station interface cards, TFB filters, power supply card, and DRX 
+         ** receivers (correlator is not responsible for DRX receivers).  
+         ** The 9U bins (otherwise known as CORRELATOR bins) typically contain the LTA, 
+         ** correlator cards, correlator interface cards, and power supply card.  Additionally, 
+         ** there are some cards that are associated with the quadrant itself and are 
+         ** found in 9U bins: the quadrant control card, power control card, and final adders.
+         ** The constants for each type of correlator configuration are as follows:
+         ** TWO_ANTENNA_HW --
+         ** 
+         **   NUM_QUADS               = 1;
+         **   NUM_QCC_CARDS_PER_QUAD  = 1;
+         **   NUM_PCC_CARDS_PER_QUAD  = 0;
+         **   NUM_FA_CARDS_PER_QUAD   = 0;
+         **   NUM_STN_RACKS_PER_QUAD  = 1; 
+         **   NUM_CORR_RACKS_PER_QUAD = 1;
+         **   NUM_6U_BINS_PER_RACK    = 1;
+         **   NUM_9U_BINS_PER_RACK    = 1;
+         **
+         ** SINGLE_QUAD_HW, TWO_QUAD_HW, FULL_SYSTEM_HW --
+         **
+         **   NUM_QUADS               = 1, 2, 4;
+         **   NUM_QCC_CARDS_PER_QUAD  = 1;
+         **   NUM_PCC_CARDS_PER_QUAD  = 1;
+         **   NUM_FA_CARDS_PER_QUAD   = 2;
+         **   NUM_STN_RACKS_PER_QUAD  = 4; 
+         **   NUM_CORR_RACKS_PER_QUAD = 4;
+         **   NUM_6U_BINS_PER_RACK    = 4;
+         **   NUM_9U_BINS_PER_RACK    = 4;
+         **
+         ** NOTE: The constants defined in the current idl (Feb. 25, 2009) are
+         ** for a single quadrant correlator.
+         */
+        /*@{*/
+        const short NUM_QUADS               = 1; ///< Number of quadrantw
+        const short NUM_QCC_CARDS_PER_QUAD  = 1; ///< Number of quadrant control cards per quadrant
+        const short NUM_PCC_CARDS_PER_QUAD  = 1; ///< Number of power control cards per quadrant
+        const short NUM_FA_CARDS_PER_QUAD   = 2; ///< Number of final adder cards per quadrant
+        const short NUM_STN_RACKS_PER_QUAD  = 4; ///< Number of station racks per quadrant
+        const short NUM_CORR_RACKS_PER_QUAD = 4; ///< Number of correlator racks per quadrant
+        const short NUM_6U_BINS_PER_RACK    = 4; ///< Number of 6U (STATION) bins per rack
+        const short NUM_9U_BINS_PER_RACK    = 4; ///< Number of 9U (CORRELATOR) bins per rack
+        /*@}*/
+
+        /** \defgroup These numbers specified the maximum number of the corresponding
+         ** cards per bin in the racks.  During commisioning/maintenance it is possible
+         ** that not all cards will be present which would imply reduced 
+         ** correlator capabilities but the property sequences would still use the max. number
+         ** of cards for the configuration.  Each of the follwing cards has an associated 
+         ** serial number. 
+         */
+        /*@{*/
+        const short NUM_9U_PWR_PER_BIN     = 1; ///< Number of 9U power supply cards per CORRELATOR bin
+        const short NUM_CORR_CARDS_PER_BIN = 8; ///< Number of correlator cards per CORRELATOR bin
+        const short NUM_CORR_INTF_PER_BIN  = 8; ///< Number of correlator interface cards per CORRELATOR bin
+        const short NUM_LTA_PER_BIN        = 1; ///< Number of LTA cardds per CORRELATOR bin
+        const short NUM_6U_PWR_PER_BIN     = 2; ///< Number of 6U power supply cards per STATION bin
+        const short NUM_TFB_CARDS_PER_BIN  = 8; ///< Number of TFB cards per STATION bin
+        const short NUM_STN_CARDS_PER_BIN  = 4; ///< Number of station cards per STATION bin
+        const short NUM_SCC_PER_BIN        = 1; ///< Number of station control cards per STATION bin
+        const short NUM_STN_INTF_PER_BIN   = 2; ///< Number of station interface cards per STATION bin
+        /*@}*/
+
+        /** \defgroup CorrelatorCardsMonitorPoints Correlator card monitor points.
+         ** These are the correlator card monitor points.  There are:
+         ** NUM_QUADS * NUM_CORR_RACKS_PER_QUAD * NUM_9U_BINS_PER_RACK * NUM_CORR_CARDS_PER_BIN
+         ** of each property below.
+         */
+        /*@{*/
+        readonly attribute ACS::ROdoubleSeq voltage_corrCard_1_8v;
+	readonly attribute ACS::ROdoubleSeq voltage_corrCard_3_3v;
+	readonly attribute ACS::ROdoubleSeq voltage_corrCard_5v;
+	readonly attribute ACS::ROdoubleSeq voltage_corrCard_48v;
+	readonly attribute ACS::ROdoubleSeq current0_corrCard_1_8v;
+	readonly attribute ACS::ROdoubleSeq current1_corrCard_1_8v;
+	readonly attribute ACS::ROdoubleSeq current2_corrCard_1_8v;
+	readonly attribute ACS::ROdoubleSeq temp_corrCard;
+        /*@}*/
+        
+        /** \defgroup BinPowerSupplyCard9U 9U Bin Power Supply Card monitor points.
+         ** These are voltages and currents of various power supplies and bin
+         ** temperature. The 9U bin holds the correlator, correlator interface and 
+         ** LTA cards.  There are:
+         **  NUM_QUADS * NUM_CORR_RACKS_PER_QUAD * NUM_9U_BINS_PER_RACK * NUM_9U_PWR_PER_BIN 
+         ** of each property below. 
+         */
+        /*@{*/
+        /// 1.8 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_9U_1_8v;
+        /// 3.3 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_9U_3_3v;
+        /// 5 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_9U_5v;
+        /// 48 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_9U_48v;
+        /// Current for 1.8 Volts power supply 0
+	readonly attribute ACS::ROdoubleSeq current0_9U_1_8v;
+        /// Current for 1.8 Volts power supply 1
+	readonly attribute ACS::ROdoubleSeq current1_9U_1_8v;
+        /// Current for 1.8 Volts power supply 2
+	readonly attribute ACS::ROdoubleSeq current2_9U_1_8v;
+        /// Current for 3.3 Volts power supply 0
+	readonly attribute ACS::ROdoubleSeq current0_9U_3_3v;
+        /// Current for 3.3 Volts power supply 1
+	readonly attribute ACS::ROdoubleSeq current1_9U_3_3v;
+        /// Current for 5 Volts power supply
+	readonly attribute ACS::ROdoubleSeq current_9U_5v;
+        /// Temperature for the 9U bin
+	readonly attribute ACS::ROdoubleSeq temp_9U;
+        /*@}*/
+        
+        /** \defgroup BinPowerSupplyCard6U 6U Bin Power Supply Card monitor points.
+         ** These are the various voltages, currents and temperatures accessible
+         ** to the 6U cards. 6U cards are the Station, Station interface and Filter cards,  There are:
+         **  NUM_QUADS * NUM_STN_RACKS_PER_QUAD * NUM_6U_BINS_PER_RACK * NUM_6U_PWR_PER_BIN
+         ** of each property below.
+         */
+        /*@{*/
+        /// 1.8 Volts level
+	readonly attribute ACS::ROdoubleSeq voltage_6U_1_8v;
+        /// 3.3 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_6U_3_3v;
+        /// 5 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_6U_5v;
+        /// 48 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_6U_48v;
+        /// Current for 1.8 Volts power supply 0
+	readonly attribute ACS::ROdoubleSeq current0_6U_1_8v;
+        /// Current for 1.8 Volts power supply 1
+	readonly attribute ACS::ROdoubleSeq current1_6U_1_8v;
+        /// Current for 1.8 Volts power supply 2
+	readonly attribute ACS::ROdoubleSeq current2_6U_1_8v;
+        /// Current for 3.3 Volts power supply 0
+	readonly attribute ACS::ROdoubleSeq current0_6U_3_3v;
+        /// Current for 3.3 Volts power supply 1
+	readonly attribute ACS::ROdoubleSeq current1_6U_3_3v;
+        /// Current for 5 Volts power supply
+	readonly attribute ACS::ROdoubleSeq current_6U_5v;
+        /// Temperature for the 6U bin
+	readonly attribute ACS::ROdoubleSeq temp_6U;
+        /// Current on TFB 0
+	readonly attribute ACS::ROdoubleSeq tfb0_current;
+        /// Current on TFB 1
+	readonly attribute ACS::ROdoubleSeq tfb1_current;
+        /// Current on TFB 2
+	readonly attribute ACS::ROdoubleSeq tfb2_current;
+        /// Current on TFB 3
+	readonly attribute ACS::ROdoubleSeq tfb3_current;
+        /*@}*/
+
+        /** \defgroup PowerControlCard  Power Control Card monitor points.
+         ** Voltages and currents of various power supplies and bin temperature
+         ** accessible to the Power Control cards.  There are:
+         **  NUM_QUADS * NUM_PCC_CARDS_PER_QUAD 
+         ** of each property below.
+         */
+        /*@{*/
+        /// 3.3 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_PCC_3_3v;
+        /// 28 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_PCC_28v;
+        /// Current A for -48V power supply 
+	readonly attribute ACS::ROdoubleSeq currentA_PCC_minus48v;
+        /// Current B for -48V power supply 
+	readonly attribute ACS::ROdoubleSeq currentB_PCC_minus48v;
+        /// 5 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_PCC_5v;
+        /// Temperature for the PCC 
+	readonly attribute ACS::ROdoubleSeq temp_PCC;
+        /// Offset voltage (-43V) level
+	readonly attribute ACS::ROdoubleSeq voltage_PCC_Offset;
+        /// -48 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_PCC_minus48v;
+        /*@}*/
+        
+        /** \defgroup QuadrantControlCard  Quadrant Control Card monitor points.
+         ** Voltages and temperatures monitored on the quadrante control cards. There are:
+         **  NUM_QUADS * NUM_QCC_CARDS_PER_QUAD 
+         ** of each property below.
+         */
+        /*@{*/
+
+        /// 3.3 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_QCC_3_3v;
+        /// 1.8 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_QCC_1_8v;
+        /// 5 Volt level
+	readonly attribute ACS::ROdoubleSeq voltage_QCC_5v;
+        /// Temperature for the QCC
+	readonly attribute ACS::ROdoubleSeq temp_QCC;
+       /*@}*/
+	
+        /** \defgroup CCCMonitorPoints CCC-related monitor points.
+	 ** These monitor points are the CCC voltages and temperatures available
+	 ** in the computer chassis.
+	 */
+        /*@{*/
+        /// 5 Volt level
+	readonly attribute ACS::ROdouble voltage_CCC_5v;
+        /// CCC temperature
+        readonly attribute ACS::ROdouble temp_CCC;
+        /// CCC fan speed
+        readonly attribute ACS::ROdouble fanSpeed_CCC;
+        /*@}*/
+        
+        /** \defgroup Show the absolute CAN error count for the Long Term Accumlator 
+         ** card (LTA), the Station Control Card (SCC) and the Quadrant 
+         ** Control Card (QCC). These absolute counts can be reset by the 
+         ** XXX_ResetErrorCount() functions below.
+         ** Some mapping between node id and sequence index will be required.
+         */
+        /*@}*/
+        /// CAN Error count for the LTAs
+        readonly attribute ACS::ROlongSeq LTA_CAN_ErrorCount;
+        /// CAN Error count for the SCCs
+	readonly attribute ACS::ROlongSeq SCC_CAN_ErrorCount;
+        /// CAN Error count for the QCC
+	readonly attribute ACS::ROlongSeq QCC_CAN_ErrorCount;
+	/// Missed any timing events
+        readonly attribute ACS::ROlong missedTECount;
+        /*@}*/
+        
+        /** Reset LTA CAN error counts.  Invoking this function sets the
+         ** CAN error count for the LTA to 0.
+         */
+	void LTA_ResetErrorCount()
+	    raises(ACSErrTypeCommon::NotImplementedEx);
+
+        /** Reset  SCC CAN error counts. Invoking this function sets the
+	 ** CAN error count for the SCC to 0.
+	 */
+	void SCC_ResetErrorCount()
+	    raises(ACSErrTypeCommon::NotImplementedEx);
+        /** Reset QCC CAN error counts. Invoking this function sets the
+	 ** CAN error count for the QCC to 0.
+	 */
+	void QCC_ResetErrorCount()
+	    raises(ACSErrTypeCommon::NotImplementedEx);
+
+        /** Reset absolute timing event error counts. Invoking this function 
+	 ** sets the TE error count for  to 0.
+	 */
+        void TE_ResetErrorCount()
+            raises(ACSErrTypeCommon::NotImplementedEx);
+        
+        /** Return correlator card serial numbers for the specified property
+         ** @param propertyName name of property specifying correlator card serial number
+	 ** @exception InvalidPropertyName Exception thrown if name is not part of
+	 ** CCC_Monitor database.
+         */
+        ACS::longLongSeq getSerialNumbers(in string propertyName)
+            raises(CorrErr::ErrorEx); 
+ 
+        // Fire protection equipment status (TBD)
+        // UPS status (TBD)
+        };
+};
+#endif

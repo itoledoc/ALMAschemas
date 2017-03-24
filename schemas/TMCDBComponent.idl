@@ -1,0 +1,392 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ * 
+ * "@(#) $Id: TMCDBComponent.idl 191763 2013-07-03 15:33:47Z rmarson $" 
+ */
+ 
+#ifndef TMCDBComponent_IDL
+#define TMCDBComponent_IDL
+
+#include <TMCDBDataStructures.idl>
+#include <TmcdbErrType.idl>
+#include <acscomponent.idl>
+#include <almaEnumerations_IF.idl>
+
+#pragma prefix "alma"
+
+module TMCDB {
+
+    typedef sequence < TMCDB_IDL::PointingModelIDL > PointingModelSeq;
+    typedef sequence < TMCDB_IDL::StartupAntennaIDL > StartupAntennaSeq;
+    typedef sequence < double > MetrologyCoeffSeq;
+    
+    /**
+     * Assembly configuration data. Includes the Assembly XML document and its
+     * Schema.
+     */
+    struct AssemblyConfigXMLData {
+       string xmlDoc;
+       string schema;
+    };
+
+    /**
+     * Array reference location. Geocentric SI (meters) coordinates.
+     */
+    struct ArrayReferenceLocation {
+        double x;
+        double y;
+        double z;
+    };
+
+    /// An structure to contain a pointing or focus model. 
+    /// All values are in meters or radians
+    /// Allowed coefficient names depend on what sort of model.
+    struct ModelTerm { 
+        string name;  
+        double value;  
+    };
+    typedef sequence<ModelTerm> ModelTermSeq;
+    
+    /// The offsets for each band in a focus or pointing model.  The band must
+    /// be between 1 and 10 (inclusive).
+    struct BandOffsets {
+        ModelTermSeq terms;
+        short bandNumber;
+    };
+    typedef sequence<BandOffsets> BandOffsetsSeq;
+
+    /// A pointing model for an antenna. The overall pointing model for an
+    /// antenna has coefficients which are the sum of the base model and the
+    /// offsets for the band in use.  Sequences can be zero length and bands or
+    /// coefficients which are not specified default to zero. The allowed
+    /// coefficients are:
+    /// "IA", "IE", "NPAE", "CA", "AN", "AW"
+    /// "HASA", "HACA", "HESE", "HECE", "HESA", 
+    /// "HASA2", "HASA3", "HACA2", "HESA2", "HECA2", "HACA3", "HECA3", "HESA3"
+    struct BandPointingModel {
+        ModelTermSeq base;
+        BandOffsetsSeq offsets;
+    };
+
+    /// The current pointing model for an antenna. Its the sum of the base
+    /// pointing model and the offsets for the current band
+    typedef sequence<ModelTerm> PointingModel;
+
+    /// Structurally the focus and pointing model are the same. However they
+    /// will have different coefficient names. The allowed coefficients are:
+    /// "ALPHA", "BETA" (tip and tilt)
+    /// "XA", "XC", "XS", "XTA", "XT1", ... "XTn" (n is an integer)
+    /// "YA", "YC", "YS", "YTA", "YT1", ... "YTn" (n is an integer)
+    /// "ZA", "ZC", "ZS", "ZTA", "ZT1", ... "ZTn" (n is an integer)
+    struct BandFocusModel {
+        ModelTermSeq base;
+        BandOffsetsSeq offsets;
+    };
+
+    /// The current focus model for an antenna. Its the sum of the base
+    /// focus model and the offsets for the current band
+    typedef sequence<ModelTerm> FocusModel;
+
+    struct FEDelay {
+        ReceiverBandMod::ReceiverBand receiverBand;
+        PolarizationTypeMod::PolarizationType polarization;
+        NetSidebandMod::NetSideband sideband;
+        double delay;
+    };
+    typedef sequence<FEDelay> FEDelaySeq;
+
+    enum IFProcConnectionState {
+        USB_HIGH,
+        USB_LOW,
+        LSB_HIGH,
+        LSB_LOW
+    };
+
+    struct IFDelay {
+        BasebandNameMod::BasebandName baseband;
+        PolarizationTypeMod::PolarizationType polarization;
+        IFProcConnectionState ifSwitch;
+        double delay;
+    };
+    typedef sequence<IFDelay> IFDelaySeq;
+
+    struct LODelay {
+        BasebandNameMod::BasebandName baseband;
+        double delay;
+    };
+    typedef sequence<LODelay> LODelaySeq;
+
+    struct XPDelay {
+        ReceiverBandMod::ReceiverBand receiverBand;
+        NetSidebandMod::NetSideband sideband;
+        BasebandNameMod::BasebandName baseband;
+        double delay;
+    };
+    typedef sequence<XPDelay> XPDelaySeq;
+
+    struct AntennaDelays {
+        double antennaDelay;
+        double padDelay;
+        FEDelaySeq feDelays;
+        IFDelaySeq ifDelays;
+        LODelaySeq loDelays;
+    };
+
+    interface TMCDBComponent : ACS::ACSComponent {
+
+        string getConfigurationName() raises (TmcdbErrType::TmcdbErrorEx);
+    
+        /**
+         * The getStartupAntennasInfo interface supplies the information needed
+         * to initialize all antennas.  Included are the name of the antenna,
+         * the pad on which it resides, the name of front end, the assembly
+         * locations in the front end, and the assembly locations in the
+         * antenna.
+         */
+        StartupAntennaSeq getStartupAntennasInfo() 
+            raises (TmcdbErrType::TmcdbErrorEx);
+
+        /**
+         * The getStartupWeatherStationControllerInfo interface supplies the
+         * information needed to initialize the WeatherStation Controller,
+         * including WeatherStation devices list and its locations
+         */
+        TMCDB_IDL::StartupWeatherStationControllerIDL getStartupWeatherStationControllerInfo() 
+            raises (TmcdbErrType::TmcdbErrorEx);
+
+        TMCDB_IDL::StartupAOSTimingIDL getStartupAOSTimingInfo() 
+            raises (TmcdbErrType::TmcdbErrorEx);
+
+        /**
+         * The getStartupCLOInfo interface supplies the information 
+         * needed to initialize the Central LO.  Included are SAS/LLC 
+         * power supplies, LFRD, ML, and a sequence of photonic referneces.
+         */
+        TMCDB_IDL::StartupCLOIDL getStartupCLOInfo()
+            raises (TmcdbErrType::TmcdbErrorEx);
+        
+        /**
+         * The getAntennaInfo interface supplies static information about the
+         * named antenna.  If there is no such antenna, a TmcdbErrorEx is
+         * raised.
+         */
+        TMCDB_IDL::AntennaIDL getAntennaInfo(in string antennaName) 
+            raises (TmcdbErrType::TmcdbSqlEx, 
+                    TmcdbErrType::TmcdbNoSuchRowEx, 
+                    TmcdbErrType::TmcdbDuplicateKeyEx);
+        
+        /**
+         * The getCurrentAntennaPadInfo interface returns the pad data
+         * structure for the pad on which the antenna currently resides.  The
+         * SQL query is: select the pad for antennaName where
+         * AntennaToPad.EndTime is null and AntennaToPad.Planned is �n�.
+         * If there is no such selection, an empty structure is returned.  In
+         * this case the antenna is not currently on a pad, i.e. it is being
+         * transported or in the workshop.
+         */
+        TMCDB_IDL::PadIDL getCurrentAntennaPadInfo(in string antennaName) 
+            raises (TmcdbErrType::TmcdbSqlEx, 
+                    TmcdbErrType::TmcdbNoSuchRowEx, 
+                    TmcdbErrType::TmcdbDuplicateKeyEx, 
+                    TmcdbErrType::TmcdbRowAlreadyExistsEx);
+
+        /**
+         * An antenna pointing model is a combination of information about the
+         * pointing model itself and the terms in the pointing model.  The data
+         * structure defining the pointing model contains:
+         * <ul>
+         * <li>String antennaName;
+         * <li>String padName;
+         * <li>AntennaPointingModelIDL pointintModel;
+         * <li>AntennaPointingModelTermSEQ term;
+         * </ul>
+         * The getPointingModelInfo interface returns the current pointing
+         * model for the current combination of antenna and pad.  If there is
+         * no current pointing model or if the antenna is not on a pad, an
+         * empty structure is returned.
+         */
+        TMCDB_IDL::PointingModelIDL getPointingModelInfo(in string antennaName)
+            raises (TmcdbErrType::TmcdbNoSuchRowEx, 
+                    TmcdbErrType::TmcdbDuplicateKeyEx, 
+                    TmcdbErrType::TmcdbSqlEx, 
+                    TmcdbErrType::TmcdbRowAlreadyExistsEx);
+
+        /**
+         * The getRecentPointingModelInfo interface return the most recent
+         * pointing model for the named antenna and its pad, regardless of
+         * whether the model is current or not.  If the antenna is not
+         * currently on a pad, the most recent pointing model is returned.  If
+         * there are no pointing models for this antenna, an empty structure is
+         * returned.
+         */
+        TMCDB_IDL::PointingModelIDL getRecentPointingModelInfo(in string antennaName)
+            raises (TmcdbErrType::TmcdbSqlEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx, 
+                    TmcdbErrType::TmcdbDuplicateKeyEx, 
+                    TmcdbErrType::TmcdbDuplicateRowEx);  
+        
+        /**
+         * The getPointingModelsInfo structure returns all pointing models for
+         * the antenna.  If there are no pointing models for this antenna, an
+         * empty structure is returned.
+         */
+        PointingModelSeq getPointingModelsInfo(in string antennaName)
+            raises (TmcdbErrType::TmcdbSqlEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx,
+                    TmcdbErrType::TmcdbDuplicateKeyEx,
+                    TmcdbErrType::TmcdbDuplicateRowEx);
+
+        /**
+         * Gets the HW assembly configuration data.
+         *
+         * serialNumber HW serial number, this is usually read directly from
+         * the device (AMSI card) at run time.
+         */
+        AssemblyConfigXMLData getAssemblyConfigData(in string serialNumber)
+            raises (TmcdbErrType::TmcdbSqlEx, TmcdbErrType::TmcdbNoSuchRowEx);
+
+        /**
+         * Gets the configuration data from the component name. This function
+         * looks up in the AssemblyStartup table for the Assembly that is
+         * related with the given component, and retrieves the XML and Schema
+         * configuration data from the Assembly table.
+         *
+         * componentName Component name 
+         */
+        AssemblyConfigXMLData getComponentConfigData(in string componentName)
+            raises (TmcdbErrType::TmcdbSqlEx, TmcdbErrType::TmcdbNoSuchRowEx);
+
+        /**
+         * *** 6.1.0 HACK ***
+         * This function is only defined in 6.1.0. In future versions, the
+         * metrology coefficients will be included in the Pad or AntennaToPad
+         * table.
+         */
+        MetrologyCoeffSeq getMetrologyCoefficients(in string antennaName);
+        
+        /**
+         * Get the antenna and pad average delays.
+         * There are three pertinent delay coefficients in the signal path from
+         * an antenna to the correlator, for each baseband pair. The delay from
+         * the antenna to the pad, the delay from the pad to the correlator
+         * patch, and the delays internal to the correlator.  One way to model
+         * these delays is to maintain the averages of the first two delays
+         * (antenna/pad and pad/corr. patch), and add to the correlator
+         * internal delays the difference of the two first delays with respect
+         * to their averages, for each baseband pair.  In this way, the sum of
+         * the three delays: antenna-average + pad-average +
+         * corr-internal(baseband-pair) will be equal to the sum of delays
+         * specific for each baseband pair.
+         */
+        void getCurrentAntennaDelays(in string antennaName,
+                                     out double antennaDelayAvgCoeff,
+                                     out double padDelayAvgCoeff);
+
+        /**
+         * Get the array phase reference location.
+         * Delays are calculated relative to this position.
+         */
+        ArrayReferenceLocation getArrayReferenceLocation();
+
+        /**
+         * Sets up the startup antennas information. This function provides a
+         * way to set up this structure from test cases.  This is a temporary
+         * hack while a way to do this is implemented at the TMCDB layer.
+         */
+        void setStartupAntennasInfo(in StartupAntennaSeq sai);
+
+        /**
+         * Sets up the antennas information. This function provides a way to
+         * set up this structure from test cases.  This is a temporary hack
+         * while a way to do this is implemented at the TMCDB layer.
+         */
+        void setAntennaInfo(in string an, in TMCDB_IDL::AntennaIDL ai);
+
+        /**
+         * Sets up the antenna pads information. This function provides a way
+         * to set up this structure from test cases.  This is a temporary hack
+         * while a way to do this is implemented at the TMCDB layer.
+         */
+        void setAntennaPadInfo(in string an, in TMCDB_IDL::PadIDL api);
+
+        /**
+         * Sets up the pointing model data. This function provides a way to set
+         * up this structure from test cases.  This is a temporary hack while a
+         * way to do this is implemented at the TMCDB layer.
+         */     
+        void setPointingModelData(in TMCDB_IDL::PointingModelIDL pm);
+
+        /**
+         * Sets up the startup central lo configuration. This function provides
+         * a way to set up this structure from test cases.  This is a temporary
+         * hack while a way to do this is implemented at the TMCDB layer.
+         */
+        void setStartupCLOInfo(in TMCDB_IDL::StartupCLOIDL clo);
+
+        /// Returns the latest pointing model for the specified antenna. The
+        /// antenna name must be one of the standard names like "dv01". This
+        /// check is case insensitive. If no data is found a zero length empty
+        /// model is returned. 
+        /// \exception TmcdbErrType::TmcdbError 
+        ///   if there is any problem with the database
+        /// \exception TmcdbErrType::TmcdbNoSuchRowEx 
+        ///   if the antenna name is not one of the allowed values
+        PointingModel getCurrentAntennaPointingModel(in string antennaName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+
+        /// Returns the latest focus model for the specified antenna. In all
+        /// other respects this is the same as the
+        /// getCurrentAntennaPointingModel function.
+        FocusModel getCurrentAntennaFocusModel(in string antennaName)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+
+        /// Returns the latest pointing model offsets for the specified
+        /// band. The band number must be one in the range of 1-10
+        /// corresponding to the relevant ALMA receiver band or 0 for the
+        /// optical telescope. Set for12MAntenna to false if you need the
+        /// offsets for a 7M antenna. If no data is found a zero length empty
+        /// model is returned.
+        /// \exception TmcdbErrType::TmcdbError 
+        ///   if there is any problem with the database
+        /// \exception TmcdbErrType::TmcdbNoSuchRowEx 
+        ///   if the band number is not in in the range 0 to 10
+        PointingModel getCurrentBandPointingModel(in short bandNumber,
+                                                  in boolean for12MAntenna)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+
+        /// Returns the latest focus model for the specified antenna. In all
+        /// other respects, except the range of allowed band numbers, this is
+        /// the same as the getCurrentBandPointingModel function.
+        /// \exception TmcdbErrType::TmcdbNoSuchRowEx 
+        ///   if the band number is not in in the range 1 to 10
+        FocusModel getCurrentBandFocusModel(in short bandNumber,
+                                            in boolean for12MAntenna)
+            raises (TmcdbErrType::TmcdbErrorEx,
+                    TmcdbErrType::TmcdbNoSuchRowEx);
+    };
+};
+
+#endif // TMCDBComponent_IDL

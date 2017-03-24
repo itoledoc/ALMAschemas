@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- 
+ObsPrep is assigned types between 90,000 - 99,999
+See http://almasw.hq.eso.org/almasw/bin/view/HLA/CompletionErrorTypes
+-->
+
+<Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns="Alma/ACSError" xsi:schemaLocation="Alma/ACSError ACSError.xsd" 
+		name="ProjectRepositoryErrors"
+		type="90000" 
+		_prefix="alma">
+
+			
+<!-- these are the codes for the ERRORS -->
+
+<ErrorCode name="CreationFailure"
+           shortDescription="Failed to create entity object"
+           description="Failed to create entity object">
+   <Member name="Explanation" type="string" description="Some text explaning why creation failed."/>
+</ErrorCode>
+
+<ErrorCode name="CouldNotDelete"
+           shortDescription="Entity could not be deleted"
+           description="The specified entity could not be deleted from the database">
+           
+   <Member name="EntityId" type="string" description="The Entity's Id."/>
+   <Member name="Explanation" type="string" description="Some text explaning why deletion failed."/>
+</ErrorCode>
+
+<ErrorCode name="CouldNotRemove"
+           shortDescription="Entity could not be removed"
+           description="The specified entity could not be removed from the database">
+           
+   <Member name="EntityId" type="string" description="The Entity's Id."/>
+   <Member name="Explanation" type="string" description="Some text explaning why removal failed."/>
+</ErrorCode>
+
+
+<ErrorCode name="CouldNotRetrieve"
+           shortDescription="Entity could not be retrieved"
+           description="The specified entity could not be retrieved from the database">
+
+   <Member name="EntityId" type="string" description="The Entity's Id."/>
+   <Member name="Explanation" type="string" description="Some text explaning why retrieval failed."/>
+</ErrorCode>
+
+
+<ErrorCode name="CouldNotQuery"
+           shortDescription="Database could not be queried"
+           description="The specified information could not be queried from the database">
+   <Member name="Explanation" type="string" description="Some text explaning why querying failed."/>
+</ErrorCode>
+
+
+<ErrorCode name="CouldNotStore"
+           shortDescription="Entity could not be stored"
+           description="The specified entity could not be stored in the database">
+   <Member name="Explanation" type="string" description="Some text explaning why storage failed."/>
+</ErrorCode>
+
+
+<ErrorCode name="RepositoryInternalError"
+           shortDescription="An internal error in the repository has occurred"
+           description="An internal error in the repository has occurred">
+</ErrorCode>
+
+
+
+
+
+<!-- 
+Potential Errors to add
+	
+<ErrorCode name="AlreadyThere"
+           shortDescription=""
+           description=""
+/>
+<ErrorCode name="InvalidState"
+           shortDescription=""
+           description=""
+/>
+<ErrorCode name="AuthorizationFailure"
+           shortDescription=""
+           description=""
+/>
+<ErrorCode name="VersionMismatch"
+           shortDescription=""
+           description=""
+/>
+-->
+
+
+</Type>

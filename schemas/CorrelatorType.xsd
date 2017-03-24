@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
    ALMA - Atacama Large Millimeter Array
   (c) European Southern Observatory, 2002
@@ -31,7 +31,12 @@
    /////////////////////////////////////////////////////////////////
   
    File CorrelatorType.xsd
- --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:crltyp="http://Alma/XENUM/CorrelatorTypeMod" targetNamespace="http://Alma/XENUM/CorrelatorTypeMod" attributeFormDefault="qualified" elementFormDefault="unqualified" version="1 -1">  
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                         xmlns:crltyp="http://Alma/XENUM/CorrelatorTypeMod" 
+                         targetNamespace="http://Alma/XENUM/CorrelatorTypeMod"
+                         attributeFormDefault="qualified" elementFormDefault="unqualified"
+                         version="1 -1" >  
 	<xsd:simpleType name="CorrelatorType">
 	
 		<xsd:annotation>
@@ -40,7 +45,7 @@
 	
  		<xsd:restriction base="xsd:NCName">
      
-			<xsd:enumeration value="FX">
+			<xsd:enumeration value="FX" >
 		
 				<xsd:annotation>
 					<xsd:documentation>identifies a digital correlator of type FX. </xsd:documentation>
@@ -48,7 +53,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="XF">
+			<xsd:enumeration value="XF" >
 		
 				<xsd:annotation>
 					<xsd:documentation>identifies a digital correlator of type XF. </xsd:documentation>
@@ -56,7 +61,7 @@
 		
 			</xsd:enumeration>
      
-			<xsd:enumeration value="FXF">
+			<xsd:enumeration value="FXF" >
 		
 				<xsd:annotation>
 					<xsd:documentation>identifies a correlator of type FXF. </xsd:documentation>
@@ -82,9 +87,9 @@
 			</xsd:simpleType>
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:simpleType name="CorrelatorTypes">
+	<xsd:simpleType name ="CorrelatorTypes">
 		<xsd:restriction base="crltyp:CorrelatorTypeList">
-			<xsd:maxLength value="3" />
+			<xsd:maxLength value = "3" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>
